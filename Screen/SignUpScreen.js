@@ -64,8 +64,8 @@ export default function SignUpScreen( {navigation} ) {
         mode="contained"
         contentStyle={{ paddingVertical: 5 }}
         onPress={() => {
-          const signedIn = createAccount(email, password);
-          if (signedIn) {
+          createAccount(email, password);
+          if (password != password1) {
               navigation.navigate("List")
           }
         }}>
