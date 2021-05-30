@@ -40,11 +40,12 @@ export const slice = createSlice({
             if (item.key == input.key) {
               return {
                 name: input.name,
-                key: item.key,
+                key: input.key,
                 start: input.start,
                 end: input.end,
-                
               }
+            } else {
+              return item;
             }
           }),
           count: state.count,

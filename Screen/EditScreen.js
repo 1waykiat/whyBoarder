@@ -26,9 +26,11 @@ export default function signIn( { navigation, route } ) {
       onChangeText={(text) => setName(text)}
       autoCapitalize="none"
       returnKeyType="next"
+      onSubmitEditing={() => { this.secondTextInput.focus(); }}
       blurOnSubmit={false}
-      />
+     />
     <TextInput
+      ref={(input) => { this.secondTextInput = input; }}
       mode='outlined'
       style={styles.textInput}
       label= 'Start Time'
@@ -36,9 +38,11 @@ export default function signIn( { navigation, route } ) {
       onChangeText={(text) => setStart(text)}
       autoCapitalize="none"
       returnKeyType="next"
+      onSubmitEditing={() => { this.thirdTextInput.focus(); }}
       blurOnSubmit={false}
-      />
+     />
     <TextInput
+      ref={(input) => { this.thirdTextInput = input; }}
       mode='outlined'
       style={styles.textInput}
       label= 'End Time'
@@ -47,7 +51,16 @@ export default function signIn( { navigation, route } ) {
       autoCapitalize="none"
       returnKeyType="next"
       blurOnSubmit={false}
-      />
+      onSubmitEditing={() => {
+        dispatch(editTodo({
+          name: name,
+          key: input.key,
+          start: start,
+          end: end,
+        }));
+        navigation.goBack();}
+      }
+    />
 
     <Button
       style={{marginBottom: 10, borderRadius: 10, width: 350}}
@@ -60,8 +73,8 @@ export default function signIn( { navigation, route } ) {
           key: input.key,
           start: start,
           end: end,
-        }))
-        navigation.pop() 
+        }));
+        navigation.goBack();
       }}>
         Update
     </Button>

@@ -29,10 +29,11 @@ export default function signIn( { navigation } ) {
       onChangeText={handleEmailUpdate}
       autoCapitalize="none"
       returnKeyType="next"
-      onSubmitEditing={() => passwordTextInput.current.focus()}
+      onSubmitEditing={() => { this.secondTextInput.focus(); }}
       blurOnSubmit={false}
       />
     <TextInput
+      ref={(input) => { this.secondTextInput = input; }}
       mode='outlined'
       style={styles.textInput}
       label= 'Password'
@@ -45,15 +46,17 @@ export default function signIn( { navigation } ) {
         onPress={() => setIsPasswordVisible((state) => !state)} />
       }
       secureTextEntry={!isPasswordVisible}
+      onSubmitEditing={() => { this.signInButton.focus(); }}
+      blurOnSubmit={false}
       />
     <Button
+      ref={(input) => { this.signInButton = input; }}
       style={{marginBottom: 10, borderRadius: 10, width: 350}}
       mode="contained"
       contentStyle={{ paddingVertical: 5 }}
       onPress={() => {
         signInAccount(email, password);
         if (firebase.auth().currentUser != null) {
-            console.log(firebase.auth().currentUser);
             navigation.navigate("List");
         }
       }}>
