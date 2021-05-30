@@ -36,7 +36,7 @@ export default function signIn( { navigation } ) {
       mode='outlined'
       style={styles.textInput}
       label= 'Password'
-      placeholder='e.g. I<3MooByul uwU'
+      placeholder=''
       value={password}
       onChangeText={handlePasswordUpdate}
       autoCapitalize="none"
@@ -53,6 +53,7 @@ export default function signIn( { navigation } ) {
       onPress={() => {
         signInAccount(email, password);
         if (firebase.auth().currentUser != null) {
+            console.log(firebase.auth().currentUser);
             navigation.navigate("List");
         }
       }}>

@@ -8,7 +8,7 @@ import TodoList from '../todoList/todoList';
 export default function ListScreen( { navigation } ) {
     return (
             <View style={styles.container}>
-                <TodoList />
+                <TodoList navigation={navigation}/>
                 <TouchableOpacity
                     style={{marginBottom: 10, borderRadius: 10, width: 350}}
                     onPress={() => {

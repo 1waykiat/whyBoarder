@@ -3,17 +3,19 @@ import { FlatList, TextInput, View, Text, StyleSheet, Button} from 'react-native
 import { useDispatch, useSelector } from 'react-redux';
 import { addTodo, removeTodo, selectTodoList} from './todoListSlice';
 
-export default function todoList() {
+export default function todoList( {navigation} ) {
   const todoList = useSelector(selectTodoList);
   const dispatch = useDispatch();
   const [text, setText] = useState("");
+  // const [start, setStart] = useState("00:00");
+  // const [end, setEnd] = useState("00:00");
 
   return (
     <View>
       <FlatList
         style={{marginTop: 20, height: 20, flex: 1 }}
-        data={todoList}
-        key={item => item.key}
+        data={todoList} 
+        keyExtractor={item => item.key.toString()}
         renderItem={
           ({item}) => (
             <View style={{flexDirection: 'row'}}>
@@ -27,6 +29,14 @@ export default function todoList() {
                 contentStyle={{ paddingVertical: 5 }}
                 onPress={() => dispatch(removeTodo(item.key))}
                 title="Clear"
+              />
+              <Button
+                style={{marginBottom: 5, borderRadius: 5, width: 10}}
+                mode="contained"
+                color='black'
+                contentStyle={{ paddingVertical: 5 }}
+                onPress={() => navigation.navigate("Edit", {...item})}
+                title="Edit"
               />
             </View>
           )
@@ -42,7 +52,11 @@ export default function todoList() {
         mode="contained"
         color='black'
         contentStyle={{ paddingVertical: 5 }}
-        onPress={() => dispatch(addTodo(text))}
+        onPress={() => dispatch(addTodo({
+          name: text,
+          start: "start",
+          end: "end",
+        }))}
         title="Add Item"
       />
     </View>

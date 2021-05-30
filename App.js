@@ -8,6 +8,7 @@ import SignInScreen from './Screen/SignInScreen';
 import SignUpScreen from './Screen/SignUpScreen';
 import ListScreen from './Screen/ListScreen';
 import ForgotPasswordScreen from './Screen/ForgotPasswordScreen';
+import EditScreen from './Screen/EditScreen';
 
 import fb from "./api/Firebase";
 
@@ -31,6 +32,7 @@ export default function App() {
           <Stack.Screen name="SignIn" component={SignInScreen}/>
           <Stack.Screen name="SignUp" component={SignUpScreen}/>
           <Stack.Screen name="List" component={ListScreen}/>
+          <Stack.Screen name="Edit" component={EditScreen}/>
           <Stack.Screen name="ForgotPassword" component={ForgotPasswordScreen}/>
         </Stack.Navigator>
       </NavigationContainer>

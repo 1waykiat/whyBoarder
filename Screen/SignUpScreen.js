@@ -64,11 +64,12 @@ export default function SignUpScreen( {navigation} ) {
         mode="contained"
         contentStyle={{ paddingVertical: 5 }}
         onPress={() => {
-          createAccount(email, password);
-          if (password != password1) {
+          if (password == password1) {
+            createAccount(email, password);
               navigation.navigate("List")
           }
-        }}>
+        }
+      }>
           Create Account
       </Button>
     </View>

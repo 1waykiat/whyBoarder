@@ -6,34 +6,54 @@ export const slice = createSlice({
         count: 1,
         list: [{
             name: "chore",
+            start: "00:00",
+            end: "00:00",
             key: 0,
         }, ],
         
     },
     reducers: {
-        addTodo: (state, action) => {
-            const newState = {
-                list: [
-                    ...(state.list),
-                    {
-                        name: action.payload,
-                        key: state.count,
-                    }],
-                count: state.count + 1,
-            };
-            return newState;
-        },
-        removeTodo: (state, action) => {
-            const newState = {
-                list: state.list.filter((item) => item.key != action.payload),
-                count: state.count,
-            };
-            return newState;
-        },
+      addTodo: (state, action) => {
+        const input = action.payload;
+        return {
+          list: [
+            ...(state.list),
+            {
+              name: input.name,
+              start: input.start,
+              end: input.end,
+              key: state.count,
+            }],
+          count: state.count + 1,
+        };
+      },
+      removeTodo: (state, action) => {
+        return {
+          list: state.list.filter((item) => item.key != action.payload),
+          count: state.count,
+        };
+      },
+      editTodo: (state, action) => {
+        const input = action.payload;
+        return {
+          list: state.list.map((item) => {
+            if (item.key == input.key) {
+              return {
+                name: input.name,
+                key: item.key,
+                start: input.start,
+                end: input.end,
+                
+              }
+            }
+          }),
+          count: state.count,
+        };
+      }
     }
 });
 
-export const { addTodo,removeTodo } = slice.actions;
+export const { addTodo, removeTodo, editTodo } = slice.actions;
 
 export const selectTodoList = state => state.todoList.list;
 
