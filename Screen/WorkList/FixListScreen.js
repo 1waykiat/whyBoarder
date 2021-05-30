@@ -2,18 +2,17 @@ import { StatusBar } from 'expo-status-bar';
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 
-import {signOut} from '../api/Authentication';
-import TodoList from '../todoList/todoList';
+import Authentication from '../../api/Authentication';
+import TodoList from '../../todoList/todoList';
 
-export default function ListScreen( { navigation } ) {
+export default function FixListScreen( { navigation } ) {
     return (
             <View style={styles.container}>
                 <TodoList navigation={navigation}/>
                 <TouchableOpacity
                     style={{marginBottom: 10, borderRadius: 10, width: 350}}
                     onPress={() => {
-                        (signOut())
-                        navigation.navigate("Home");
+                      Authentication({action: "signOut", navigation})
                     }}
                 >
                     <Text styles={ {marginTop: 20}}>Sign Out</Text>

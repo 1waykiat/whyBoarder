@@ -2,8 +2,7 @@ import React, {useState} from 'react'
 import { Text, Button, TextInput } from 'react-native-paper'
 import { View, StyleSheet, Image, Pressable } from 'react-native'
 
-import { signIn as signInAccount } from '../api/Authentication';
-import firebase from 'firebase/app';
+import Authentication from '../api/Authentication';
 
 import colors from '../presentational/colors';
 
@@ -53,10 +52,7 @@ export default function signIn( { navigation } ) {
       mode="contained"
       contentStyle={{ paddingVertical: 5 }}
       onPress={() => {
-        signInAccount(email, password);
-        if (firebase.auth().currentUser != null) {
-            navigation.navigate("List");
-        }
+        Authentication({action: "signIn", email: email, password: password, navigation: navigation});
       }}>
         Log In
     </Button>

@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { Text, Button, TextInput } from 'react-native-paper'
-import { View, StyleSheet, Image } from 'react-native'
+import { View, StyleSheet, Image, Alert } from 'react-native'
 
-import { createAccount } from '../api/Authentication';
+import Authentication from '../api/Authentication';
 
 export default function SignUpScreen( {navigation} ) {
   const [email, setEmail] = useState('')
@@ -29,11 +29,12 @@ export default function SignUpScreen( {navigation} ) {
         onChangeText={handleEmailUpdate}
         autoCapitalize="none"
         returnKeyType="next"
-        onSubmitEditing={() => passwordTextInput.current.focus()}
+        onSubmitEditing={() => { this.secondTextInput.focus(); }}
         blurOnSubmit={false}
         />
       
       <TextInput
+        ref={(input) => { this.secondTextInput = input; }}
         mode='outlined'
         style={styles.textInput}
         label= 'Password'
@@ -44,9 +45,12 @@ export default function SignUpScreen( {navigation} ) {
         right={<TextInput.Icon name={isPasswordVisible ? "eye-off" : "eye"}
           onPress={() => setIsPasswordVisible((state) => !state)} />}
         secureTextEntry={!isPasswordVisible}
+        onSubmitEditing={() => { this.thirdTextInput.focus(); }}
+        blurOnSubmit={false}
         />
 
       <TextInput
+        ref={(input) => { this.thirdTextInput = input; }}
         mode='outlined'
         style={styles.textInput}
         label= 'Confirm Password'
@@ -65,8 +69,9 @@ export default function SignUpScreen( {navigation} ) {
         contentStyle={{ paddingVertical: 5 }}
         onPress={() => {
           if (password == password1) {
-            createAccount(email, password);
-              navigation.navigate("List")
+            Authentication({action: "createAccount", email, password, navigation});
+          } else {
+            Alert("Password does not match");
           }
         }
       }>

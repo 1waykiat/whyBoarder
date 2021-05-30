@@ -2,11 +2,11 @@ import 'react-native-gesture-handler';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import HomeScreen from './Screen/HomeScreen';
 import SignInScreen from './Screen/SignInScreen';
 import SignUpScreen from './Screen/SignUpScreen';
-import ListScreen from './Screen/ListScreen';
+import WorkList from './Screen/WorkList/WorkList';
 import ForgotPasswordScreen from './Screen/ForgotPasswordScreen';
 import EditScreen from './Screen/EditScreen';
 
@@ -31,7 +31,7 @@ export default function App() {
           <Stack.Screen name="Home" component={HomeScreen}/>
           <Stack.Screen name="SignIn" component={SignInScreen}/>
           <Stack.Screen name="SignUp" component={SignUpScreen}/>
-          <Stack.Screen name="List" component={ListScreen}/>
+          <Stack.Screen name="WorkList" component={WorkList}/>
           <Stack.Screen name="Edit" component={EditScreen}/>
           <Stack.Screen name="ForgotPassword" component={ForgotPasswordScreen}/>
         </Stack.Navigator>
