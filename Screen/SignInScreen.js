@@ -46,11 +46,9 @@ export default function signIn( { navigation } ) {
         onPress={() => setIsPasswordVisible((state) => !state)} />
       }
       secureTextEntry={!isPasswordVisible}
-      onSubmitEditing={() => { this.signInButton.focus(); }}
       blurOnSubmit={false}
       />
     <Button
-      ref={(input) => { this.signInButton = input; }}
       style={{marginBottom: 10, borderRadius: 10, width: 350}}
       mode="contained"
       contentStyle={{ paddingVertical: 5 }}
