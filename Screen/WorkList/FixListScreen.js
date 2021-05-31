@@ -8,7 +8,7 @@ import TodoList from '../../todoList/todoList';
 export default function FixListScreen( { navigation } ) {
     return (
             <View style={styles.container}>
-                <TodoList navigation={navigation}/>
+                <TodoList type={"fixList"} navigation={navigation}/>
                 <TouchableOpacity
                     style={{marginBottom: 10, borderRadius: 10, width: 350}}
                     onPress={() => {

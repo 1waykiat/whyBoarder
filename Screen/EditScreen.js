@@ -7,11 +7,12 @@ import { useDispatch } from 'react-redux';
 import { editTodo } from '../todoList/todoListSlice';
 
 
-export default function signIn( { navigation, route } ) {
+export default function EditScreen( { navigation, route } ) {
   const input = route.params;
-  const [name, setName] = useState(input.name);
-  const [start, setStart] = useState(input.start);
-  const [end, setEnd] = useState(input.end);
+  const item = input.item;
+  const [name, setName] = useState(item.name);
+  const [start, setStart] = useState(item.start);
+  const [end, setEnd] = useState(item.end);
   const dispatch = useDispatch();
 
   return(
@@ -53,8 +54,9 @@ export default function signIn( { navigation, route } ) {
       blurOnSubmit={false}
       onSubmitEditing={() => {
         dispatch(editTodo({
+          type: input.type,
           name: name,
-          key: input.key,
+          key: item.key,
           start: start,
           end: end,
         }));

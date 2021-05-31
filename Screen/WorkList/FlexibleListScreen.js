@@ -7,7 +7,7 @@ import TodoList from '../../todoList/todoList';
 export default function FlexibleListScreen( { navigation } ) {
     return (
             <View style={styles.container}>
-                <TodoList navigation={navigation}/>
+                <TodoList type={"flexList"} navigation={navigation}/>
                 <StatusBar style="auto" />
             </View>
     )
