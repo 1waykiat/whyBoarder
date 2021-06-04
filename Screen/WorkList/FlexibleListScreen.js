@@ -2,7 +2,7 @@ import { StatusBar } from 'expo-status-bar';
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
 
-import TodoList from '../../todoList/todoList';
+import TodoList from '../../component/todoList';
 
 export default function FlexibleListScreen( { navigation } ) {
     return (

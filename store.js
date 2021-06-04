@@ -1,6 +1,6 @@
 import { configureStore } from '@reduxjs/toolkit';
-import todoListReducer from './todoList/todoListSlice';
-import userInfoReducer from './userInfo/userInfoSlice';
+import todoListReducer from './slice/todoListSlice';
+import userInfoReducer from './ignore/userInfo/userInfoSlice';
 
 export default configureStore({
     reducer: {

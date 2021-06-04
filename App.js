@@ -3,12 +3,12 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 
 import React, { useEffect } from 'react';
-import HomeScreen from './Screen/HomeScreen';
-import SignInScreen from './Screen/SignInScreen';
-import SignUpScreen from './Screen/SignUpScreen';
-import WorkList from './Screen/WorkList/WorkList';
-import ForgotPasswordScreen from './Screen/ForgotPasswordScreen';
-import EditScreen from './Screen/EditScreen';
+import HomeScreen from './screen/HomeScreen';
+import SignInScreen from './screen/SignInScreen';
+import SignUpScreen from './screen/SignUpScreen';
+import WorkList from './screen/WorkList/WorkList';
+import ForgotPasswordScreen from './screen/ForgotPasswordScreen';
+import EditScreen from './screen/EditScreen';
 
 import fb from "./api/Firebase";
 

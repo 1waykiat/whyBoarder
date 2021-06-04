@@ -1,47 +1,32 @@
 import React, { useState } from 'react';
-import { FlatList, View, StyleSheet} from 'react-native';
-import { useDispatch, useSelector } from 'react-redux';
-import { addTodo, removeTodo, selectTodoList} from './todoListSlice';
-import { Card, Title, Paragraph, Button, TextInput } from 'react-native-paper'
+import { View, StyleSheet } from 'react-native';
 
-export default function todoList( { type, navigation} ) {
-  const todoList = type == "fixList" ? useSelector(selectTodoList).fixList : useSelector(selectTodoList).flexList;
+import { useDispatch } from 'react-redux';
+import { addTodo } from '../slice/todoListSlice';
+
+import { Button, TextInput } from 'react-native-paper'
+
+export default function TaskInput( {type} ) {
   const dispatch = useDispatch();
   const [text, setText] = useState("");
   const [start, setStart] = useState("00:00");
   const [end, setEnd] = useState("00:00");
+  const add = () => dispatch(addTodo({
+    type: type,
+    name: text,
+    start: start,
+    end: end,
+  }));
 
   return (
     <View>
-      <FlatList
-        style={{marginTop: 20, height: 20, flex: 1 }}
-        data={todoList} 
-        keyExtractor={item => item.key.toString()}
-        renderItem={
-          ({item}) => (
-            <View style={{flexDirection: 'row'}}>
-
-              <Card style={{width: 375, height: 130, marginBottom: 5}}>
-                <Card.Content>
-                  <Title>{item.name}</Title>
-                  <Paragraph>{item.start} - {item.end}</Paragraph>
-                </Card.Content>
-                <Card.Actions>
-                  <Button icon='close' onPress={() => dispatch(removeTodo({type: type, key: item.key}))}/>
-                  <Button icon='check' onPress={() => navigation.navigate("Edit", {type: type, item: item} )}/>
-                </Card.Actions>
-              </Card>
-            </View>
-          )
-        }
-      />
       <TextInput
         ref={(input) => { this.firstTextInput = input; }}
         mode='outlined'
         style={styles.textInput}
         label= 'Task'
         value={text}
-        onChangeText={(item) => setText(key=item)}
+        onChangeText={(item) => setText(item)}
         autoCapitalize="none"
         returnKeyType="next"
         onSubmitEditing={() => { this.secondTextInput.focus(); }}
@@ -54,7 +39,7 @@ export default function todoList( { type, navigation} ) {
           style={styles.textInputSmall}
           label= 'Start Time'
           value={start}
-          onChangeText={(item) => setStart(key=item)}
+          onChangeText={(item) => setStart(item)}
           autoCapitalize="none"
           returnKeyType="next"
           onSubmitEditing={() => { this.thirdTextInput.focus(); }}
@@ -66,15 +51,12 @@ export default function todoList( { type, navigation} ) {
           style={styles.textInputSmall}
           label= 'End Time'
           value={end}
-          onChangeText={(item) => setEnd(key=item)}
+          onChangeText={(item) => setEnd(item)}
           autoCapitalize="none"
           returnKeyType="next"
-          onSubmitEditing={() => dispatch(addTodo({
-            type: type,
-            name: text,
-            start: start,
-            end: end,
-          }))}
+          onSubmitEditing={() => {
+            add();
+        }}
           blurOnSubmit={false}
           />
         </View>
@@ -83,12 +65,7 @@ export default function todoList( { type, navigation} ) {
         mode="contained"
         contentStyle={{ paddingVertical: 5 }}
         onPress={() => {
-          dispatch(addTodo({
-            name: text,
-            start: start,
-            end: end,
-           }));
-          this.firstTextInput.focus();
+          add();
         }}
         title="Add Item"
       />

@@ -1,10 +1,10 @@
 import React, {useState} from 'react'
 import { Text, Button, TextInput } from 'react-native-paper'
-import { View, StyleSheet, Image, Pressable } from 'react-native'
+import { View, StyleSheet, Image } from 'react-native'
 
 import colors from '../presentational/colors';
 import { useDispatch } from 'react-redux';
-import { editTodo } from '../todoList/todoListSlice';
+import { editTodo } from '../slice/todoListSlice';
 
 
 export default function EditScreen( { navigation, route } ) {

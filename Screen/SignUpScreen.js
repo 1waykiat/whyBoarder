@@ -14,6 +14,13 @@ export default function SignUpScreen( {navigation} ) {
   const handleEmailUpdate = (text) => setEmail(text)
   const handlePasswordUpdate = (text) => setPassword(text)
   const handlePasswordUpdate1 = (text) => setPassword1(text)
+
+  const createAccount = () => Authentication( {action: "createAccount", email, password, event: () => {
+    Authentication( {action: "emailVerification", event: () => {
+      Alert.alert("Verification email has been sent to " + email);
+      navigation.navigate("SignIn");
+    }} )
+  } });
   
   return(
     <View style={styles.container}>
@@ -69,7 +76,7 @@ export default function SignUpScreen( {navigation} ) {
         contentStyle={{ paddingVertical: 5 }}
         onPress={() => {
           if (password == password1) {
-            Authentication({action: "createAccount", email, password, navigation});
+            createAccount();
           } else {
             Alert("Password does not match");
           }

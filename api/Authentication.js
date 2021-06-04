@@ -1,13 +1,13 @@
 import "firebase/auth"; 
 import firebase from "firebase/app";
 
-export default function Authentication( {action, email, password, navigation } ) {
-  const createAccount = async (email, password) => {
+export default function Authentication( {action, email, password, event } ) {
+  const createAccount = async () => {
     await firebase.auth()
     .createUserWithEmailAndPassword(email, password)
     .then(() => {
       console.log('User account created & signed in!');
-      navigation.navigate("WorkList");
+      event();
     })
     .catch(error => {
       if (error.code === 'auth/email-already-in-use') {
@@ -22,12 +22,12 @@ export default function Authentication( {action, email, password, navigation } )
     });
   };
   
-  const signIn = async (email, password) => {
+  const signIn = async () => {
     await firebase.auth()
     .signInWithEmailAndPassword(email, password)
     .then(() => {
       console.log('User account signed in!');
-      navigation.navigate("WorkList");
+      event();
     })
     .catch(error => {
       if (error.code === 'auth/email-already-in-use') {
@@ -48,24 +48,64 @@ export default function Authentication( {action, email, password, navigation } )
     .signOut()
     .then(() => {
       console.log('User account signed out!');
-      navigation.navigate("Home");
+      event();
     })
     .catch(error => {
       console.error(error);
     });
-  }
+  };
+
+  const forgotPassword = async () => {
+    await firebase.auth()
+    .sendPasswordResetEmail(email)
+    .then(() => {
+      console.log('Password reset email sent!');
+      event();
+    })
+    .catch(error => {     
+      console.error(error);
+    });
+  };
+
+  const emailVerification = async () => {
+    await firebase.auth()
+    .currentUser.sendEmailVerification()
+    .then(() => {
+      console.log('Verification email sent!');
+      event();
+    })
+    .catch(error => {
+      console.error(error);
+    });
+  };
+
+  const checkVerified = async () => {
+    return firebase.auth().currentUser.emailVerified ? (event.pass)() : (event.fail)();
+  };
 
   switch (action) {
     case "createAccount": {
-       createAccount(email, password);
+       createAccount();
        break;
-    }
+    };
     case "signIn": {
-       signIn(email, password);
+       signIn();
        break;
-    } 
+    } ;
     case "signOut": {
       signOut();
+      break;
+    };
+    case "forgotPassword": {
+      forgotPassword();
+      break;
+    };
+    case "emailVerification": {
+      emailVerification();
+      break;
+    };
+    case "checkVerified": {
+      checkVerified();
       break;
     }
   }

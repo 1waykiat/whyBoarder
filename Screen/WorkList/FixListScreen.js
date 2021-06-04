@@ -3,7 +3,7 @@ import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 
 import Authentication from '../../api/Authentication';
-import TodoList from '../../todoList/todoList';
+import TodoList from '../../component/todoList';
 
 export default function FixListScreen( { navigation } ) {
     return (
@@ -12,7 +12,7 @@ export default function FixListScreen( { navigation } ) {
                 <TouchableOpacity
                     style={{marginBottom: 10, borderRadius: 10, width: 350}}
                     onPress={() => {
-                      Authentication({action: "signOut", navigation})
+                      Authentication( {action: "signOut", event: () => navigation.navigate("Home") })
                     }}
                 >
                     <Text styles={ {marginTop: 20}}>Sign Out</Text>

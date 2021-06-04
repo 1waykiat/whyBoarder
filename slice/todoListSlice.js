@@ -28,7 +28,7 @@ export const slice = createSlice({
         };
         return {
           fixList: input.type == "fixList" ? [...(state.fixList),newItem] : state.fixList,
-          flexList: input.type == " flexList" ? [...(state.flexList),newItem] : state.flexList,
+          flexList: input.type == "flexList" ? [...(state.flexList),newItem] : state.flexList,
           count: state.count + 1,
         };
       },

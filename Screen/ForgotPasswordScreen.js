@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { Text, Button, TextInput } from 'react-native-paper'
-import { View, StyleSheet, Image } from 'react-native'
+import { View, StyleSheet, Image, Alert } from 'react-native'
+
+import Authentication from '../api/Authentication'
 
 export default function ForgotPasswordScreen( {navigation} ) {
   const [email, setEmail] = useState('')
@@ -30,7 +32,7 @@ export default function ForgotPasswordScreen( {navigation} ) {
         mode="contained"
         contentStyle={{ paddingVertical: 5 }}
         onPress={() => {
-          alert("Email sent to " + {email}.email);
+          Authentication( {action: "forgotPassword", email, event: () => Alert.alert("Reset password email has been sent! ")} )
         }}>
           Reset Password
       </Button>
