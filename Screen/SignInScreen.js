@@ -2,25 +2,43 @@ import React, {useState} from 'react'
 import { Text, Button, TextInput } from 'react-native-paper'
 import { View, StyleSheet, Image, Pressable, Alert } from 'react-native'
 
-import Authentication from '../api/Authentication';
-
 import colors from '../presentational/colors';
+
+import { useDispatch } from 'react-redux';
+import { downloadTodo } from "../slice/todoListSlice"
+
+import Authentication from '../api/Authentication';
+import Database from '../api/Database';
 
 export default function signIn( { navigation } ) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
 
+  const dispatch = useDispatch();
+
   const handleEmailUpdate = (text) => setEmail(text);
   const handlePasswordUpdate = (text) => setPassword(text);
 
   const signIn = () => Authentication( {action: "signIn", email, password, event: () => {
     Authentication( {action: "checkVerified", event: {
-      pass: () => navigation.navigate("WorkList"),
-      fail: () => Authentication( {action: "emailVerification", event: () => {
-        Alert.alert("Verification email has been resent to " + email);
-        // other actions?
-      }})
+      pass: () => {
+        navigation.navigate("WorkList");
+        Database( {action: "download", event: (data) => {
+          const item = data.val()
+          const formattedItem = {
+            fixList: Object.values(item.fixList),
+            flexList: Object.values(item.flexList),
+            ...item
+          }
+          dispatch(downloadTodo(formattedItem))
+        }} );
+      },
+      fail: () => Authentication( {
+        action: "emailVerification", event: () => {
+          Alert.alert("Verification email has been resent to " + email);
+        }
+      })
     }} )
   } });
 

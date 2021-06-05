@@ -1,8 +1,9 @@
 import 'react-native-gesture-handler';
+import React, { useEffect } from 'react';
+
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 
-import React, { useEffect } from 'react';
 import HomeScreen from './screen/HomeScreen';
 import SignInScreen from './screen/SignInScreen';
 import SignUpScreen from './screen/SignUpScreen';
@@ -10,17 +11,20 @@ import WorkList from './screen/WorkList/WorkList';
 import ForgotPasswordScreen from './screen/ForgotPasswordScreen';
 import EditScreen from './screen/EditScreen';
 
-import fb from "./api/Firebase";
+import { LogBox } from 'react-native';
+
+import firebase from "./api/Firebase";
 
 import { Provider } from "react-redux";
 import store from './store';
 
+LogBox.ignoreLogs(['Setting a timer for a long period of time'])
 
 export default function App() {
   const Stack = createStackNavigator();
 
   useEffect(() => {
-    const app = fb();
+    const app = () => firebase;
     return app; // unsubscribe on unmount
   }, []);
 

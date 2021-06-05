@@ -10,7 +10,7 @@ export default function todoList( { type, navigation} ) {
   const dispatch = useDispatch();
 
   return (
-    <View>
+    <View style={{height: 500}}>
       <FlatList
         style={{marginTop: 20, height: 20, flex: 1 }}
         data={todoList} 

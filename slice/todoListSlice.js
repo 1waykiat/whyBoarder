@@ -64,10 +64,16 @@ export const slice = createSlice({
           count: state.count,
         };
       },
+      downloadTodo: (state, action) => {
+        const input = action.payload;
+        return {
+          ...input
+        };
+      }
     }
 });
 
-export const { addTodo, removeTodo, editTodo } = slice.actions;
+export const { addTodo, removeTodo, editTodo, downloadTodo } = slice.actions;
 
 export const selectTodoList = state => state.todoList;
 
