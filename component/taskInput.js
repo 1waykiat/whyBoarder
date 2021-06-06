@@ -11,6 +11,7 @@ export default function TaskInput( {type} ) {
   const [text, setText] = useState("");
   const [start, setStart] = useState("00:00");
   const [end, setEnd] = useState("00:00");
+  
   const add = () => dispatch(addTodo({
     type: type,
     name: text,

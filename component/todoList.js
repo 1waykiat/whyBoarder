@@ -1,16 +1,15 @@
 import React from 'react';
-import { FlatList, View, StyleSheet} from 'react-native';
+import { FlatList, View, StyleSheet, TouchableOpacity} from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { removeTodo, selectTodoList} from '../slice/todoListSlice';
 import { Card, Title, Paragraph, Button } from 'react-native-paper'
-import TaskInput from './taskInput';
 
 export default function todoList( { type, navigation} ) {
   const todoList = type == "fixList" ? useSelector(selectTodoList).fixList : useSelector(selectTodoList).flexList;
   const dispatch = useDispatch();
 
   return (
-    <View style={{height: 500}}>
+    <View style={{height: 550}}>
       <FlatList
         style={{marginTop: 20, height: 20, flex: 1 }}
         data={todoList} 
@@ -33,8 +32,16 @@ export default function todoList( { type, navigation} ) {
           )
         }
       />
-      
-      <TaskInput type={type}/>
+
+      <Button
+        style={{marginBottom: 10, borderRadius: 10, width: 350}}
+        mode="contained"
+        contentStyle={{ paddingVertical: 5 }}
+        onPress={() => navigation.navigate("Edit", {type: type})}
+        title="Add Item"
+      >
+        Add Item
+      </Button>
     </View>
   )
 }

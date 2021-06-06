@@ -24,7 +24,7 @@ export default function signIn( { navigation } ) {
     Authentication( {action: "checkVerified", event: {
       pass: () => {
         navigation.navigate("WorkList");
-        Database( {action: "download", event: (data) => {
+        Database( {action: "download", event: () => (data) => {
           const item = data.val()
           const formattedItem = {
             fixList: Object.values(item.fixList),
@@ -74,6 +74,7 @@ export default function signIn( { navigation } ) {
       }
       secureTextEntry={!isPasswordVisible}
       blurOnSubmit={false}
+      onSubmitEditing={() => signIn()}
       />
     <Button
       style={{marginBottom: 10, borderRadius: 10, width: 350}}

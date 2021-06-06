@@ -4,16 +4,38 @@ import { View, StyleSheet, Image } from 'react-native'
 
 import colors from '../presentational/colors';
 import { useDispatch } from 'react-redux';
-import { editTodo } from '../slice/todoListSlice';
+import { addTodo, editTodo } from '../slice/todoListSlice';
 
+import DateTimePicker from '@react-native-community/datetimepicker';
 
 export default function EditScreen( { navigation, route } ) {
   const input = route.params;
   const item = input.item;
-  const [name, setName] = useState(item.name);
-  const [start, setStart] = useState(item.start);
-  const [end, setEnd] = useState(item.end);
+
+  const [name, setName] = useState(item == undefined ? "" : item.name);
+  const [start, setStart] = useState(item == undefined ? "00:00" : item.start);
+  const [end, setEnd] = useState(item == undefined ? "00:00" : item.end);
   const dispatch = useDispatch();
+
+  const reducer = () => {
+    if (item == undefined) {
+      return dispatch(addTodo( {
+        type: input.type,
+        name: name,
+        start: start,
+        end: end,
+      } ));
+    } else {  
+      return dispatch(editTodo( {
+        type: input.type,
+        name: name,
+        key: item.key,
+        start: start,
+        end: end,
+      } ));
+    }
+    
+  };
 
   return(
   <View style={styles.container}>
@@ -53,13 +75,7 @@ export default function EditScreen( { navigation, route } ) {
       returnKeyType="next"
       blurOnSubmit={false}
       onSubmitEditing={() => {
-        dispatch(editTodo({
-          type: input.type,
-          name: name,
-          key: item.key,
-          start: start,
-          end: end,
-        }));
+        reducer();
         navigation.goBack();}
       }
     />
@@ -70,12 +86,7 @@ export default function EditScreen( { navigation, route } ) {
       color='#fdfaf6'
       contentStyle={{ paddingVertical: 5 }}
       onPress={() => {
-        dispatch(editTodo({
-          name: name,
-          key: input.key,
-          start: start,
-          end: end,
-        }));
+        reducer();
         navigation.goBack();
       }}>
         Update

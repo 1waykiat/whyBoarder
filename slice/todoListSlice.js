@@ -1,21 +1,22 @@
 import { createSlice } from '@reduxjs/toolkit';
+import Database from '../api/Database';
 
 export const slice = createSlice({
     name: 'todoList',
     initialState: {
-        count: 1,
+        count: 2,
         fixList: [{
-            name: "chore (fixList)",
+            name: "example (fixList)",
             start: "00:00",
             end: "00:00",
             key: 0,
         }, ],
         flexList: [{
-          name: "chore (flexList)",
+          name: "example (flexList)",
           start: "00:00",
           end: "00:00",
-          key: 0,
-      }, ],
+          key: 1,
+        },],
     },
     reducers: {
       addTodo: (state, action) => {
@@ -26,15 +27,17 @@ export const slice = createSlice({
           end: input.end,
           key: state.count,
         };
-        return {
+        const newState =  {
           fixList: input.type == "fixList" ? [...(state.fixList),newItem] : state.fixList,
           flexList: input.type == "flexList" ? [...(state.flexList),newItem] : state.flexList,
           count: state.count + 1,
         };
+        Database( {action: "upload", data: newState} );
+        return newState;
       },
       removeTodo: (state, action) => {
         const input = action.payload;
-        return {
+        const newState =  {
           fixList: input.type == "fixList"
             ? state.fixList.filter((item) => item.key != input.key)
             : state.fixList,
@@ -43,6 +46,8 @@ export const slice = createSlice({
             : state.flexList,
           count: state.count,
         };
+        Database( {action: "upload", data: newState} );
+        return newState;        
       },
       editTodo: (state, action) => {
         const input = action.payload;
@@ -52,7 +57,7 @@ export const slice = createSlice({
           start: input.start,
           end: input.end,
         };
-        return {
+        const newState = {
           fixList: input.type == "fixList" 
             ? state.fixList.map((item) =>
               item.key == input.key ? newItem : item)
@@ -63,6 +68,8 @@ export const slice = createSlice({
             : state.flexList,
           count: state.count,
         };
+        Database( {action: "upload", data: newState} );
+        return newState;
       },
       downloadTodo: (state, action) => {
         const input = action.payload;

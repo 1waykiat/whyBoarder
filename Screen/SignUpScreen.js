@@ -68,7 +68,14 @@ export default function SignUpScreen( {navigation} ) {
         right={<TextInput.Icon name={isPasswordVisible1 ? "eye-off" : "eye"}
           onPress={() => setIsPasswordVisible1((state) => !state)} />}
         secureTextEntry={!isPasswordVisible1}
-        />
+        onSubmitEditing={() => {
+          if (password == password1) {
+            createAccount();
+          } else {
+            Alert.alert("Password does not match");
+          } 
+        }}
+      />
 
       <Button
         style={{marginBottom: 10, borderRadius: 10, width: 350}}
@@ -78,10 +85,10 @@ export default function SignUpScreen( {navigation} ) {
           if (password == password1) {
             createAccount();
           } else {
-            Alert("Password does not match");
+            Alert.alert("Password does not match");
           }
-        }
-      }>
+        }}
+      >
           Create Account
       </Button>
     </View>

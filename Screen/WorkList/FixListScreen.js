@@ -27,7 +27,7 @@ export default function FixListScreen( { navigation } ) {
                 <TouchableOpacity
                     style={{marginBottom: 10, borderRadius: 10, width: 350}}
                     onPress={() => {
-                      Database( {action: "upload", data: todoList, event: () => {}} )
+                      Database( {action: "upload", data: todoList, } )
                     }}
                 >
                     <Text styles={ {marginTop: 20}}>Upload</Text>
