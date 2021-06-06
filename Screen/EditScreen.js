@@ -71,8 +71,9 @@ export default function EditScreen( { navigation, route } ) {
       contentStyle={{ paddingVertical: 5 }}
       onPress={() => {
         dispatch(editTodo({
+          type: input.type,
           name: name,
-          key: input.key,
+          key: item.key,
           start: start,
           end: end,
         }));

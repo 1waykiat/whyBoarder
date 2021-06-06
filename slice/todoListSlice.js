@@ -5,13 +5,13 @@ export const slice = createSlice({
     initialState: {
         count: 1,
         fixList: [{
-            name: "chore (fixList)",
+            name: "Chore (fixList)",
             start: "00:00",
             end: "00:00",
             key: 0,
         }, ],
         flexList: [{
-          name: "chore (flexList)",
+          name: "Chore (flexList)",
           start: "00:00",
           end: "00:00",
           key: 0,
