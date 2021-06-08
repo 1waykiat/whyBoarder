@@ -1,14 +1,17 @@
 import React, { useState } from 'react'
-import { Calendar, CalendarList, Agenda } from 'react-native-calendars'
-import { View, StatusBar, Text, TouchableOpacity, StyleSheet, Button, Platform } from 'react-native'
+import { Agenda } from 'react-native-calendars'
+import { View, Text, TouchableOpacity, StyleSheet, Button, Platform } from 'react-native'
 import { Card } from 'react-native-paper'
-import DateTimePicker from '@react-native-community/datetimepicker';
-import { current } from 'immer';
 import RNDateTimePicker from '@react-native-community/datetimepicker';
 
-const timeToString = (time) => {
-  const date = new Date(time);
-  return date.toISOString().split('T')[0];
+const timeToDate = (time) => {
+  const temp = new Date(time);
+  return temp.toISOString().split('T')[0];
+}
+
+const timeToHourMin = (time) => {
+  const temp = new Date(time).toISOString().split('T')[1].split(':')
+  return temp[0]+":"+temp[1];
 }
 
 const AgendaScreen = () => {
@@ -27,7 +30,9 @@ const AgendaScreen = () => {
     const currentDate = selectedDate || date;
     setShow(Platform.OS === 'ios');
     setDate(currentDate);
-    console.log(currentDate)
+    console.log(currentDate);
+    console.log(timeToHourMin(currentDate));
+    console.log(timeToDate(currentDate));
   };
 
   const showMode = (currentMode) => {
@@ -107,7 +112,7 @@ const AgendaScreen = () => {
       <Button onPress={showTimepicker} title="Show time picker!" />
       {show && (
         <RNDateTimePicker
-          timeZoneOffsetInSeconds={7200}
+          timeZoneOffsetInMinutes={0}
           testID="dateTimePicker"
           value={date}
           mode={mode}

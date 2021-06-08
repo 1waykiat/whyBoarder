@@ -7,31 +7,46 @@ export const slice = createSlice({
         count: 2,
         fixList: [{
             name: "example (fixList)",
-            start: "00:00",
-            end: "00:00",
+            startDate: "2021-06-06",
+            startTime: "00:00",
+            endDate: "2021-06-06",
+            endTime: "01:00",
+            recurring: true,
             key: 0,
         }, ],
         flexList: [{
           name: "example (flexList)",
-          start: "00:00",
-          end: "00:00",
+          duration: "2:30",
+          recurring: false,
           key: 1,
         },],
+        agenda: {
+          "2021-06-06": [{
+            name: "example",
+            startTime: "00:00",
+            endTime: "01:00",
+            key: 0,
+          },],
+        },
     },
     reducers: {
       addTodo: (state, action) => {
         const input = action.payload;
-        const newItem = {
-          name: input.name,
-          start: input.start,
-          end: input.end,
-          key: state.count,
-        };
+        const newItem = {...(input.newItem), key: state.count};
+        const {startDate, endDate, recurring, ...newAgenda} = newItem; 
         const newState =  {
-          fixList: input.type == "fixList" ? [...(state.fixList),newItem] : state.fixList,
-          flexList: input.type == "flexList" ? [...(state.flexList),newItem] : state.flexList,
+          fixList: input.type == "fixList" ? [...(state.fixList), newItem] : state.fixList,
+          flexList: input.type == "flexList" ? [...(state.flexList), newItem] : state.flexList,
           count: state.count + 1,
-        };
+          agenda: input.type == "fixList"
+            ? {
+                ...(state.agenda),
+                [input.newItem.startDate]: (state.agenda)[input.newItem.startDate] == undefined
+                  ? [newAgenda]
+                  : [...((state.agenda)[input.newItem.startDate]), newAgenda] 
+              }
+              : state.agenda
+        }
         Database( {action: "upload", data: newState} );
         return newState;
       },
@@ -39,34 +54,37 @@ export const slice = createSlice({
         const input = action.payload;
         const newState =  {
           fixList: input.type == "fixList"
-            ? state.fixList.filter((item) => item.key != input.key)
-            : state.fixList,
+          ? state.fixList.filter((item) => item.key != input.key)
+          : state.fixList,
           flexList: input.type == "flexList"
-            ? state.flexList.filter((item) => item.key != input.key)
-            : state.flexList,
+          ? state.flexList.filter((item) => item.key != input.key)
+          : state.flexList,
           count: state.count,
+          agenda: Object.fromEntries(Object.entries(state.agenda).map((date) => {
+            date[1] = date[1].filter((item) => item.key != input.key);
+            return date;
+          })),
         };
         Database( {action: "upload", data: newState} );
         return newState;        
       },
-      editTodo: (state, action) => {
+      editTodo: (state, action) => {  
         const input = action.payload;
-        const newItem = {
-          name: input.name,
-          key: input.key,
-          start: input.start,
-          end: input.end,
-        };
+        const {startDate, endDate, recurring, ...newAgenda} = {...(input.newItem)}; 
         const newState = {
           fixList: input.type == "fixList" 
             ? state.fixList.map((item) =>
-              item.key == input.key ? newItem : item)
+              item.key == input.key ? input.newItem : item)
             : state.fixList,
           flexList: input.type == "flexList" 
             ? state.flexList.map((item) =>
-              item.key == input.key ? newItem : item)
+              item.key == input.key ? input.newItem : item)
             : state.flexList,
           count: state.count,
+          agenda: Object.fromEntries(Object.entries(state.agenda).map((date) => {
+            date[1] = date[1].map((item) => item.key == input.key ? newAgenda : item);
+            return date;
+          })),
         };
         Database( {action: "upload", data: newState} );
         return newState;

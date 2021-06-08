@@ -6,35 +6,52 @@ import colors from '../presentational/colors';
 import { useDispatch } from 'react-redux';
 import { addTodo, editTodo } from '../slice/todoListSlice';
 
-import DateTimePicker from '@react-native-community/datetimepicker';
+import RNDateTimePicker from '@react-native-community/datetimepicker';
 
 export default function EditScreen( { navigation, route } ) {
   const input = route.params;
   const item = input.item;
 
   const [name, setName] = useState(item == undefined ? "" : item.name);
-  const [start, setStart] = useState(item == undefined ? "00:00" : item.start);
-  const [end, setEnd] = useState(item == undefined ? "00:00" : item.end);
+  const [startDate, setStartDate] = useState(item == undefined ? "2021-01-01" : item.startDate);
+  const [startTime, setStartTime] = useState(item == undefined ? "00:00" : item.startTime);
+  const [endDate, setEndDate] = useState(item == undefined ? "2021-01-01" : item.endDate);
+  const [endTime, setEndTime] = useState(item == undefined ? "00:00" : item.endTime);
+  const [duration, setDuration] = useState(item == undefined ? "0" : item.duration);
+  const [recurring, setRecurring] = useState(item == undefined ? true : item.recurring);
   const dispatch = useDispatch();
 
+  
   const reducer = () => {
+    const fixListItem = {
+      name: name,
+      startDate: startDate,
+      startTime: startTime,
+      endDate: endDate,
+      endTime: endTime,
+      recurring: true,
+    };
+  
+    const flexListItem = {
+      name: name,
+      duration: duration,
+      recurring: true,
+    };
+  
+    const newItem = input.type == "fixList" ? fixListItem : flexListItem;
+    
     if (item == undefined) {
       return dispatch(addTodo( {
         type: input.type,
-        name: name,
-        start: start,
-        end: end,
+        newItem: newItem,
       } ));
     } else {  
       return dispatch(editTodo( {
         type: input.type,
-        name: name,
         key: item.key,
-        start: start,
-        end: end,
+        newItem: {...newItem, key: item.key},
       } ));
     }
-    
   };
 
   return(
@@ -52,25 +69,80 @@ export default function EditScreen( { navigation, route } ) {
       onSubmitEditing={() => { this.secondTextInput.focus(); }}
       blurOnSubmit={false}
      />
+    <View style={{flexDirection:"row"}}>
+      <TextInput
+        ref={(input) => { this.secondTextInput = input; }}
+        mode='outlined'
+        style={styles.textInputSmall}
+        label= 'Start Date'
+        value={startTime}
+        onChangeText={(text) => setStartDate(text)}
+        autoCapitalize="none"
+        returnKeyType="next"
+        onSubmitEditing={() => { this.thirdTextInput.focus(); }}
+        blurOnSubmit={false}
+       />
+      <TextInput
+        ref={(input) => { this.thirdTextInput = input; }}
+        mode='outlined'
+        style={styles.textInputSmall}
+        label= 'Start Time'
+        value={startTime}
+        onChangeText={(text) => setStartTime(text)}
+        autoCapitalize="none"
+        returnKeyType="next"
+        onSubmitEditing={() => { this.fourthTextInput.focus(); }}
+        blurOnSubmit={false}
+      />
+    </View>
+
+    <View style={{flexDirection:"row"}}>
+      <TextInput
+        ref={(input) => { this.fourthTextInput = input; }}
+        mode='outlined'
+        style={styles.textInputSmall}
+        label= 'End Date'
+        value={endDate}
+        onChangeText={(text) => setEndDate(text)}
+        autoCapitalize="none"
+        returnKeyType="next"
+        onSubmitEditing={() => { this.fifthTextInput.focus(); }}
+        blurOnSubmit={false}
+       />
+      <TextInput
+        ref={(input) => { this.fifthTextInput = input; }}
+        mode='outlined'
+        style={styles.textInputSmall}
+        label= 'End Time'
+        value={endTime}
+        onChangeText={(text) => setEndTime(text)}
+        autoCapitalize="none"
+        returnKeyType="next"
+        onSubmitEditing={() => { this.sixthTextInput.focus(); }}
+        blurOnSubmit={false}
+      />
+    </View>
+
     <TextInput
-      ref={(input) => { this.secondTextInput = input; }}
+      ref={(input) => { this.sixthTextInput = input; }}
       mode='outlined'
       style={styles.textInput}
-      label= 'Start Time'
-      value={start}
-      onChangeText={(text) => setStart(text)}
+      label= 'Duration'
+      value={duration}
+      onChangeText={(text) => setDuration(text)}
       autoCapitalize="none"
       returnKeyType="next"
-      onSubmitEditing={() => { this.thirdTextInput.focus(); }}
       blurOnSubmit={false}
-     />
+      onSubmitEditing={() => { this.seventhTextInput.focus(); }}
+    />
+
     <TextInput
-      ref={(input) => { this.thirdTextInput = input; }}
+      ref={(input) => { this.seventhTextInput = input; }}
       mode='outlined'
       style={styles.textInput}
-      label= 'End Time'
-      value={end}
-      onChangeText={(text) => setEnd(text)}
+      label= 'Recurring'
+      value={recurring}
+      onChangeText={(text) => setRecurring(text)}
       autoCapitalize="none"
       returnKeyType="next"
       blurOnSubmit={false}
@@ -116,6 +188,12 @@ const styles = StyleSheet.create({
   },
   textInput: {
     width: 350,
+    marginBottom: 10,
+    backgroundColor: '#fdfaf6',
+    fontFamily: 'sans-serif-condensed'
+  },
+  textInputSmall: {
+    width: 175,
     marginBottom: 10,
     backgroundColor: '#fdfaf6',
     fontFamily: 'sans-serif-condensed'
