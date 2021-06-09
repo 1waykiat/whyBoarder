@@ -10,7 +10,7 @@ export default function todoList( { type, navigation} ) {
   const dispatch = useDispatch();
 
   return (
-    <View style={{height: 500}}>
+    <View>
       <FlatList
         style={{marginTop: 20, height: 20, flex: 1 }}
         data={todoList} 
@@ -33,8 +33,6 @@ export default function todoList( { type, navigation} ) {
           )
         }
       />
-      
-      <TaskInput type={type}/>
     </View>
   )
 }

@@ -67,9 +67,9 @@ export default function TaskInput( {type} ) {
         onPress={() => {
           add();
         }}
-        title="Add Item"
-      />
-
+      >
+      Add
+      </Button>
     </View>
   )
 }

@@ -1,14 +1,25 @@
 import React, { useState } from 'react'
 import { Calendar, CalendarList, Agenda } from 'react-native-calendars'
-import { View, StatusBar, Text, TouchableOpacity, StyleSheet, Button, Platform } from 'react-native'
+import { View, Text, TouchableOpacity, StyleSheet, Button, Platform } from 'react-native'
 import { Card } from 'react-native-paper'
-import DateTimePicker from '@react-native-community/datetimepicker';
-import { current } from 'immer';
 import RNDateTimePicker from '@react-native-community/datetimepicker';
+import { Modal, Portal, Provider, FAB } from 'react-native-paper'
+
+
 
 const timeToString = (time) => {
   const date = new Date(time);
   return date.toISOString().split('T')[0];
+}
+
+const timeToDate = (time) => {
+  const temp = new Date(time);
+  return temp.toISOString().split('T')[0];
+}
+
+const timeToHourMin = (time) => {
+  const temp = new Date(time).getTimezoneOffset().toISOString().split('T')[1].split(':')
+  return temp[0] + ':' + temp[1];
 }
 
 const AgendaScreen = () => {
@@ -23,10 +34,18 @@ const AgendaScreen = () => {
   const [mode, setMode] = useState('date');
   const [show, setShow] = useState(false);
 
+  const [visible, setVisible] = React.useState(false);
+
+  const showModal = () => setVisible(true);
+  const hideModal = () => setVisible(false);
+
+
   const onChange = (event, selectedDate) => {
     const currentDate = selectedDate || date;
     setShow(Platform.OS === 'ios');
     setDate(currentDate);
+    console.log(timeToDate(currentDate))
+    console.log(timeToHourMin(currentDate))
     console.log(currentDate)
   };
 
@@ -97,25 +116,37 @@ const AgendaScreen = () => {
 
   return(
     <View style={{flex: 1}}>
-      <Agenda
-        items={items}
-        loadItemsForMonth={loadItems}
-        selected={'2021-05-28'}
-        renderItem={renderThing}
-      />
-      <Button onPress={showDatepicker} title="Show date picker!" />
-      <Button onPress={showTimepicker} title="Show time picker!" />
-      {show && (
-        <RNDateTimePicker
-          timeZoneOffsetInSeconds={7200}
-          testID="dateTimePicker"
-          value={date}
-          mode={mode}
-          is24Hour={true}
-          display="default"
-          onChange={onChange}
+      <Provider>
+        <Portal>
+          <Modal visible={visible} onDismiss={hideModal} contentContainerStyle={styles.containerStyle}>
+            <Text> Example Modal. Tap outside to dismiss </Text>
+            <Button onPress={showDatepicker} title="Show date picker!" />
+            <Button onPress={showTimepicker} title="Show time picker!" />
+            {show && (
+              <RNDateTimePicker
+                timeZoneOffsetInMinutes={0}
+                testID="dateTimePicker"
+                value={date}
+                mode={mode}
+                is24Hour={true}
+                display="default"
+                onChange={onChange}
+              />
+            )}
+          </Modal>
+        </Portal>
+        <Agenda
+          items={items}
+          loadItemsForMonth={loadItems}
+          selected={'2021-05-28'}
+          renderItem={renderThing}
         />
-      )}
+        <FAB 
+          style={styles.fab}
+          icon="plus"
+          onPress={showModal}
+        />
+      </Provider>
     </View>
 
   )
@@ -138,7 +169,17 @@ const styles = StyleSheet.create({
     height: 15,
     flex: 1,
     paddingTop: 30
-  }
+  },
+  containerStyle: {
+    backgroundColor: 'white',
+    padding: 20,
+  },
+  fab: {
+    position: 'absolute',
+    margin: 16,
+    right: 0,
+    bottom: 0,
+  },
 });
 
 export default AgendaScreen
