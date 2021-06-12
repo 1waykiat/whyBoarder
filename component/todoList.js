@@ -42,7 +42,6 @@ export default function todoList( { type, navigation} ) {
                       {timeToHourMin(dateTimeMerge(item.endDate, item.endTime))}
                     </Paragraph>
                       : <Paragraph>{item.duration}</Paragraph>}
-                  <Title>{item.name}</Title>
                 </Card.Content>
               </Card>
             </View>
