@@ -8,6 +8,11 @@ export default function todoList( { type, navigation} ) {
   const todoList = type == "fixList" ? useSelector(selectTodoList).fixList : useSelector(selectTodoList).flexList;
   const dispatch = useDispatch();
 
+  const display = (item) => {
+    type == "fixList"
+      ? <Paragraph>{item.startDate}: {item.startTime} - {item.endDate}: {item.endTime}</Paragraph>
+      : <Paragraph>{item.duration}</Paragraph>
+  };
   return (
     <View style={{height: 550}}>
       <FlatList
@@ -21,7 +26,9 @@ export default function todoList( { type, navigation} ) {
               <Card style={{width: 375, height: 130, marginBottom: 5}}>
                 <Card.Content>
                   <Title>{item.name}</Title>
-                  <Paragraph>{item.startDate}: {item.startTime} - {item.endDate}: {item.endTime}</Paragraph>
+                  {type == "fixList"
+                    ? <Paragraph>{item.startDate}: {item.startTime} - {item.endDate}: {item.endTime}</Paragraph>
+                    : <Paragraph>{item.duration}</Paragraph>}
                 </Card.Content>
                 <Card.Actions>
                   <Button icon='close' onPress={() => dispatch(removeTodo({type: type, key: item.key}))}/>

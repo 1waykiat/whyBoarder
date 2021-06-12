@@ -6,8 +6,6 @@ import colors from '../presentational/colors';
 import { useDispatch } from 'react-redux';
 import { addTodo, editTodo } from '../slice/todoListSlice';
 
-import RNDateTimePicker from '@react-native-community/datetimepicker';
-
 export default function EditScreen( { navigation, route } ) {
   const input = route.params;
   const item = input.item;

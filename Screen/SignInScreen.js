@@ -35,8 +35,6 @@ export default function signIn( { navigation } ) {
             })), 
             ...item
           }
-          console.log("next");
-          console.log(formattedItem);
           dispatch(downloadTodo(formattedItem));
         }} );
       },

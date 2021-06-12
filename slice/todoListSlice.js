@@ -57,7 +57,6 @@ export const slice = createSlice({
             })
           ),
         };
-        console.log(newState);
         Database( {action: "upload", data: newState} );
         return newState;
       },
