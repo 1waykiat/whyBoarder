@@ -15,23 +15,27 @@ export default function signIn( { navigation } ) {
   const [password, setPassword] = useState('');
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
 
-  const dispatch = useDispatch();
-
   const handleEmailUpdate = (text) => setEmail(text);
   const handlePasswordUpdate = (text) => setPassword(text);
+
+  const dispatch = useDispatch();
 
   const signIn = () => Authentication( {action: "signIn", email, password, event: () => {
     Authentication( {action: "checkVerified", event: {
       pass: () => {
         navigation.navigate("WorkList");
-        Database( {action: "download", event: (data) => {
-          const item = data.val()
+        Database( {action: "download", event: () => (data) => {
+          const item = data.val();
           const formattedItem = {
-            fixList: Object.values(item.fixList),
-            flexList: Object.values(item.flexList),
+            fixList: Array.from(item.fixList),
+            flexList: Array.from(item.flexList),
+            agenda: Object.fromEntries(Object.entries(item.agenda).map((date) => {
+              date[1] = [...date[1]];
+              return date;
+            })), 
             ...item
           }
-          dispatch(downloadTodo(formattedItem))
+          dispatch(downloadTodo(formattedItem));
         }} );
       },
       fail: () => Authentication( {
@@ -74,6 +78,7 @@ export default function signIn( { navigation } ) {
       }
       secureTextEntry={!isPasswordVisible}
       blurOnSubmit={false}
+      onSubmitEditing={() => signIn()}
       />
     <Button
       style={{marginBottom: 10, borderRadius: 10, width: 350}}

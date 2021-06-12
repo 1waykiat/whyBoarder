@@ -13,12 +13,13 @@ import EditScreen from './screen/EditScreen';
 
 import { LogBox } from 'react-native';
 
+import { Provider as PaperProvider } from 'react-native-paper';
+
 import firebase from "./api/Firebase";
 
 import { Provider } from "react-redux";
 import store from './store';
 
-import { Provider as PaperProvider} from "react-native-paper"
 
 LogBox.ignoreLogs(['Setting a timer for a long period of time'])
 
@@ -34,7 +35,7 @@ export default function App() {
     <Provider store={store}>
       <PaperProvider>
         <NavigationContainer>
-          <Stack.Navigator initialRouteName='Home'>
+          <Stack.Navigator initialRouteName='Home' headerMode='none'>
             <Stack.Screen name="Home" component={HomeScreen}/>
             <Stack.Screen name="SignIn" component={SignInScreen}/>
             <Stack.Screen name="SignUp" component={SignUpScreen}/>

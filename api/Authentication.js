@@ -4,6 +4,8 @@ import { Alert } from "react-native";
 const auth = firebase.auth();
 
 export default function Authentication( {action, email, password, event } ) {
+  event = event == undefined ? () => {} : event
+
   const createAccount = async () => {
     await auth
     .createUserWithEmailAndPassword(email, password)
