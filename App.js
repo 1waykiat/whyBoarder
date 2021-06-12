@@ -13,6 +13,8 @@ import EditScreen from './screen/EditScreen';
 
 import { LogBox } from 'react-native';
 
+import { Provider as PaperProvider } from 'react-native-paper';
+
 import firebase from "./api/Firebase";
 
 import { Provider } from "react-redux";
@@ -30,16 +32,18 @@ export default function App() {
 
   return (
     <Provider store={store}>
-      <NavigationContainer>
-        <Stack.Navigator initialRouteName='Home'>
-          <Stack.Screen name="Home" component={HomeScreen}/>
-          <Stack.Screen name="SignIn" component={SignInScreen}/>
-          <Stack.Screen name="SignUp" component={SignUpScreen}/>
-          <Stack.Screen name="WorkList" component={WorkList}/>
-          <Stack.Screen name="Edit" component={EditScreen}/>
-          <Stack.Screen name="ForgotPassword" component={ForgotPasswordScreen}/>
-        </Stack.Navigator>
-      </NavigationContainer>
+      <PaperProvider>
+        <NavigationContainer>
+          <Stack.Navigator initialRouteName='Home' headerMode='none'>
+            <Stack.Screen name="Home" component={HomeScreen}/>
+            <Stack.Screen name="SignIn" component={SignInScreen}/>
+            <Stack.Screen name="SignUp" component={SignUpScreen}/>
+            <Stack.Screen name="WorkList" component={WorkList}/>
+            <Stack.Screen name="Edit" component={EditScreen}/>
+            <Stack.Screen name="ForgotPassword" component={ForgotPasswordScreen}/>
+          </Stack.Navigator>
+        </NavigationContainer>
+      </PaperProvider>
     </Provider>
    );
 }

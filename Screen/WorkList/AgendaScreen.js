@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { Agenda } from 'react-native-calendars'
 import { View, Text, TouchableOpacity, StyleSheet, Button, Platform } from 'react-native'
 import { Card } from 'react-native-paper'
-import RNDateTimePicker from '@react-native-community/datetimepicker';
+
 
 const timeToDate = (time) => {
   const temp = new Date(time);
@@ -108,19 +108,6 @@ const AgendaScreen = () => {
         selected={'2021-05-28'}
         renderItem={renderThing}
       />
-      <Button onPress={showDatepicker} title="Show date picker!" />
-      <Button onPress={showTimepicker} title="Show time picker!" />
-      {show && (
-        <RNDateTimePicker
-          timeZoneOffsetInMinutes={0}
-          testID="dateTimePicker"
-          value={date}
-          mode={mode}
-          is24Hour={true}
-          display="default"
-          onChange={onChange}
-        />
-      )}
     </View>
 
   )
