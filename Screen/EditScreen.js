@@ -101,7 +101,7 @@ export default function EditScreen( { navigation, route } ) {
     const fixListItem = {
       name: name,
       startDate: dateExtract(startDisplay),
-      startTime: timeToHourMin(startDisplay),
+      startTime: timeExtract(startDisplay),
       endDate: dateExtract(endDisplay),
       endTime: timeExtract(endDisplay),
       recurring: recurring,
