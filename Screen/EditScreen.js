@@ -75,7 +75,7 @@ export default function EditScreen( { navigation, route } ) {
         mode='outlined'
         style={styles.textInputSmall}
         label= 'Start Date'
-        value={startTime}
+        value={startDate}
         onChangeText={(text) => setStartDate(text)}
         autoCapitalize="none"
         returnKeyType="next"
