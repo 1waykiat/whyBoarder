@@ -27,9 +27,6 @@ const AgendaScreen = () => {
     const currentDate = selectedDate || date;
     setShow(Platform.OS === 'ios');
     setDate(currentDate);
-    console.log(currentDate);
-    console.log(timeToHourMin(currentDate));
-    console.log(timeToDate(currentDate));
   };
 
   const showMode = (currentMode) => {
