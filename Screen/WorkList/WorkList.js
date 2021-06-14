@@ -9,7 +9,6 @@ import ProfileScreen from '../ProfileScreen';
 
 import { Feather } from '@expo/vector-icons';
 
-
 export default function WorkList() {
   const Tab = createMaterialBottomTabNavigator();
 
@@ -28,7 +27,6 @@ export default function WorkList() {
               tabBarIcon: ({ color }) => (
                 <Feather name="lock" size={24} color={color} />
               ),
-
             }}
           />
           <Tab.Screen

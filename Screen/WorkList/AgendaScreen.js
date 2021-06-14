@@ -88,7 +88,7 @@ const AgendaScreen = () => {
           <Text>{item.startTime + ' - ' + item.endTime}</Text>  
         </Card.Content>
       </Card>
-    )    
+    )
   }
 
 
