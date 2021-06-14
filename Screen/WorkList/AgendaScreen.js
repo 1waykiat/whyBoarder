@@ -43,18 +43,6 @@ const AgendaScreen = () => {
     setMode(currentMode);
   };
 
-  const showDatepicker = () => {
-    showMode('date');
-  };
-
-  const showTimepicker = () => {
-    showMode('time');
-  };
-  
-  const print = (x) => {
-    console.log(x)
-  }
-
   // const loadItems = (day) => {
   //   setTimeout(() => {
   //     // for (let i = -15; i < 85; i++) {
@@ -91,14 +79,15 @@ const AgendaScreen = () => {
 
   const renderThing = (item) => {
     return(
-    <TouchableOpacity>
-      <Card style={styles.item}>
+      <Card 
+        style={styles.item}
+        onPress={() => console.log('To Do')}
+      >
         <Card.Content>
           <Text style={styles.task}>{item.name}</Text>
           <Text>{item.startTime + ' - ' + item.endTime}</Text>  
         </Card.Content>
       </Card>
-    </TouchableOpacity>
     )    
   }
 
@@ -120,14 +109,17 @@ const styles = StyleSheet.create({
   item: {
     backgroundColor: 'white',
     flex: 1,
-    borderRadius: 20,
-    padding: 10,
+    borderRadius: 10,
     marginRight: 20,
     marginTop: 8,
   },
   task: {
-    fontSize: 18,
-    fontWeight: 'bold'
+    fontSize: 16,
+    fontWeight: '900',
+  },
+  subheading: {
+    fontSize: 10,
+    color: 'gray'
   },
   emptyDate: {
     height: 15,

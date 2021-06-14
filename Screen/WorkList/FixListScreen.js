@@ -1,22 +1,21 @@
 import { StatusBar } from 'expo-status-bar';
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet} from 'react-native';
-import { FAB, Appbar } from 'react-native-paper'
+import { FAB, Appbar, Portal } from 'react-native-paper'
 import { useSelector } from 'react-redux';
-
-import Authentication from '../../api/Authentication';
-import Database from '../../api/Database';
-import DateTimeInput from '../../component/dateTimeInput';
 
 import TodoList from '../../component/todoList';
 import { selectTodoList } from '../../slice/todoListSlice';
 
 export default function FixListScreen( { navigation } ) {
-  const [visible, setVisible] = React.useState(false);
-  const showModal = () => setVisible(true);
-  const hideModal = () => setVisible(false);
-
   const todoList = useSelector(selectTodoList);
+
+  const [state, setState] = React.useState({ open: false });
+
+  const onStateChange = ({ open }) => setState({ open });
+
+  const { open } = state;
+
   return (
     <View style={styles.container}>
       <Appbar.Header style={{backgroundColor: '#fad8bf',}}>
@@ -27,23 +26,45 @@ export default function FixListScreen( { navigation } ) {
       <View style={{alignItems:'center',}}>
         <TodoList type={"fixList"} navigation={navigation}/>
       </View>
-        {/* <TouchableOpacity
-            style={{marginBottom: 10, borderRadius: 10, width: 350}}
-            onPress={() => {
-              Authentication( {action: "signOut", event: () => navigation.navigate("Home") })
-            }}
-        >
-            <Text styles={ {marginTop: 20}}>Sign Out</Text>
-        </TouchableOpacity>
-         */}
       <StatusBar style="dark" />
 
 
-      <FAB
+
+
+      <FAB.Group
+        visible={true}
+        open={open}
+        icon={open ? 'close' : 'plus'}
+        actions={[
+          { icon: 'delete',
+            label: 'Clear',
+            onPress: () => console.log('Pressed Clear all') },
+          {
+            icon: 'filter',
+            label: 'Sort to Agenda',
+            onPress: () => console.log('Pressed sorting'),
+            small: false,
+          },
+          {
+            icon: 'calendar',
+            label: 'Add task',
+            onPress: () => navigation.navigate("Edit", {type: 'fixList'}),
+            small: false,
+          }
+        ]}
+        onStateChange={onStateChange}
+        onPress={() => {
+          if (open) {
+            // do something if the speed dial is open
+          }
+        }}
+      />
+
+      {/* <FAB
           style={styles.fab}
           icon="plus"
           onPress={() => navigation.navigate("Edit", {type: 'fixList'})}
-      />
+      /> */}
     </View>
     )
 }

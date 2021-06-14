@@ -8,6 +8,7 @@ import { useDispatch } from 'react-redux';
 import { addTodo, editTodo, removeTodo } from '../slice/todoListSlice';
 
 import RNDateTimePicker from '@react-native-community/datetimepicker';
+import { current } from '@reduxjs/toolkit';
 
 // Converts to local readable DATE
 const timeToHumanDate = (time) => {
@@ -88,20 +89,20 @@ export default function EditScreen( { navigation, route } ) {
     } else {
       setEndDisplay(currentDate)
     }
-    // console.log(timeToHumanDate(currentDate))
-    // console.log(timeToHourMin(currentDate))
-    console.log(dateExtract(new Date()))
-    console.log(timeExtract(new Date()))
-    console.log(new Date().toISOString())
+
   };
 
+
+  // 15 Jun 06:00 - 07:00
+  // Displayed as 15 Jun, 06:00 - 07:00
+  // Editing it as 14 Jun, 22:00 - 23:00
 
   
   const reducer = () => {
     const fixListItem = {
       name: name,
       startDate: dateExtract(startDisplay),
-      startTime: timeToHourMin(startDisplay),
+      startTime: timeExtract(startDisplay),
       endDate: dateExtract(endDisplay),
       endTime: timeExtract(endDisplay),
       recurring: recurring,
@@ -136,7 +137,10 @@ export default function EditScreen( { navigation, route } ) {
       <Appbar.Header style={{backgroundColor: 'white'}}>
         <Appbar.BackAction onPress={() => navigation.goBack()} />
         <Appbar.Content title="Add Task" />
-        <Appbar.Action icon="delete" onPress={() => dispatch(removeTodo({type: type, key: item.key}))} />
+        <Appbar.Action icon="delete" onPress={() => {
+          dispatch(removeTodo({type: input.type, key: item.key}))
+          navigation.goBack()
+        }} />
       </Appbar.Header>
 
       {/* Title Input */}

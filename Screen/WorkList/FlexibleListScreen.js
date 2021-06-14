@@ -6,6 +6,12 @@ import { FAB, Appbar } from 'react-native-paper'
 import TodoList from '../../component/todoList';
 
 export default function FlexibleListScreen( { navigation } ) {
+  const [state, setState] = React.useState({ open: false });
+
+  const onStateChange = ({ open }) => setState({ open });
+
+  const { open } = state;
+
     return (
       <View style={styles.container}>
         <Appbar.Header style={{backgroundColor: '#B3E3F8'}}>
@@ -16,10 +22,33 @@ export default function FlexibleListScreen( { navigation } ) {
         <View style={{alignItems: 'center'}}>
           <TodoList type={"flexList"} navigation={navigation}/>
         </View>
-        <FAB
-          style={styles.fab}
-          icon="plus"
-          onPress={() => navigation.navigate("Edit", {type: 'flexList'})}
+        <FAB.Group
+          visible={true}
+          open={open}
+          icon={open ? 'close' : 'plus'}
+          actions={[
+            { icon: 'delete',
+              label: 'Clear',
+              onPress: () => console.log('Pressed Clear all') },
+            {
+              icon: 'filter',
+              label: 'Sort to Agenda',
+              onPress: () => console.log('Pressed sorting'),
+              small: false,
+            },
+            {
+              icon: 'calendar',
+              label: 'Add task',
+              onPress: () => navigation.navigate("Edit", {type: 'flexList'}),
+              small: false,
+            }
+          ]}
+          onStateChange={onStateChange}
+          onPress={() => {
+            if (open) {
+              // do something if the speed dial is open
+            }
+          }}
         />
       </View>
     )

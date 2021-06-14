@@ -7,7 +7,7 @@ import FlexibleListScreen from './FlexibleListScreen';
 import AgendaScreen from './AgendaScreen';
 import ProfileScreen from '../ProfileScreen'; 
 
-import { Entypo, Feather } from '@expo/vector-icons';
+import { Feather } from '@expo/vector-icons';
 
 
 export default function WorkList() {
