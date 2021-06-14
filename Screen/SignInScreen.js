@@ -15,23 +15,29 @@ export default function signIn( { navigation } ) {
   const [password, setPassword] = useState('');
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
 
-  const dispatch = useDispatch();
-
   const handleEmailUpdate = (text) => setEmail(text);
   const handlePasswordUpdate = (text) => setPassword(text);
+
+  const dispatch = useDispatch();
 
   const signIn = () => Authentication( {action: "signIn", email, password, event: () => {
     Authentication( {action: "checkVerified", event: {
       pass: () => {
         navigation.navigate("WorkList");
         Database( {action: "download", event: () => (data) => {
-          const item = data.val()
+          const item = data.val();
           const formattedItem = {
-            fixList: Object.values(item.fixList),
-            flexList: Object.values(item.flexList),
+            fixList: Array.from(item.fixList),
+            flexList: Array.from(item.flexList),
+            agenda: Object.fromEntries(Object.entries(item.agenda).map((date) => {
+              date[1] = [...date[1]];
+              return date;
+            })), 
             ...item
           }
-          dispatch(downloadTodo(formattedItem))
+          console.log("next");
+          console.log(formattedItem);
+          dispatch(downloadTodo(formattedItem));
         }} );
       },
       fail: () => Authentication( {

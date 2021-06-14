@@ -22,7 +22,7 @@ export const slice = createSlice({
         },],
         agenda: {
           "2021-06-06": [{
-            name: "example",
+            name: "example (fixList)",
             startTime: "00:00",
             endTime: "01:00",
             key: 0,
@@ -33,20 +33,31 @@ export const slice = createSlice({
       addTodo: (state, action) => {
         const input = action.payload;
         const newItem = {...(input.newItem), key: state.count};
-        const {startDate, endDate, recurring, ...newAgenda} = newItem; 
+        const {startDate, endDate, recurring, ...newAgendaTask} = newItem;
+
+        const newAgenda = input.type == "fixList"
+        ? {
+            ...(state.agenda),
+            [input.newItem.startDate]: (state.agenda)[input.newItem.startDate] == undefined
+              ? [newAgendaTask]
+              : [...((state.agenda)[input.newItem.startDate]), newAgendaTask] 
+          }
+          : state.agenda;
+
         const newState =  {
-          fixList: input.type == "fixList" ? [...(state.fixList), newItem] : state.fixList,
-          flexList: input.type == "flexList" ? [...(state.flexList), newItem] : state.flexList,
+          fixList: input.type == "fixList" ? [...(state.fixList), newItem] : [...state.fixList],
+          flexList: input.type == "flexList" ? [...(state.flexList), newItem] : [...state.flexList],
           count: state.count + 1,
-          agenda: input.type == "fixList"
-            ? {
-                ...(state.agenda),
-                [input.newItem.startDate]: (state.agenda)[input.newItem.startDate] == undefined
-                  ? [newAgenda]
-                  : [...((state.agenda)[input.newItem.startDate]), newAgenda] 
-              }
-              : state.agenda
-        }
+          agenda: Object.fromEntries(
+            Object.entries(newAgenda)
+            .filter((date) => date[1].length != 0)
+            .map((date) => {
+               date[1] = [...date[1]];
+              return date;
+            })
+          ),
+        };
+        console.log(newState);
         Database( {action: "upload", data: newState} );
         return newState;
       },
@@ -54,11 +65,11 @@ export const slice = createSlice({
         const input = action.payload;
         const newState =  {
           fixList: input.type == "fixList"
-          ? state.fixList.filter((item) => item.key != input.key)
-          : state.fixList,
+            ? state.fixList.filter((item) => item.key != input.key)
+            : [...state.fixList],
           flexList: input.type == "flexList"
-          ? state.flexList.filter((item) => item.key != input.key)
-          : state.flexList,
+            ? state.flexList.filter((item) => item.key != input.key)
+            : [...state.flexList],
           count: state.count,
           agenda: Object.fromEntries(Object.entries(state.agenda).map((date) => {
             date[1] = date[1].filter((item) => item.key != input.key);
@@ -70,16 +81,16 @@ export const slice = createSlice({
       },
       editTodo: (state, action) => {  
         const input = action.payload;
-        const {startDate, endDate, recurring, ...newAgenda} = {...(input.newItem)}; 
+        const {startDate, endDate, recurring, ...newAgenda} = {...(input.newItem)};
         const newState = {
           fixList: input.type == "fixList" 
             ? state.fixList.map((item) =>
               item.key == input.key ? input.newItem : item)
-            : state.fixList,
+            : [...state.fixList],
           flexList: input.type == "flexList" 
             ? state.flexList.map((item) =>
               item.key == input.key ? input.newItem : item)
-            : state.flexList,
+            : [...state.flexList],
           count: state.count,
           agenda: Object.fromEntries(Object.entries(state.agenda).map((date) => {
             date[1] = date[1].map((item) => item.key == input.key ? newAgenda : item);
