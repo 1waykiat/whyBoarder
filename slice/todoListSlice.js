@@ -16,7 +16,7 @@ export const slice = createSlice({
         }, ],
         flexList: [{
           name: "example (flexList)",
-          duration: "2:30",
+          duration: 240,
           recurring: false,
           key: 1,
         },],
