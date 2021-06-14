@@ -36,7 +36,11 @@ const timeExtract = (time) => {
 
 // Merges both the YYYY-MM-DD and HH:MM to return Date object
 const dateTimeMerge = (date, time) => {
-  return new Date(date + "T" + time + ":00.000Z")
+  if (date != undefined) {
+    const dateArray = date.split("-");
+    return new Date(new Date(dateArray[1] + "/" + dateArray[2] + "/" + dateArray[0] + " " + time + ":00").toUTCString());
+  }
+  return new Date();
 }
 
 
@@ -45,19 +49,14 @@ export default function EditScreen( { navigation, route } ) {
   const item = input.item;
 
   const [name, setName] = useState(item == undefined ? "" : item.name);
-  // const [startDate, setStartDate] = useState(item == undefined ? dateExtract( new Date()) : item.startDate);
-  // const [startTime, setStartTime] = useState(item == undefined ? "00:00" : item.startTime);
-  // const [endDate, setEndDate] = useState(item == undefined ? dateExtract( new Date() ) : item.endDate);
-  // const [endTime, setEndTime] = useState(item == undefined ? "00:00" : item.endTime);
-  // const [duration, setDuration] = useState(item == undefined ? "0" : item.duration);
-  const [hours, setHours] = useState(item == undefined ? "" : Math.floor(item.duration / 60))
-  const [minutes, setMinutes] = useState(item == undefined ? "" : item.duration % 60)
+  const [hours, setHours] = useState(item == undefined ? "" : Math.floor(item.duration / 60).toString());
+  const [minutes, setMinutes] = useState(item == undefined ? "" : (item.duration % 60).toString());
   const [recurring, setRecurring] = useState(item == undefined ? "Does not repeat" : item.recurring);
   const dispatch = useDispatch();
 
-  const [startDisplay, setStartDisplay] = useState(item == undefined ? new Date() : dateTimeMerge(item.startDate, item.startTime) )
-  const [endDisplay, setEndDisplay] = useState(item == undefined ? new Date() : dateTimeMerge(item.endDate, item.endTime) )
-
+  const [startDisplay, setStartDisplay] = useState(item == undefined  ? new Date() : dateTimeMerge(item.startDate, item.startTime) )
+  const [endDisplay, setEndDisplay] = useState(item == undefined  ? new Date() : dateTimeMerge(item.endDate, item.endTime) )
+  
   const [mode, setMode] = useState('date');
   const [show, setShow] = useState(false);
   const [begin, setBegin] = useState(true)
@@ -89,7 +88,6 @@ export default function EditScreen( { navigation, route } ) {
     } else {
       setEndDisplay(currentDate)
     }
-
   };
 
 
@@ -99,35 +97,35 @@ export default function EditScreen( { navigation, route } ) {
 
   
   const reducer = () => {
-    const fixListItem = {
-      name: name,
-      startDate: dateExtract(startDisplay),
-      startTime: timeExtract(startDisplay),
-      endDate: dateExtract(endDisplay),
-      endTime: timeExtract(endDisplay),
-      recurring: recurring,
-    };
+    const fixListItem = () => {
+      return {
+        name: name,
+        startDate: dateExtract(startDisplay),
+        startTime: timeToHourMin(startDisplay),
+        endDate: dateExtract(endDisplay),
+        endTime: timeToHourMin(endDisplay),
+        recurring: recurring,
+    }};
   
-    const flexListItem = {
-      name: name,
-      duration: hours * 60 + minutes,
-      recurring: recurring,
-    };
+    const flexListItem = () => {
+      return {
+        name: name,
+        duration: parseInt(hours) * 60 + parseInt(minutes),
+        recurring: recurring,
+    }};
 
-    console.log(hours * 60 + minutes)
-  
-    const newItem = input.type == "fixList" ? fixListItem : flexListItem;
+    const newItem = () => input.type == "fixList" ? fixListItem() : flexListItem();
     
     if (item == undefined) {
       return dispatch(addTodo( {
         type: input.type,
-        newItem: newItem,
+        newItem: newItem(),
       } ));
     } else {  
       return dispatch(editTodo( {
         type: input.type,
         key: item.key,
-        newItem: {...newItem, key: item.key},
+        newItem: {...newItem(), key: item.key},
       } ));
     }
   };
@@ -138,8 +136,8 @@ export default function EditScreen( { navigation, route } ) {
         <Appbar.BackAction onPress={() => navigation.goBack()} />
         <Appbar.Content title="Add Task" />
         <Appbar.Action icon="delete" onPress={() => {
-          dispatch(removeTodo({type: input.type, key: item.key}))
-          navigation.goBack()
+          dispatch(removeTodo({key: item.key}));
+          navigation.goBack();
         }} />
       </Appbar.Header>
 
@@ -298,7 +296,7 @@ export default function EditScreen( { navigation, route } ) {
         }}
         style={{margin: 10, backgroundColor: '#85BEF9'}}
       >
-        Add 
+        {item == undefined ? "Add" : "Edit"} 
       </Button>
     </View>
     
