@@ -132,55 +132,12 @@ export default function EditScreen( { navigation, route } ) {
   };
 
   return(
-<<<<<<< HEAD
     <View style={styles.container}>
       <Appbar.Header style={{backgroundColor: 'white'}}>
         <Appbar.BackAction onPress={() => navigation.goBack()} />
         <Appbar.Content title="Add Task" />
         <Appbar.Action icon="delete" onPress={() => dispatch(removeTodo({type: type, key: item.key}))} />
       </Appbar.Header>
-=======
-  <View style={styles.container}>
-    <Image style={styles.image} source={require('../assets/logo.png')} />
-    <Text style={styles.title}>Welcome productivity.</Text>
-    <TextInput
-      mode='outlined'
-      style={styles.textInput}
-      label= 'Name'
-      value={name}
-      onChangeText={(text) => setName(text)}
-      autoCapitalize="none"
-      returnKeyType="next"
-      onSubmitEditing={() => { this.secondTextInput.focus(); }}
-      blurOnSubmit={false}
-     />
-    <View style={{flexDirection:"row"}}>
-      <TextInput
-        ref={(input) => { this.secondTextInput = input; }}
-        mode='outlined'
-        style={styles.textInputSmall}
-        label= 'Start Date'
-        value={startDate}
-        onChangeText={(text) => setStartDate(text)}
-        autoCapitalize="none"
-        returnKeyType="next"
-        onSubmitEditing={() => { this.thirdTextInput.focus(); }}
-        blurOnSubmit={false}
-       />
-      <TextInput
-        ref={(input) => { this.thirdTextInput = input; }}
-        mode='outlined'
-        style={styles.textInputSmall}
-        label= 'Start Time'
-        value={startTime}
-        onChangeText={(text) => setStartTime(text)}
-        autoCapitalize="none"
-        returnKeyType="next"
-        onSubmitEditing={() => { this.fourthTextInput.focus(); }}
-        blurOnSubmit={false}
-      />
-    </View>
->>>>>>> 28b23acd57e13a196a8f0052c911d8816ae6f624
 
       {/* Title Input */}
       <TextInput
