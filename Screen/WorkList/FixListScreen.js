@@ -4,15 +4,10 @@ import { View, Text, TouchableOpacity, StyleSheet} from 'react-native';
 import { FAB, Appbar } from 'react-native-paper'
 import { useSelector } from 'react-redux';
 
-import Authentication from '../../api/Authentication';
-import Database from '../../api/Database';
-
 import TodoList from '../../component/todoList';
-import { selectTodoList } from '../../slice/todoListSlice';
 
 export default function FixListScreen( { navigation } ) {
 
-  const todoList = useSelector(selectTodoList);
   return (
     <View style={styles.container}>
       <Appbar.Header style={{backgroundColor: '#fad8bf',}}>
@@ -22,19 +17,9 @@ export default function FixListScreen( { navigation } ) {
       </Appbar.Header>
       <View style={{alignItems:'center',}}>
         <TodoList type={"fixList"} navigation={navigation}/>
-      </View>
-        {/* <TouchableOpacity
-            style={{marginBottom: 10, borderRadius: 10, width: 350}}
-            onPress={() => {
-              Authentication( {action: "signOut", event: () => navigation.navigate("Home") })
-            }}
-        >
-            <Text styles={ {marginTop: 20}}>Sign Out</Text>
-        </TouchableOpacity>
-         */}
+      </View>      
       <StatusBar style="dark" />
-
-
+        
       <FAB
           style={styles.fab}
           icon="plus"

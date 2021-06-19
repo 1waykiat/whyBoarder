@@ -18,6 +18,7 @@ const timeToHourMin = (time) => {
 
 const AgendaScreen = () => {
   const items = useSelector(selectTodoList).agenda;
+  const today = (new Date(Date.now())).toISOString().split("T")[0];
 
   const [date, setDate] = useState(new Date(1598051730000));
   const [mode, setMode] = useState('date');
@@ -99,7 +100,7 @@ const AgendaScreen = () => {
       <Agenda
         items={items}
         // loadItemsForMonth={loadItems}
-        selected={'2021-05-28'}
+        selected={today}
         renderItem={renderThing}
       />
     </View>
