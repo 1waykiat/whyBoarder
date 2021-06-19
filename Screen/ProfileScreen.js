@@ -1,8 +1,8 @@
-import { StatusBar } from 'expo-status-bar';
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity} from 'react-native';
 import { Appbar, Button } from 'react-native-paper'
-import { useSelector } from 'react-redux';
+
+import TaskSorter from '../TaskSorter';
 
 import Authentication from '../api/Authentication';
 
@@ -23,6 +23,8 @@ export default function ProfileScreen( { navigation } ) {
       >
         Sign out T.T
       </Button>
+
+      <TaskSorter />
     </View>  
   )
 }

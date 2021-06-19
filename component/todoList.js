@@ -1,15 +1,18 @@
 import React from 'react';
 import { FlatList, View, StyleSheet, TouchableOpacity} from 'react-native';
-import { useDispatch, useSelector } from 'react-redux';
-import { removeTodo, selectTodoList} from '../slice/todoListSlice';
-import { Card, Title, Paragraph, } from 'react-native-paper'
+import { useSelector } from 'react-redux';
+import { selectTodoList} from '../slice/todoListSlice';
+import { Card, Title, Paragraph,  } from 'react-native-paper'
 
 export default function todoList( { type, navigation} ) {
   const todoList = type == "fixList" ? useSelector(selectTodoList).fixList : useSelector(selectTodoList).flexList;
-  const dispatch = useDispatch();
 
   const dateTimeMerge = (date, time) => {
-    return new Date(date + "T" + time + ":00.000Z")
+  if (date != undefined) {
+      const dateArray = date.split("-");
+      return new Date(new Date(dateArray[1] + "/" + dateArray[2] + "/" + dateArray[0] + " " + time + ":00").toUTCString());
+    }
+    return new Date();
   }
 
   const timeToSimpleHumanDate = (time) => {
@@ -37,10 +40,14 @@ export default function todoList( { type, navigation} ) {
                   <Title
                     style={{fontSize:16,}}
                   >{item.name}</Title>
-                  <Paragraph>
-                    {timeToSimpleHumanDate(dateTimeMerge(item.startDate, item.startTime))}, {timeToHourMin(dateTimeMerge(item.startDate, item.startTime))} - { } 
-                     {timeToHourMin(dateTimeMerge(item.endDate, item.endTime))}
-                  </Paragraph>
+                  {type == "fixList"
+                    ? <Paragraph>
+                      {timeToSimpleHumanDate(dateTimeMerge(item.startDate, item.startTime))}, {timeToHourMin(dateTimeMerge(item.startDate, item.startTime))} - { } 
+                      {timeToHourMin(dateTimeMerge(item.endDate, item.endTime))}
+                    </Paragraph>
+                    : <Paragraph>
+                        {Math.floor(item.duration / 60)}:{(item.duration % 60).toString().padStart(2,"0")}
+                    </Paragraph>}
                 </Card.Content>
               </Card>
             </View>
