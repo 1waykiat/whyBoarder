@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { Agenda } from 'react-native-calendars'
 import { View, Text, TouchableOpacity, StyleSheet, Button, Platform } from 'react-native'
-import { Card } from 'react-native-paper'
+import { Card, Appbar } from 'react-native-paper'
 
 import { useSelector } from 'react-redux';
 import { selectTodoList } from '../../slice/todoListSlice';
@@ -91,6 +91,11 @@ const AgendaScreen = () => {
 
   return(
     <View style={{flex: 1}}>
+      <Appbar.Header style={{backgroundColor: 'white',}}>
+        <Appbar.BackAction onPress={() => navigation.goBack()} />
+        <Appbar.Content title="Agenda" />
+        <Appbar.Action icon="dots-vertical" onPress={() => console.log('More options')}  />
+      </Appbar.Header>
       <Agenda
         items={items}
         // loadItemsForMonth={loadItems}

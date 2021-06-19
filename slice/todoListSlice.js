@@ -27,113 +27,34 @@ const flexListSorter = (arr) => {
   })
   return sorted;
 }
- 
 
 export const slice = createSlice({
-    name: 'todoList',
-    initialState: {
-        count: 2,
-        fixList: [{
-            name: "example (fixList)",
-            startDate: "2021-06-06",
-            startTime: "00:00",
-            endDate: "2021-06-06",
-            endTime: "01:00",
-            recurring: "Does not repeat",
-            key: 0,
-        }, ],
-        flexList: [{
-          name: "example (flexList)",
-          duration: 240, 
+  name: 'todoList',
+  initialState: {
+      count: 2,
+      fixList: [{
+          name: "example (fixList)",
+          startDate: "2021-06-06",
+          startTime: "00:00",
+          endDate: "2021-06-06",
+          endTime: "01:00",
           recurring: "Does not repeat",
-          key: 1,
+          key: 0,
+      }, ],
+      flexList: [{
+        name: "example (flexList)",
+        duration: 240, 
+        recurring: "Does not repeat",
+        key: 1,
+      },],
+      agenda: {
+        "2021-06-06": [{
+          name: "Example (Agenda)",
+          startTime: "00:00",
+          endTime: "01:00",
+          key: 0,
         },],
-        agenda: {
-          "2021-06-06": [{
-            name: "Example (Agenda)",
-            startTime: "00:00",
-            endTime: "01:00",
-            key: 0,
-          },],
-          "2021-06-07": [{
-            name: "Example1 (Agenda)",
-            startTime: "00:00",
-            endTime: "01:00",
-            key: 0,
-          },],
-          "2021-06-08": [{
-            name: "Example1 (Agenda)",
-            startTime: "00:00",
-            endTime: "01:00",
-            key: 0,
-          },],
-          "2021-06-09": [{
-            name: "Example1 (Agenda)",
-            startTime: "00:00",
-            endTime: "01:00",
-            key: 0,
-          },],
-          "2021-06-10": [{
-            name: "Example1 (Agenda)",
-            startTime: "00:00",
-            endTime: "01:00",
-            key: 0,
-          },],
-          "2021-06-11": [{
-            name: "Example1 (Agenda)",
-            startTime: "00:00",
-            endTime: "01:00",
-            key: 0,
-          },],
-          "2021-06-12": [{
-            name: "Example1 (Agenda)",
-            startTime: "00:00",
-            endTime: "01:00",
-            key: 0,
-          },],
-          "2021-06-13": [{
-            name: "Example1 (Agenda)",
-            startTime: "00:00",
-            endTime: "01:00",
-            key: 0,
-          },],
-          "2021-06-14": [{
-            name: "Example1 (Agenda)",
-            startTime: "00:00",
-            endTime: "01:00",
-            key: 0,
-          },],
-          "2021-06-15": [{
-            name: "Example1 (Agenda)",
-            startTime: "00:00",
-            endTime: "01:00",
-            key: 0,
-          },],
-          "2021-06-16": [{
-            name: "Example1 (Agenda)",
-            startTime: "00:00",
-            endTime: "01:00",
-            key: 0,
-          },],
-          "2021-06-17": [{
-            name: "Example1 (Agenda)",
-            startTime: "00:00",
-            endTime: "01:00",
-            key: 0,
-          },],
-          "2021-06-18": [{
-            name: "Example1 (Agenda)",
-            startTime: "00:00",
-            endTime: "01:00",
-            key: 0,
-          },],
-          "2021-06-19": [{
-            name: "Example1 (Agenda)",
-            startTime: "00:00",
-            endTime: "01:00",
-            key: 0,
-          },],
-        },
+      },
     },
     reducers: {
       addTodo: (state, action) => {
@@ -149,7 +70,7 @@ export const slice = createSlice({
             ...(state.agenda),
             [input.newItem.startDate]: (state.agenda)[input.newItem.startDate] == undefined
               ? [newAgendaTask]
-              : [...((state.agenda)[input.newItem.startDate]), newAgendaTask] 
+              : [...((state.agenda)[input.newItem.startDate]), newAgendaTask]
           }
           : state.agenda;
 
@@ -192,7 +113,7 @@ export const slice = createSlice({
             ? state.fixList.map((item) =>
               item.key == input.key ? input.newItem : item)
             : [...state.fixList]),
-          flexList: flexListSorter(input.type == "flexList" 
+          flexList: flexListSorter(input.type == "flexList"
             ? state.flexList.map((item) =>
               item.key == input.key ? input.newItem : item)
             : [...state.flexList]),
