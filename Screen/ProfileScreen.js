@@ -1,8 +1,8 @@
-import { StatusBar } from 'expo-status-bar';
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity} from 'react-native';
 import { Appbar, Button } from 'react-native-paper'
-import { useSelector } from 'react-redux';
+
+import TaskSorter from '../TaskSorter';
 
 import Authentication from '../api/Authentication';
 
@@ -10,10 +10,9 @@ export default function ProfileScreen( { navigation } ) {
   return (
     <View style={styles.container}>
       <Appbar.Header style={{backgroundColor: 'white'}}>
-        <Appbar.Content title="Chris" subtitle="e123456x@nus.edu.sg" />
+        <Appbar.Content title="Settings" />
         <Appbar.Action icon="dots-vertical" onPress={() => console.log('More options')} />
       </Appbar.Header>
-      <Text style={styles.title}>Welcome back!</Text>
       <Button
         mode='contained'
         onPress={() => {
@@ -23,6 +22,13 @@ export default function ProfileScreen( { navigation } ) {
       >
         Sign out T.T
       </Button>
+      <Text
+        style={{color:'gray'}}
+      >
+        Task Sorter Settings
+      </Text>
+
+      <TaskSorter />
     </View>  
   )
 }

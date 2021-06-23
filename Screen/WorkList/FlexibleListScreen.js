@@ -1,8 +1,8 @@
 import React from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet } from 'react-native'
 import { FAB, Appbar } from 'react-native-paper'
 
-import TodoList from '../../component/todoList';
+import TodoList from '../../component/todoList'
 
 export default function FlexibleListScreen( { navigation } ) {
   const [state, setState] = React.useState({ open: false });

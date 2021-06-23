@@ -306,7 +306,7 @@ export default function EditScreen( { navigation, route } ) {
             style={styles.time}
             underlineColorAndroid='gray'
             placeholder='2'
-            keyboardchild='numeric'
+            keyboardType='numeric'
             value={hours}
             onChangeText={(number) => setHours(number)}
             autoCapitalize="none"
