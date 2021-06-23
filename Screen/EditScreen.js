@@ -23,8 +23,9 @@ const timeToHourMin = (time) => {
 
 // Converts to UTC YYYY-MM-DD 
 const dateExtract = (time) => {
-  const temp = new Date(time).toISOString().split('T')[0]
-  return temp
+  const temp = time.toLocaleDateString().split('/');
+  const result = time.toLocaleString().split(" ")[4]+"-"+temp[0].padStart(2, "0")+"-"+temp[1].padStart(2, "0");
+  return result;
 } 
 
 // Converts to UTC HH:MM 

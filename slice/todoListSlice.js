@@ -31,6 +31,7 @@ const agendaSorter = (obj) => {
   return Object.fromEntries(sorted);
 };
 
+// flexList sorter by duration descending order
 const flexListSorter = (arr) => {
   const sorted = arr.sort((x, y) => {
     return y.duration - x. duration
@@ -38,6 +39,42 @@ const flexListSorter = (arr) => {
   return sorted;
 }
 
+const newAgendaAdder = ({ agenda, type, date, newAgendaTask }) => type == "fixList"
+  ? {...(agenda),
+      [date]: (agenda)[date] == undefined
+        ? [newAgendaTask]
+        : [...(agenda[date]), newAgendaTask] 
+    }
+  : {...agenda};
+
+const multiDayAdder = ({ agenda, type, startDate, endDate, newAgendaTask }) => {
+  if (type != "fixList") return {...agenda}
+  let tempAgenda = agenda;
+  let currentDate = startDate;
+
+  const addDate = (dateString, numberOfDays) => {
+    let nextDate = new Date(dateString)
+    nextDate.setDate(nextDate.getDate() + numberOfDays);
+    return nextDate.toISOString().split('T')[0];
+  }
+  
+  while (true) {
+    tempAgenda = newAgendaAdder({
+      agenda: tempAgenda,
+      type: type,
+      date: currentDate,
+      newAgendaTask: {
+        ...newAgendaTask,
+        startTime: currentDate == startDate ? newAgendaTask.startTime : "00:00",
+        endTime: currentDate == endDate ? newAgendaTask.endTime : "23:59",
+      }
+    })
+
+    if (currentDate == endDate) break;
+    currentDate = addDate(currentDate, 1);
+  }
+  return tempAgenda;
+}
 
 export const slice = createSlice({
     name: 'todoList',
@@ -77,14 +114,14 @@ export const slice = createSlice({
         const {startDate, endDate, recurring, ...newAgendaTask} = newItem;
 
         // add in new task if Fix List to Agenda without cleanup
-        const newAgenda = input.type == "fixList"
-        ? {
-            ...(state.agenda),
-            [input.newItem.startDate]: (state.agenda)[input.newItem.startDate] == undefined
-              ? [newAgendaTask]
-              : [...((state.agenda)[input.newItem.startDate]), newAgendaTask] 
-          }
-          : state.agenda;
+
+        const newAgenda = multiDayAdder({
+          agenda: state.agenda,
+          type: input.type,
+          startDate: input.newItem.startDate,
+          endDate: input.newItem.endDate, 
+          newAgendaTask: newAgendaTask
+        });
 
         const newState =  {
           fixList: fixListSorter(input.type == "fixList" ? [...(state.fixList), newItem] : [...state.fixList]),
@@ -130,14 +167,13 @@ export const slice = createSlice({
           return date;
         }));
 
-        newAgenda = input.type == "fixList"
-          ? {
-            ...(newAgenda),
-            [input.newItem.startDate]: (newAgenda)[input.newItem.startDate] == undefined
-              ? [newAgendaTask]
-              : [...((newAgenda)[input.newItem.startDate]), newAgendaTask] 
-          }
-          : newAgenda;
+        newAgenda = multiDayAdder({
+          agenda: newAgenda,
+          type: input.type,
+          startDate: input.newItem.startDate,
+          endDate: input.newItem.endDate, 
+          newAgendaTask: newAgendaTask
+        });
 
         const newState = {
           fixList: fixListSorter(input.type == "fixList"
