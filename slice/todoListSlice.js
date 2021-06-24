@@ -42,28 +42,22 @@ const flexListSorter = (arr) => {
 export const slice = createSlice({
     name: 'todoList',
     initialState: {
-        count: 2,
-        fixList: [{
-            name: "example (fixList)",
-            startDate: "2021-06-06",
-            startTime: "00:00",
-            endDate: "2021-06-06",
-            endTime: "01:00",
-            recurring: "Does not repeat",
-            key: 0,
-        }, ],
-        flexList: [{
-          name: "example (flexList)",
-          duration: 240,
+      count: 2,
+      fixList: [{
+          name: "example (fixList)",
+          startDate: "2021-06-06",
+          startTime: "00:00",
+          endDate: "2021-06-06",
+          endTime: "01:00",
           recurring: "Does not repeat",
           key: 0,
       }, ],
       flexList: [{
         name: "example (flexList)",
-        duration: 240, 
+        duration: 240,
         recurring: "Does not repeat",
-        key: 1,
-      },],
+        key: 0,
+      }, ],
       agenda: {
         "2021-06-06": [{
           name: "Example (Agenda)",
