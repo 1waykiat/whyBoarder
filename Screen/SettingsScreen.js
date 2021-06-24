@@ -77,7 +77,7 @@ export default function SettingsScreen( { navigation } ) {
   return (
     <View style={styles.container}>
       <Appbar.Header style={{backgroundColor: 'white'}}>
-        <Appbar.Content title="Settings" />
+        <Appbar.Content title="Task Sorter" />
         <Appbar.Action icon="dots-vertical" onPress={() => console.log('More options')} />
       </Appbar.Header>
       <Text
@@ -238,14 +238,13 @@ export default function SettingsScreen( { navigation } ) {
         </Modal>
       </Portal>
 
-
-
       <TaskSorter />
       <Button
-        mode='contained'
+        mode='text'
         onPress={() => {
           Authentication( {action: "signOut", event: () => navigation.navigate("Home") })
         }}
+        color='red'
         style={styles.button}
       >
         Sign out
@@ -276,8 +275,7 @@ const styles = StyleSheet.create({
     },
     button: {
       width: 150,
-      margin: 20,
-      backgroundColor: 'red',
+      marginTop: 200,
       alignSelf:'flex-end',
     },
     press: {
