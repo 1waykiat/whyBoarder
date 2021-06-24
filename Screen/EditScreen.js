@@ -68,9 +68,6 @@ const dateOverlap = (task1, task2) => {
 }
 
 const validDuration = (task) => {
-  console.log(task.startTime)
-  console.log(task.endTime)
-  console.log(task.startTime == task.endTime)
   return task.startTime <= task.endTime && task.startTime != task.endTime
 }
 
@@ -127,8 +124,6 @@ export default function EditScreen( { navigation, route } ) {
     } else {
       setEndDisplay(currentDate)
     }
-    console.log('startDisplay: ' + startDisplay + ' --> ' + testConvert(startDisplay))
-    console.log('endDisplay: ' + endDisplay + ' --> ' + testConvert(endDisplay))
   };
 
 

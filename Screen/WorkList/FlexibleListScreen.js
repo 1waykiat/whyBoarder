@@ -1,10 +1,13 @@
 import React from 'react';
 import { View, StyleSheet } from 'react-native'
 import { FAB, Appbar } from 'react-native-paper'
+import { useDispatch } from 'react-redux';
 
 import TodoList from '../../component/todoList'
 
 export default function FlexibleListScreen( { navigation } ) {
+  const dispatch = useDispatch();
+
   const [state, setState] = React.useState({ open: false });
 
   const onStateChange = ({ open }) => setState({ open });
@@ -28,7 +31,10 @@ export default function FlexibleListScreen( { navigation } ) {
           actions={[
             { icon: 'delete',
               label: 'Clear',
-              onPress: () => console.log('Pressed Clear all') },
+              onPress: () => {
+                console.log('Pressed Clear all')
+                dispatch(clearTodo({type: "flexList"}))
+              } },
             {
               icon: 'filter',
               label: 'Sort to Agenda',

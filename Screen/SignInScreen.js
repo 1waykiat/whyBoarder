@@ -24,12 +24,11 @@ export default function signIn( { navigation } ) {
   const signIn = () => Authentication( {action: "signIn", email, password, event: () => {
     Authentication( {action: "checkVerified", event: {
       pass: () => {
-        navigation.navigate("WorkList");
         Database( {action: "download", slice: "todoList", event: () => (data) => {
           const item = data.val();
           const formattedItem = {
-            fixList: Array.from(item.fixList),
-            flexList: Array.from(item.flexList),
+            fixList: Array.from(item.fixList == undefined ? {} : item.fixList),
+            flexList: Array.from(item.flexList == undefined ? {} : item.flexList),
             agenda: Object.fromEntries(Object.entries(item.agenda).map((date) => {
               date[1] = [...date[1]];
               return date;
@@ -38,18 +37,20 @@ export default function signIn( { navigation } ) {
           }
           dispatch(downloadTodo(formattedItem));
         }} );
-
+        
         Database( {action: "download", slice: "settings", event: () => (data) => {
           const item = data.val();
           dispatch(downloadSettings(item));
         }} );
+        
+        navigation.navigate("WorkList");
       },
       fail: () => Authentication( {
         action: "emailVerification", event: () => {
           Alert.alert("Verification email has been resent to " + email);
         }
       })
-    }} )
+    }} );
   } });
 
   return(

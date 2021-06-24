@@ -76,6 +76,15 @@ const multiDayAdder = ({ agenda, type, startDate, endDate, newAgendaTask }) => {
   return tempAgenda;
 }
 
+const cleanupAgenda = (agenda) => Object.fromEntries(
+  Object.entries(agendaSorter(agenda))
+  .filter((date) => date[1].length != 0)
+  .map((date) => {
+    date[1] = [...date[1]];
+    return date;
+  })
+);
+
 const upload = (data) => Database( {action: "upload", slice: "todoList", data: data} );
 
 export const slice = createSlice({
@@ -130,14 +139,7 @@ export const slice = createSlice({
         flexList: flexListSorter(input.type == "flexList" ? [...(state.flexList), newItem] : [...state.flexList]),
         count: state.count + 1,
         // take new Agenda Object and remove dates which have no task and to ensure no Array-like Object instead of Array
-        agenda: Object.fromEntries(
-          Object.entries(agendaSorter(newAgenda))
-          .filter((date) => date[1].length != 0)
-          .map((date) => {
-              date[1] = [...date[1]];
-            return date;
-          })
-        ),
+        agenda: cleanupAgenda(newAgenda),
       };
       upload(newState);
       return newState;
@@ -147,9 +149,9 @@ export const slice = createSlice({
     removeTodo: (state, action) => {
       const input = action.payload;
       const newState =  {
+        ...state,
         fixList: fixListSorter(state.fixList.filter((item) => item.key != input.key)),
         flexList: flexListSorter(state.flexList.filter((item) => item.key != input.key)),
-        count: state.count,
         agenda: Object.fromEntries(Object.entries(state.agenda).map((date) => {
           date[1] = date[1].filter((item) => item.key != input.key);
           return date;
@@ -164,11 +166,13 @@ export const slice = createSlice({
       const input = action.payload;
       const {startDate, endDate, recurring, ...newAgendaTask} = {...(input.newItem)};
       
+      // remove task first
       let newAgenda = Object.fromEntries(Object.entries(state.agenda).map((date) => {
         date[1] = date[1].filter((item) => item.key != input.key);
         return date;
       }));
 
+      // add back the edited task
       newAgenda = multiDayAdder({
         agenda: newAgenda,
         type: input.type,
@@ -178,6 +182,7 @@ export const slice = createSlice({
       });
 
       const newState = {
+        ...state,
         fixList: fixListSorter(input.type == "fixList"
           ? state.fixList.map((item) =>
             item.key == input.key ? input.newItem : item)
@@ -186,19 +191,12 @@ export const slice = createSlice({
           ? state.flexList.map((item) =>
             item.key == input.key ? input.newItem : item)
           : [...state.flexList]),
-        count: state.count,
-        agenda: Object.fromEntries(
-          Object.entries(agendaSorter(newAgenda))
-          .filter((date) => date[1].length != 0)
-          .map((date) => {
-              date[1] = [...date[1]];
-            return date;
-          })
-        ),
+        agenda: cleanupAgenda(newAgenda),
       };
       upload(newState);
       return newState;
     },
+
     // input is updated state object
     downloadTodo: (state, action) => {
       const input = action.payload;
@@ -210,32 +208,48 @@ export const slice = createSlice({
     // give date and agenda item to be added
     addAgendaItem: (state, action) => {
       const input = action.payload;
-      const newAgenda = {
-        ...(state.agenda),
-        [input.date]: (state.agenda)[input.date] == undefined
-          ? [input.newItem]
-          : [...((state.agenda)[input.date]), input.newItem]
-      };
+
+      const newAgenda = newAgendaAdder({
+        agenda: state.agenda,
+        type: "fixList",
+        date: input.date,
+        newAgendaTask: input.newItem,
+      })
+
       const newState = {
+        ...state,
         fixList: [...state.fixList],
         flexList: [...state.flexList],
-        agenda: Object.fromEntries(
-          Object.entries(agendaSorter(newAgenda))
-          .filter((date) => date[1].length != 0)
-          .map((date) => {
-            date[1] = [...date[1]];
-            return date;
-          })
-        ),
-        count: state.count,
+        agenda: cleanupAgenda(newAgenda),
       }
       upload(newState);
       return newState;
-    }
+    },
+    
+    clearTodo: (state, action) => {
+      const input = action.payload;
+      const removedList = state[input.type];
+      let newAgenda = {...(state.agenda)};
+
+      for (let i = 0; i < removedList.length; i++) {
+        newAgenda = Object.fromEntries(Object.entries(newAgenda).map((date) => {
+          date[1] = date[1].filter((item) => item.key != removedList[i].key);
+          return date;
+        }));
+      }
+
+      const newState = {
+        ...state,
+        agenda: cleanupAgenda(newAgenda),
+        [input.type]: [],
+      };
+      upload(newState);
+      return newState;
+    },
   }	
 });
 
-export const { addTodo, removeTodo, editTodo, downloadTodo, addAgendaItem } = slice.actions;
+export const { addTodo, removeTodo, editTodo, downloadTodo, addAgendaItem, clearTodo } = slice.actions;
 
 export const selectTodoList = state => state.todoList;
 

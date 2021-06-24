@@ -22,8 +22,7 @@ export default function Authentication( {action, email, password, event } ) {
         console.log('That email address is invalid!');
       }
       
-      console.error(error);
-      Alert.alert(error.Message);
+      Alert.alert(error.message);
       
     });
   };
@@ -44,8 +43,7 @@ export default function Authentication( {action, email, password, event } ) {
         console.log('That email address is invalid!');
       }
       
-      console.error(error);
-      Alert.alert(error.Message);
+      Alert.alert(error.message);
     });
     
   };
@@ -58,8 +56,7 @@ export default function Authentication( {action, email, password, event } ) {
       event();
     })
     .catch(error => {
-      console.error(error);
-      Alert.alert(error.Message);
+      Alert.alert(error.message);
     });
   };
 
@@ -70,9 +67,8 @@ export default function Authentication( {action, email, password, event } ) {
       console.log('Password reset email sent!');
       event();
     })
-    .catch(error => {     
-      console.error(error);
-      Alert.alert(error.Message);
+    .catch(error => {
+      Alert.alert(error.message);
     });
   };
 
@@ -84,8 +80,7 @@ export default function Authentication( {action, email, password, event } ) {
       event();
     })
     .catch(error => {
-      console.error(error);
-      Alert.alert(error.Message);
+      Alert.alert(error.message);
     });
   };
 
