@@ -21,12 +21,12 @@ export default function SettingsScreen( { navigation } ) {
   const settings = useSelector(selectSettings)
   const dispatch = useDispatch();
 
-  const [startTime, setStartTime] = useState( new Date('December 17, 2021 08:00:00'))
-  const [cutoffTime, setCutoffTime] = useState( new Date('December 17, 2021 23:59:00'))
-  // const [startTime, setStartTime] = useState( new Date( 'December 17, 2021 ' + settings.startTime + ':00'))
-  // const [cutoffTime, setCutoffTime] = useState( new Date( 'December 17, 2021 ' + settings.cutoffTime + ':00'))
-  const [day, setDay] = useState('Same Day')
-  // const [day, setDay] = useState(settings.cutoffDay)
+  // const [startTime, setStartTime] = useState( new Date('December 17, 2021 08:00:00'))
+  // const [cutoffTime, setCutoffTime] = useState( new Date('December 17, 2021 23:59:00'))
+  const [startTime, setStartTime] = useState( new Date( 'December 17, 2021 ' + settings.startTime + ':00'))
+  const [cutoffTime, setCutoffTime] = useState( new Date( 'December 17, 2021 ' + settings.cutoffTime + ':00'))
+  // const [day, setDay] = useState('Same Day')
+  const [day, setDay] = useState(settings.cutoffDay)
 
   /* states for time picker */
   const [mode, setMode] = useState('time')
@@ -46,17 +46,17 @@ export default function SettingsScreen( { navigation } ) {
   /* offset states */
   const [hours, setHours] = useState('0')
   // const [hoursShown, setHoursShown] = useState('0')
-  const [hoursShown, setHoursShown] = useState( Math.floor(settings.offset / 60) )
+  const [hoursShown, setHoursShown] = useState( (Math.floor(settings.offset / 60)).toString() )
   const [minutes, setMinutes] = useState('30')
   // const [minutesShown, setMinutesShown] = useState('30')
-  const [minutesShown, setMinutesShown] = useState( settings.offset % 60 )
+  const [minutesShown, setMinutesShown] = useState( (settings.offset % 60).toString() )
   
   const [limitHrs, setLimitHrs] = useState('8')
-  const [limitHrsShown, setLimitHrsShown] = useState('8')
-  // const [limitHrsShown, setLimitHrsShown] = useState( Math.floor(settings.limit / 60) )
+  // const [limitHrsShown, setLimitHrsShown] = useState('8')
+  const [limitHrsShown, setLimitHrsShown] = useState( (Math.floor(settings.limit / 60)).toString() )
   const [limitMins, setLimitMins] = useState('0')
-  const [limitMinsShown, setLimitMinsShown] = useState('0')
-  // const [limitMinsShown, setLimitMinsShown] = useState( settings.limit % 60)
+  // const [limitMinsShown, setLimitMinsShown] = useState('0')
+  const [limitMinsShown, setLimitMinsShown] = useState( (settings.limit % 60).toString() )
   const [timeType, setTimeType] = useState('offset')
 
   const showMode = (currentMode) => {
@@ -74,8 +74,10 @@ export default function SettingsScreen( { navigation } ) {
     setShow(false)
     if (begin === true) {
       setStartTime(currentDate)
+      dispatch(editSettings({type: 'startTime', newValue: timeToHourMin(currentDate)}))
     } else {
       setCutoffTime(currentDate)
+      dispatch(editSettings({type: 'cutoffTime', newValue: timeToHourMin(currentDate)}))
       showRadioModal()
     }
   }
@@ -141,9 +143,10 @@ export default function SettingsScreen( { navigation } ) {
               status={day === 'Next Day' ? 'checked' : 'unchecked'}
               onPress={() => {
                 setDay('Next Day')
+                dispatch(editSettings({type: 'cutoffDay', newValue: 'Next Day'}))
                 hideRadioModal()
               }}
-            />
+              />
           </View>
           <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
             <Text style={{fontSize: 16, padding: 5}}> Same Day </Text>
@@ -152,6 +155,7 @@ export default function SettingsScreen( { navigation } ) {
               status={ day === 'Same Day' ? 'checked' : 'unchecked'}
               onPress={() => {
                 setDay('Same Day')
+                dispatch(editSettings({type: 'cutoffDay', newValue: 'Same Day'}))
                 hideRadioModal()
               }}
             />
@@ -173,6 +177,24 @@ export default function SettingsScreen( { navigation } ) {
             <Text style={styles.subtitle}>Break interval between tasks </Text>
           </View>
           <Text style={styles.value}>{hours + ' hrs ' + minutes + ' mins'}</Text>
+        </View>
+      </Pressable>
+      <Divider />
+      
+      {/* Limit number of hours per day */}
+      <Pressable
+        onPress ={() => {
+          setTimeType('limit')
+          showTimeModal()
+        }}
+        android_ripple={{color: '#bababa'}}
+        style={styles.press}>
+        <View style={{flexDirection:'row', justifyContent:'space-between'}}>
+          <View>
+            <Text style={styles.title}>Limit</Text>
+            <Text style={styles.subtitle}>Max total task time per day</Text>
+          </View>
+          <Text style={styles.value}>{limitHrs + ' hrs ' + limitMins + ' mins'}</Text>
         </View>
       </Pressable>
       <Divider />
@@ -212,11 +234,12 @@ export default function SettingsScreen( { navigation } ) {
               if (timeType === 'offset') {
                 setHours(hoursShown)
                 setMinutes(minutesShown)
-                dispatch(editSettings({settingName: "offset", newSetting: parseInt(hoursShown) * 60 + parseInt(minutesShown)}));
+                dispatch(editSettings({type: 'offset', newValue: parseInt(hours) * 60 + parseInt(minutes)}))
                 hideTimeModal()
               } else {
                 setLimitHrs(limitHrsShown)
                 setLimitMins(limitMinsShown)
+                dispatch(editSettings({type: 'limit', newValue: parseInt(limitHrs) * 60 + parseInt(limitMins)}))
                 hideTimeModal()
               }
             }}
@@ -227,23 +250,6 @@ export default function SettingsScreen( { navigation } ) {
         </Modal>
       </Portal>
 
-      {/* Limit number of hours per day */}
-      <Pressable
-        onPress ={() => {
-          setTimeType('limit')
-          showTimeModal()
-        }}
-        android_ripple={{color: '#bababa'}}
-        style={styles.press}>
-        <View style={{flexDirection:'row', justifyContent:'space-between'}}>
-          <View>
-            <Text style={styles.title}>Limit</Text>
-            <Text style={styles.subtitle}>Max total task time per day</Text>
-          </View>
-          <Text style={styles.value}>{limitHrs + ' hrs ' + limitMins + ' mins'}</Text>
-        </View>
-      </Pressable>
-      <Divider />
 
 
       <TaskSorter />

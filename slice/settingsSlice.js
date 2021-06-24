@@ -4,7 +4,7 @@ import Database from '../api/Database';
 export const slice = createSlice({
   name: 'settings',
   initialState: {
-    startTime: "08:00",
+    startTime: "09:00",
     cutoffTime: "23:59",
     cutoffDay: "Same Day",
     // in mins
@@ -16,7 +16,7 @@ export const slice = createSlice({
       const input = action.payload
       const newState = {
         ...state,
-        [input.settingName]: input.newSetting,
+        [input.type]: input.newValue
       }
       console.log(newState);
       Database( {action: "upload", slice: "settings", data: newState} )
@@ -29,7 +29,7 @@ export const slice = createSlice({
       }
       return newState;
     },
-  }
+  },
 })
 
 export const { editSettings, downloadSettings } = slice.actions;
