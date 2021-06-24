@@ -154,13 +154,14 @@ export default function EditScreen( { navigation, route } ) {
     
 
     // Error checking area
-    if(!validDuration(newItem())) {
-      console.log('ERROR: Invalid time duration set!')
-      setAlertType('invalid')
-      toggleSnack()
-      return
+    if (input.type == "fixList") {
+      if(!validDuration(newItem())) {
+        console.log('ERROR: Invalid time duration set!')
+        setAlertType('invalid')
+        toggleSnack()
+        return
+      }
 
-    } else if (input.type == "fixList") {
       if(item == undefined) {
         if(todoList.filter( (task) => dateOverlap(newItem(), task)).filter( (task) => timeOverlap(newItem(), task)).length > 0) {
             console.log('ERROR: Task input time interval overlaps with existing task in FixList')
