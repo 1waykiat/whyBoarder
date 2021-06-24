@@ -1,8 +1,9 @@
 import React, { useState } from 'react'
-import { View, TouchableOpacity, Text, Alert, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
 import { useDispatch, useSelector } from "react-redux";
 import { addAgendaItem, selectTodoList } from "./slice/todoListSlice";
 import { Button, Portal, Modal } from 'react-native-paper';
+import { selectSettings } from "./slice/settingsSlice";
 
 /*
   Time format:
@@ -97,13 +98,18 @@ export default function TaskSorter() {
   // current date
   const temp = (new Date(Date.now())).toLocaleDateString().split('/');
   const today = (new Date(Date.now())).toLocaleString().split(" ")[4]+"-"+temp[0].padStart(2, "0")+"-"+temp[1].padStart(2, "0");
+
   const dispatch = useDispatch();
+  const settings = useSelector(selectSettings);
+
+
   const state = useSelector(selectTodoList);
   let agenda = {...(state.agenda)};
   let toUpdate =[];
-  const start  = "08:00";
-  const end = "23:59";
-  const limit = 480;
+  const start  = settings.startTime;
+  const end = settings.cutoffTime;
+  const limit = settings.limit;
+  const offset = settings.offset;
 
   function sort( { item, date, offset = 0 } ) {
     const agendaDate = [...(agenda[date] == undefined ? [] : agenda[date])];
@@ -117,7 +123,7 @@ export default function TaskSorter() {
       const taskStartTime = stringToNumberTime(agendaDate[i].startTime);
       const taskEndTime = stringToNumberTime(agendaDate[i].endTime);
 
-      if (addTime(taskEndTime, offset) <= taskStartTime) {
+      if (addTime(endTime, offset) <= taskStartTime) {
         break;
       } else {
         startTime = addTime(taskEndTime, offset); 
@@ -155,7 +161,7 @@ export default function TaskSorter() {
       let result = undefined;
       
       while (true) {
-        result = sort( { item: flexList[i], date: date, offset: 30 } );
+        result = sort( { item: flexList[i], date: date, offset: offset } );
         if (result != undefined) break; 
         date = addDate(date, 1);
       }
