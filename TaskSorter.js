@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { View, TouchableOpacity, Text, Alert, StyleSheet } from 'react-native';
 import { useDispatch, useSelector } from "react-redux";
 import { addAgendaItem, selectTodoList } from "./slice/todoListSlice";
-import { Button, Snackbar } from 'react-native-paper';
+import { Button, Portal, Modal } from 'react-native-paper';
 
 /*
   Time format:
@@ -146,7 +146,7 @@ export default function TaskSorter() {
     const flexList = checkAdded([...(state.flexList == undefined ? [] : state.flexList)], agenda);
     if (flexList.length == 0) {
       setAlertType('alreadySorted')
-      onToggleSnackBar()
+      showModal()
       return;
     }
 
@@ -167,13 +167,13 @@ export default function TaskSorter() {
     toUpdate = [];
     
     setAlertType('success')
-    onToggleSnackBar()
+    showModal()
   }
 
-  const [visible, setVisible] = React.useState(false);
-  const onToggleSnackBar = () => setVisible(!visible);
-  const onDismissSnackBar = () => setVisible(false);
   const [alertType, setAlertType] = useState('success')
+  const [visible, setVisible] = React.useState(false);
+  const showModal = () => setVisible(true);
+  const hideModal = () => setVisible(false);
 
 
   return (
@@ -181,13 +181,14 @@ export default function TaskSorter() {
       <Button style={styles.button} icon="filter" mode="contained" onPress={() => sortAll()}>
         Sort my Tasks!
       </Button>
-
-      <Snackbar
-        visible={visible}
-        onDismiss={onDismissSnackBar}
-      >
-        {alertType === 'success' ? 'Tasks successfully sorted!' : 'Tasks already sorted!' }
-      </Snackbar>
+      <Portal>
+        <Modal visible={visible} onDismiss={hideModal} contentContainerStyle={styles.containerStyle}>
+          <Text> { alertType === 'success' ? 'Task succesfully added!' : 'Tasks already sorted!'} </Text>
+          <Button mode='text' onPress={() => hideModal()} labelStyle={{fontSize: 12,}} style={{alignSelf: 'flex-end'}}>
+            Dismiss
+          </Button>
+        </Modal>
+      </Portal>
     </View>
   );
 }
@@ -196,5 +197,10 @@ const styles = StyleSheet.create({
   button: {
     marginHorizontal: 30,
     marginVertical: 30,
+  },
+  containerStyle: {
+    backgroundColor: 'white',
+    padding: 20,
+    marginHorizontal: 50,
   }
 })
