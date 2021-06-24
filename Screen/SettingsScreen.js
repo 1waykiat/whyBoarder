@@ -44,19 +44,11 @@ export default function SettingsScreen( { navigation } ) {
   const hideTimeModal = () => setTimeVisible(false)
 
   /* offset states */
-  const [hours, setHours] = useState('0')
-  // const [hoursShown, setHoursShown] = useState('0')
-  const [hoursShown, setHoursShown] = useState( (Math.floor(settings.offset / 60)).toString() )
-  const [minutes, setMinutes] = useState('30')
-  // const [minutesShown, setMinutesShown] = useState('30')
-  const [minutesShown, setMinutesShown] = useState( (settings.offset % 60).toString() )
-  
-  const [limitHrs, setLimitHrs] = useState('8')
-  // const [limitHrsShown, setLimitHrsShown] = useState('8')
-  const [limitHrsShown, setLimitHrsShown] = useState( (Math.floor(settings.limit / 60)).toString() )
-  const [limitMins, setLimitMins] = useState('0')
-  // const [limitMinsShown, setLimitMinsShown] = useState('0')
-  const [limitMinsShown, setLimitMinsShown] = useState( (settings.limit % 60).toString() )
+  const [hours, setHours] = useState( (Math.floor(settings.offset / 60)).toString() )
+  const [minutes, setMinutes] = useState( (settings.offset % 60).toString() )
+
+  const [limitHrs, setLimitHrs] = useState( (Math.floor(settings.limit / 60)).toString() )
+  const [limitMins, setLimitMins] = useState( (settings.limit % 60).toString() )
   const [timeType, setTimeType] = useState('offset')
 
   const showMode = (currentMode) => {
@@ -209,8 +201,8 @@ export default function SettingsScreen( { navigation } ) {
               underlineColorAndroid='gray'
               placeholder='1'
               keyboardType='numeric'
-              value={timeType === 'offset' ? hoursShown : limitHrsShown}
-              onChangeText={(number) => timeType === 'offset' ? setHoursShown(number) : setLimitHrsShown(number)}
+              value={timeType === 'offset' ? hours : limitHrs}
+              onChangeText={(number) => timeType === 'offset' ? setHours(number) : setLimitHrs(number)}
               autoCapitalize="none"
               blurOnSubmit={false}
             />
@@ -221,8 +213,8 @@ export default function SettingsScreen( { navigation } ) {
               underlineColorAndroid='gray'
               placeholder='30'
               keyboardType='numeric'
-              value={timeType === 'offset' ? minutesShown : limitMinsShown}
-              onChangeText={(number) => timeType === 'offset' ? setMinutesShown(number) : setLimitMinsShown(number)}
+              value={timeType === 'offset' ? minutes : limitMins}
+              onChangeText={(number) => timeType === 'offset' ? setMinutes(number) : setLimitMins(number)}
               autoCapitalize="none"
               blurOnSubmit={false}
             />
@@ -232,13 +224,9 @@ export default function SettingsScreen( { navigation } ) {
             mode="text"
             onPress={() => {
               if (timeType === 'offset') {
-                setHours(hoursShown)
-                setMinutes(minutesShown)
                 dispatch(editSettings({type: 'offset', newValue: parseInt(hours) * 60 + parseInt(minutes)}))
                 hideTimeModal()
               } else {
-                setLimitHrs(limitHrsShown)
-                setLimitMins(limitMinsShown)
                 dispatch(editSettings({type: 'limit', newValue: parseInt(limitHrs) * 60 + parseInt(limitMins)}))
                 hideTimeModal()
               }
