@@ -13,7 +13,7 @@ export default function FlexibleListScreen( { navigation } ) {
 
     return (
       <View style={styles.container}>
-        <Appbar.Header style={{backgroundColor: '#B3E3F8'}}>
+        <Appbar.Header style={{backgroundColor: '#277DA1'}}>
           <Appbar.BackAction onPress={() => navigation.goBack()} />
           <Appbar.Content title="FlexList" />
           <Appbar.Action icon="dots-vertical" onPress={() => console.log('More options')} />
@@ -28,12 +28,7 @@ export default function FlexibleListScreen( { navigation } ) {
           actions={[
             { icon: 'delete',
               label: 'Clear',
-              onPress: () => console.log('Pressed Clear all') },
-            {
-              icon: 'filter',
-              label: 'Sort to Agenda',
-              onPress: () => console.log('Pressed sorting'),
-              small: false,
+              onPress: () => console.log('Pressed Clear all') 
             },
             {
               icon: 'calendar',
@@ -58,7 +53,7 @@ const styles = StyleSheet.create({
       flex:1,
       flexDirection: 'column',
       alignItems: 'stretch',
-      backgroundColor: '#B3E3F8',
+      backgroundColor: '#174b61',
     },
     title: {
       alignContent: 'flex-start',

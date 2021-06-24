@@ -40,7 +40,7 @@ export default function todoList( { type, navigation} ) {
           ({item}) => (
             <View style={{flexDirection: 'row',}}>
               <Card 
-                style={{width: 375, maxHeight: 120, marginTop: 5, backgroundColor: '#f94144' }}
+                style={{width: 375, maxHeight: 120, marginTop: 5, }}
                 onPress={() => navigation.navigate("Edit", {type: type, item: item} )}
                 mode='elevated'
               >
@@ -75,11 +75,10 @@ const styles = StyleSheet.create({
   },
   paragraph : {
     fontSize: 17,
-    color: '#feecec'
+    color: 'black'
   },
   caption: {
     fontSize: 12,
-    color: '#802123'
   },
   colorcode: {
     backgroundColor: 'gray',

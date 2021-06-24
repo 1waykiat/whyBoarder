@@ -53,9 +53,9 @@ export default function WorkList() {
             name="Profile"
             component={SettingsScreen}
             options={{
-              tabBarLabel: 'Settings',
+              tabBarLabel: 'Sorter',
               tabBarIcon: ( {color} ) => (
-                <Feather name="settings" size={24} color={color} />
+                <Feather name="filter" size={24} color={color} />
               )
             }}
           />

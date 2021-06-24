@@ -42,40 +42,6 @@ const AgendaScreen = () => {
     setMode(currentMode);
   };
 
-  // const loadItems = (day) => {
-  //   setTimeout(() => {
-  //     // for (let i = -15; i < 85; i++) {
-  //     //   const time = day.timestamp + i * 24 * 60 * 60 * 1000;
-  //     //   const strTime = timeToString(time);
-  //     //   console.log(strTime)
-  //     //   if (!items[strTime]) {
-  //     //     items[strTime] = [];
-  //     //     const numItems = 1;
-  //     //     for (let j = 0; j < numItems; j++) {
-  //     //       items[strTime].push({
-  //     //         name: 'Item for ' + strTime + ' #' + j,
-  //     //         height: 1
-  //     //       });
-  //     //     }
-  //     //   }
-  //     // }
-  //     items['2021-05-29'] = []
-  //     items['2021-05-29'].push({
-  //       name: 'Coding',
-  //       startTime: '0900',
-  //       endTime: '1200',
-  //     })
-  //     items['2021-05-31'] = []
-  //     for( var i = 0; i < 10; i++){
-  //       items['2021-05-31'].push({
-  //         name: 'Submit Milestone 1',
-  //         startTime: '0900',
-  //         endTime: '1200',
-  //       })
-  //     }
-  //   }, 1000);
-  // }
-
   const renderThing = (item) => {
     return(
       <Card 

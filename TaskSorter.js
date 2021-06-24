@@ -1,7 +1,8 @@
-import React from 'react'
-import { TouchableOpacity, Text, Alert } from 'react-native';
+import React, { useState } from 'react'
+import { View, TouchableOpacity, Text, Alert, StyleSheet } from 'react-native';
 import { useDispatch, useSelector } from "react-redux";
 import { addAgendaItem, selectTodoList } from "./slice/todoListSlice";
+import { Button, Snackbar } from 'react-native-paper';
 
 /*
   Time format:
@@ -144,7 +145,8 @@ export default function TaskSorter() {
   function sortAll() {
     const flexList = checkAdded([...(state.flexList == undefined ? [] : state.flexList)], agenda);
     if (flexList.length == 0) {
-      Alert.alert("All sorted");
+      setAlertType('alreadySorted')
+      onToggleSnackBar()
       return;
     }
 
@@ -163,15 +165,36 @@ export default function TaskSorter() {
       dispatch(addAgendaItem( { date: toUpdate[j][0], newItem: toUpdate[j][1] } ));
     }
     toUpdate = [];
+    
+    setAlertType('success')
+    onToggleSnackBar()
   }
 
+  const [visible, setVisible] = React.useState(false);
+  const onToggleSnackBar = () => setVisible(!visible);
+  const onDismissSnackBar = () => setVisible(false);
+  const [alertType, setAlertType] = useState('success')
+
+
   return (
-      <TouchableOpacity
-        onPress={() => {
-          sortAll();
-        }}
+    <View>
+      <Button style={styles.button} icon="filter" mode="contained" onPress={() => sortAll()}>
+        Sort my Tasks!
+      </Button>
+
+      <Snackbar
+        visible={visible}
+        onDismiss={onDismissSnackBar}
       >
-        <Text>Sort</Text>
-      </TouchableOpacity>
+        {alertType === 'success' ? 'Tasks successfully sorted!' : 'Tasks already sorted!' }
+      </Snackbar>
+    </View>
   );
 }
+
+const styles = StyleSheet.create({
+  button: {
+    marginHorizontal: 30,
+    marginVertical: 30,
+  }
+})
