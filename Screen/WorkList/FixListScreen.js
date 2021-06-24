@@ -1,12 +1,20 @@
 import { StatusBar } from 'expo-status-bar';
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet} from 'react-native';
-import { FAB, Appbar } from 'react-native-paper'
+import { FAB, Appbar, Portal } from 'react-native-paper'
 import { useSelector } from 'react-redux';
 
 import TodoList from '../../component/todoList';
+import { selectTodoList } from '../../slice/todoListSlice';
 
 export default function FixListScreen( { navigation } ) {
+  const todoList = useSelector(selectTodoList);
+
+  const [state, setState] = React.useState({ open: false });
+
+  const onStateChange = ({ open }) => setState({ open });
+
+  const { open } = state;
 
   return (
     <View style={styles.container}>
@@ -17,14 +25,46 @@ export default function FixListScreen( { navigation } ) {
       </Appbar.Header>
       <View style={{alignItems:'center',}}>
         <TodoList type={"fixList"} navigation={navigation}/>
-      </View>      
+      </View>
       <StatusBar style="dark" />
-        
-      <FAB
+
+
+
+
+      <FAB.Group
+        visible={true}
+        open={open}
+        icon={open ? 'close' : 'plus'}
+        actions={[
+          { icon: 'delete',
+            label: 'Clear',
+            onPress: () => console.log('Pressed Clear all') },
+          {
+            icon: 'filter',
+            label: 'Sort to Agenda',
+            onPress: () => console.log('Pressed sorting'),
+            small: false,
+          },
+          {
+            icon: 'calendar',
+            label: 'Add task',
+            onPress: () => navigation.navigate("Edit", {type: 'fixList'}),
+            small: false,
+          }
+        ]}
+        onStateChange={onStateChange}
+        onPress={() => {
+          if (open) {
+            // do something if the speed dial is open
+          }
+        }}
+      />
+
+      {/* <FAB
           style={styles.fab}
           icon="plus"
           onPress={() => navigation.navigate("Edit", {type: 'fixList'})}
-      />
+      /> */}
     </View>
     )
 }

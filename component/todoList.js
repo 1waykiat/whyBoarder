@@ -1,11 +1,14 @@
-import React from 'react';
-import { FlatList, View, StyleSheet, TouchableOpacity} from 'react-native';
+import React, {useState} from 'react';
+import { FlatList, View, StyleSheet, TouchableOpacity, Text} from 'react-native';
 import { useSelector } from 'react-redux';
-import { selectTodoList} from '../slice/todoListSlice';
-import { Card, Title, Paragraph,  } from 'react-native-paper'
+import { selectTodoList } from '../slice/todoListSlice';
+import { Card, Paragraph, Caption, Title } from 'react-native-paper'
+
 
 export default function todoList( { type, navigation} ) {
   const todoList = type == "fixList" ? useSelector(selectTodoList).fixList : useSelector(selectTodoList).flexList;
+  const [visible, setVisible] = useState(false)
+  const toggleModal = () => setVisible(!visible)
 
   const dateTimeMerge = (date, time) => {
   if (date != undefined) {
@@ -14,6 +17,7 @@ export default function todoList( { type, navigation} ) {
     }
     return new Date();
   }
+
 
   const timeToSimpleHumanDate = (time) => {
     const temp = new Date(time).toDateString().split(' ')
@@ -34,20 +38,25 @@ export default function todoList( { type, navigation} ) {
         keyExtractor={item => item.key.toString()}
         renderItem={
           ({item}) => (
-            <View style={{flexDirection: 'row'}}>
-              <Card style={{width: 375, maxHeight: 120, marginTop: 5}} onPress={() => navigation.navigate("Edit", {type: type, item: item} )}>
+            <View style={{flexDirection: 'row',}}>
+              <Card 
+                style={{width: 375, maxHeight: 120, marginTop: 5, }}
+                onPress={() => navigation.navigate("Edit", {type: type, item: item} )}
+                mode='elevated'
+              >
                 <Card.Content>
-                  <Title
-                    style={{fontSize:16,}}
-                  >{item.name}</Title>
+                  <Paragraph
+                    style={styles.paragraph}
+                  >{item.name}</Paragraph>
                   {type == "fixList"
-                    ? <Paragraph>
-                      {timeToSimpleHumanDate(dateTimeMerge(item.startDate, item.startTime))}, {timeToHourMin(dateTimeMerge(item.startDate, item.startTime))} - { } 
+                    ? <Caption>
+                      {timeToSimpleHumanDate(dateTimeMerge(item.startDate, item.startTime))} · {timeToHourMin(dateTimeMerge(item.startDate, item.startTime))} - { } 
                       {timeToHourMin(dateTimeMerge(item.endDate, item.endTime))}
-                    </Paragraph>
-                    : <Paragraph>
-                        {Math.floor(item.duration / 60)}:{(item.duration % 60).toString().padStart(2,"0")}
-                    </Paragraph>}
+                    </Caption>
+                    : <Caption>
+                      {Math.floor(item.duration / 60)}:{(item.duration % 60).toString().padStart(2,"0")}
+                    </Caption>}
+                    <View style={styles.colorcode} />
                 </Card.Content>
               </Card>
             </View>
@@ -59,17 +68,25 @@ export default function todoList( { type, navigation} ) {
 }
 
 const styles = StyleSheet.create({
-  textInput: {
-    width: 350,
-    marginBottom: 10,
-    backgroundColor: '#fdfaf6',
-    fontFamily: 'sans-serif-condensed'
+  container: {
+    backgroundColor: 'white',
+    flex: 1,
+    flexDirection: 'column'
   },
-  textInputSmall: {
-    width: 175,
-    marginBottom: 10,
-    backgroundColor: '#fdfaf6',
-    fontFamily: 'sans-serif-condensed'
+  paragraph : {
+    fontSize: 17,
+    
   },
-
+  caption: {
+    fontSize: 14,
+  },
+  colorcode: {
+    backgroundColor: 'gray',
+    width: 20,
+    flex: 1,
+    position:'absolute',
+    overflow:'hidden',
+    borderTopLeftRadius: 3,
+    opacity:0.8
+  }
 })

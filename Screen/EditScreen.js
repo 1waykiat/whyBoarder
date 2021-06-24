@@ -1,11 +1,11 @@
 import React, {useState} from 'react'
-import { Text, Button, TextInput, Divider, Appbar, Menu } from 'react-native-paper'
-import { View, StyleSheet, Pressable } from 'react-native'
+import { Text, Button, TextInput, Divider, Appbar, Menu, Snackbar } from 'react-native-paper'
+import { View, StyleSheet, Pressable, } from 'react-native'
 
 import Icon from 'react-native-vector-icons/FontAwesome5'
 
-import { useDispatch } from 'react-redux';
-import { addTodo, editTodo, removeTodo } from '../slice/todoListSlice';
+import { useDispatch, useSelector } from 'react-redux';
+import { addTodo, editTodo, removeTodo, selectTodoList } from '../slice/todoListSlice';
 
 import RNDateTimePicker from '@react-native-community/datetimepicker';
 
@@ -13,6 +13,15 @@ import RNDateTimePicker from '@react-native-community/datetimepicker';
 const timeToHumanDate = (time) => {
   const temp = new Date(time).toDateString().split(' ')
   return temp[0] + ', ' + temp[2] + ' ' + temp[1] + ' ' + temp[3]
+}
+
+// to solve a bug that may or may not exist
+const testConvert = (time) => {
+  const day = time.getDate()
+  const month = time.getMonth() + 1
+  const year = time.getFullYear() 
+
+  return year + '-' + month.toString().padStart(2, '0') + '-' + day
 }
 
 // Converts to local readable TIME
@@ -43,10 +52,33 @@ const dateTimeMerge = (date, time) => {
   return new Date();
 }
 
+// Check if time period of two fixed tasks overlap, return true if so.
+const timeOverlap = (task1, task2) => {
+  const prelim = task1.startTime == task2.endTime || task1.endTime == task2.startTime
+   const test1 = task1.endTime <= task2.startTime
+   const test2 = task2.endTime <= task1.startTime
+  // console.log("Task1 startTime: " + task1.startTime , "Task2.startTime: " + task2.startTime)
+  // console.log("Task1 endTime: " + task1.endTime , "Task2.endTime: " + task2.endTime)
+  return prelim ? false : !(test1 || test2)
+}
+
+// **needs work 
+const dateOverlap = (task1, task2) => {
+  return task1.startDate == task2.startDate
+}
+
+const validDuration = (task) => {
+  console.log(task.startTime)
+  console.log(task.endTime)
+  console.log(task.startTime == task.endTime)
+  return task.startTime <= task.endTime && task.startTime != task.endTime
+}
 
 export default function EditScreen( { navigation, route } ) {
   const input = route.params;
   const item = input.item;
+
+  const todoList = input.type == "fixList" ? useSelector(selectTodoList).fixList : useSelector(selectTodoList).flexList
 
   const [name, setName] = useState(item == undefined ? "" : item.name);
   const [hours, setHours] = useState(item == undefined ? "" : Math.floor(item.duration / 60).toString());
@@ -64,6 +96,13 @@ export default function EditScreen( { navigation, route } ) {
   const openMenu = () => setMenuVisible(true)
   const closeMenu = () => setMenuVisible(false)
   const [menuVisible, setMenuVisible] = useState(false)
+
+  const [snackVisible, setSnackVisible] = useState(false)
+  const toggleSnack = () => setSnackVisible(!snackVisible)
+  const dismissSnack = () => setSnackVisible(false)
+  const [alertType, setAlertType] = useState('')
+  const overlapAlert = "Duration overlaps with an existing task!"
+  const earlyEndAlert = "Invalid time duration set!"
 
   const showMode = (currentMode) => {
     setShow(true);
@@ -88,10 +127,11 @@ export default function EditScreen( { navigation, route } ) {
     } else {
       setEndDisplay(currentDate)
     }
+    console.log('startDisplay: ' + startDisplay + ' --> ' + testConvert(startDisplay))
+    console.log('endDisplay: ' + endDisplay + ' --> ' + testConvert(endDisplay))
   };
 
 
-  
   const reducer = () => {
     const fixListItem = () => {
       return {
@@ -112,12 +152,44 @@ export default function EditScreen( { navigation, route } ) {
 
     const newItem = () => input.type == "fixList" ? fixListItem() : flexListItem();
     
+
+    // Error checking area
+    if(!validDuration(newItem())) {
+      console.log('ERROR: Invalid time duration set!')
+      setAlertType('invalid')
+      toggleSnack()
+      return
+
+    } else if (input.type == "fixList") {
+      if(item == undefined) {
+        if(todoList.filter( (task) => dateOverlap(newItem(), task)).filter( (task) => timeOverlap(newItem(), task)).length > 0) {
+            console.log('ERROR: Task input time interval overlaps with existing task in FixList')
+            setAlertType('overlap')
+            toggleSnack()
+            return 
+          } 
+      } else {
+        if(todoList.filter( (task) => task.key != item.key)
+        .filter( (task) => dateOverlap(newItem(), task))
+        .filter( (task) => timeOverlap(newItem(), task))
+        .length > 0) {
+          console.log('ERROR: Task input time interval overlaps with existing task in FixList')
+          setAlertType('overlap')
+          toggleSnack()
+          return
+        }
+      }
+    }
+      
+
     if (item == undefined) {
+      navigation.goBack()
       return dispatch(addTodo( {
         type: input.type,
         newItem: newItem(),
       } ));
     } else {  
+      navigation.goBack()
       return dispatch(editTodo( {
         type: input.type,
         key: item.key,
@@ -235,7 +307,7 @@ export default function EditScreen( { navigation, route } ) {
             style={styles.time}
             underlineColorAndroid='gray'
             placeholder='2'
-            keyboardchild='numeric'
+            keyboardType='numeric'
             value={hours}
             onChangeText={(number) => setHours(number)}
             autoCapitalize="none"
@@ -271,8 +343,6 @@ export default function EditScreen( { navigation, route } ) {
         </View>
       )}
 
-      
-
       {show && (
         <RNDateTimePicker
           testID="dateTimePicker"
@@ -284,11 +354,22 @@ export default function EditScreen( { navigation, route } ) {
         />
       )}
 
+      <Snackbar
+        visible={snackVisible}
+        onDismiss={dismissSnack}
+        duration={5000}
+      >
+        {alertType == "overlap"
+          ? overlapAlert
+          : alertType == 'invalid'
+          ? earlyEndAlert
+          : 'smth is wrong'}
+      </Snackbar>
+
       <Button
         mode="contained"
         onPress={() => {
           reducer()
-          navigation.goBack()
         }}
         style={{margin: 10, backgroundColor: '#85BEF9'}}
       >

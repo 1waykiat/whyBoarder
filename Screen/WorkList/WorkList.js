@@ -5,10 +5,9 @@ import { createMaterialBottomTabNavigator } from '@react-navigation/material-bot
 import FixListScreen from './FixListScreen';
 import FlexibleListScreen from './FlexibleListScreen';
 import AgendaScreen from './AgendaScreen';
-import ProfileScreen from '../ProfileScreen'; 
+import SettingsScreen from '../SettingsScreen';
 
-import { Entypo, Feather } from '@expo/vector-icons';
-
+import { Feather } from '@expo/vector-icons';
 
 export default function WorkList() {
   const Tab = createMaterialBottomTabNavigator();
@@ -28,7 +27,6 @@ export default function WorkList() {
               tabBarIcon: ({ color }) => (
                 <Feather name="lock" size={24} color={color} />
               ),
-
             }}
           />
           <Tab.Screen
@@ -53,11 +51,11 @@ export default function WorkList() {
           />
           <Tab.Screen
             name="Profile"
-            component={ProfileScreen}
+            component={SettingsScreen}
             options={{
-              tabBarLabel: 'Profile',
+              tabBarLabel: 'Settings',
               tabBarIcon: ( {color} ) => (
-                <Feather name="user" size={24} color={color} />
+                <Feather name="settings" size={24} color={color} />
               )
             }}
           />

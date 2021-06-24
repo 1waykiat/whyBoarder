@@ -5,7 +5,8 @@ import { View, StyleSheet, Image, Pressable, Alert } from 'react-native'
 import colors from '../presentational/colors';
 
 import { useDispatch } from 'react-redux';
-import { downloadTodo } from "../slice/todoListSlice"
+import { downloadTodo } from "../slice/todoListSlice";
+import { downloadSettings } from "../slice/settingsSlice";
 
 import Authentication from '../api/Authentication';
 import Database from '../api/Database';
@@ -24,7 +25,7 @@ export default function signIn( { navigation } ) {
     Authentication( {action: "checkVerified", event: {
       pass: () => {
         navigation.navigate("WorkList");
-        Database( {action: "download", event: () => (data) => {
+        Database( {action: "download", slice: "todoList", event: () => (data) => {
           const item = data.val();
           const formattedItem = {
             fixList: Array.from(item.fixList),
@@ -36,6 +37,11 @@ export default function signIn( { navigation } ) {
             ...item
           }
           dispatch(downloadTodo(formattedItem));
+        }} );
+
+        Database( {action: "download", slice: "settings", event: () => (data) => {
+          const item = data.val();
+          dispatch(downloadSettings(item));
         }} );
       },
       fail: () => Authentication( {
