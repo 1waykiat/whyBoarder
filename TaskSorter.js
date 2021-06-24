@@ -1,20 +1,30 @@
 import React from 'react'
-import { TouchableOpacity, Text, View, Alert } from 'react-native';
+import { TouchableOpacity, Text, Alert } from 'react-native';
 import { useDispatch, useSelector } from "react-redux";
 import { addAgendaItem, selectTodoList } from "./slice/todoListSlice";
 
-// compare two task by time
+/*
+  Time format:
+    Number: 0930
+    String: "09:30"
+  
+    Duration given below will be in term of minutes 
+*/
+
+
+// take time in number format and return in number format e.g (0930) not ("09:30")
 const stringToNumberTime = (timeString) => {
   return parseInt(timeString.substring(0, 2) + timeString.substring(3, 5));
   };
 
+// reverse of the above
 const numberToStringTime = (timeNumber) => {
   const temp = timeNumber.toString().padStart(4,"0");
   return temp.substring(0, 2) + ":" + temp.substring(2, 4);
 }
 
 
-// take time in number format and return in number format e.g (0930) not ("09:30")
+// take a time in number format and a duration in minutes to return the new time
 const addTime = (time, duration) => {
   const mins = (duration % 60 + time % 100) % 60;
   const hours = Math.floor(duration / 60) + Math.floor((duration % 60 + time % 100) / 60)
@@ -26,6 +36,13 @@ const addDate = (dateString, numberOfDays) => {
   let nextDate = new Date(dateString)
   nextDate.setDate(nextDate.getDate() + numberOfDays);
   return nextDate.toISOString().split('T')[0];
+}
+
+// take an agenda object with startTime and endTime to calculate the duration in minutes
+const agendaDuaration = (task) => {
+  const startTime = stringToNumberTime(task.startTime);
+  const endTime = stringToNumberTime(task.endTime);
+  return (Math.floor(endTime / 100) - Math.floor(startTime / 100)) * 60 + endTime % 100 - startTime % 100;
 }
 
 
@@ -77,38 +94,39 @@ const checkAdded = (flexList, agenda) => {
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 export default function TaskSorter() {
   // current date
-  const today = (new Date(Date.now())).toISOString().split("T")[0];
+  const temp = (new Date(Date.now())).toLocaleDateString().split('/');
+  const today = (new Date(Date.now())).toLocaleString().split(" ")[4]+"-"+temp[0].padStart(2, "0")+"-"+temp[1].padStart(2, "0");
   const dispatch = useDispatch();
   const state = useSelector(selectTodoList);
   let agenda = {...(state.agenda)};
   let toUpdate =[];
+  const start  = "08:00";
+  const end = "23:59";
+  const limit = 480;
 
   function sort( { item, date, offset = 0 } ) {
-    console.log(offset);
     const agendaDate = [...(agenda[date] == undefined ? [] : agenda[date])];
-    let startTime = stringToNumberTime("08:00");
+    const totalTime = agendaDate.reduce((sum, curr) => sum + agendaDuaration(curr), 0);
+    if (totalTime > limit) return undefined;
+    let startTime = stringToNumberTime(start);
     let endTime = addTime(startTime, item.duration);
 
     // for loop to iterate through agenda of the day
     for (let i = 0; i < agendaDate.length; i++) {
-      console.log(i+ ": "+ startTime+ " " + endTime);
       const taskStartTime = stringToNumberTime(agendaDate[i].startTime);
       const taskEndTime = stringToNumberTime(agendaDate[i].endTime);
 
-      if (endTime + offset <= taskStartTime) {
+      if (addTime(taskEndTime, offset) <= taskStartTime) {
         break;
       } else {
-        startTime = taskEndTime + offset;
+        startTime = addTime(taskEndTime, offset); 
         endTime = addTime(startTime, item.duration);
       }
     }
 
-    endTime = endTime > 2359 ? 2359 : endTime;
-
     let newAgendaItem = undefined;
-
     
-    if (startTime != endTime) {
+    if (endTime <= stringToNumberTime(end)) {
       newAgendaItem = {
         name: item.name,
         key: item.key,
@@ -135,7 +153,7 @@ export default function TaskSorter() {
       let result = undefined;
       
       while (true) {
-        result = sort( { item: flexList[i], date: date } );
+        result = sort( { item: flexList[i], date: date, offset: 30 } );
         if (result != undefined) break; 
         date = addDate(date, 1);
       }
@@ -152,7 +170,7 @@ export default function TaskSorter() {
         onPress={() => {
           sortAll();
         }}
-        >
+      >
         <Text>Sort</Text>
       </TouchableOpacity>
   );

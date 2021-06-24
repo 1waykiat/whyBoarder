@@ -2,9 +2,8 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, Pressable} from 'react-native';
 import { Appbar, Button, Divider, Portal, Modal, RadioButton, TextInput } from 'react-native-paper'
 
-import { useSelector, useDispatch } from 'react-redux';
-import { selectSettings } from '../slice/settingsSlice';
-import { editSettings } from '../slice/settingsSlice';
+import { useDispatch, useSelector } from 'react-redux';
+import { selectSettings, editSettings } from '../slice/settingsSlice';
 
 import RNDateTimePicker from '@react-native-community/datetimepicker';
 
@@ -242,7 +241,7 @@ export default function SettingsScreen( { navigation } ) {
                 setLimitMins(limitMinsShown)
                 dispatch(editSettings({type: 'limit', newValue: parseInt(limitHrs) * 60 + parseInt(limitMins)}))
                 hideTimeModal()
-              } 
+              }
             }}
             style={{paddingTop: 10,}}
           >

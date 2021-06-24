@@ -2,14 +2,14 @@ import { createSlice } from '@reduxjs/toolkit';
 import Database from '../api/Database';
 
 export const slice = createSlice({
-  name: 'taskSorterSettings',
+  name: 'settings',
   initialState: {
     startTime: "09:00",
     cutoffTime: "23:59",
     cutoffDay: "Same Day",
     // in mins
     offset: 30,
-    limit: 8 * 60,
+    limit:  8 * 60,
   },
   reducers: {
     editSettings: (state, action) => {
@@ -18,13 +18,22 @@ export const slice = createSlice({
         ...state,
         [input.type]: input.newValue
       }
-      return newState
+      console.log(newState);
+      Database( {action: "upload", slice: "settings", data: newState} )
+      return newState;
     },
-  }
+    downloadSettings: (state, action) => {
+      const input = action.payload
+      const newState = {
+        ...input
+      }
+      return newState;
+    },
+  },
 })
 
-export const { editSettings } = slice.actions
+export const { editSettings, downloadSettings } = slice.actions;
 
-export const selectSettings = state => state.settings
+export const selectSettings = state => state.settings;
 
 export default slice.reducer;

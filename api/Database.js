@@ -3,16 +3,15 @@ import firebase from "./Firebase";
 
 const database = firebase.database();
 
-export default function Database( {action, data, event} ) {
+export default function Database( {action, slice, data, event = () => {}} ) {
   const uid = firebase.auth().currentUser.uid;
-
-  event = event == undefined ? () => {} : event
+  const route = uid +"/" + slice;
 
   const upload = () => {
-    database.ref(uid)
+    database.ref(route)
     .set(data)
     .then(() => {
-      event == undefined ? () => {} : event
+      event()
     })
     .catch((error) =>{
       console.log(error);
@@ -21,7 +20,7 @@ export default function Database( {action, data, event} ) {
   }
 
   const download = () => {
-    database.ref().child(uid)
+    database.ref().child(route)
     .get()
     .then((item) => {
       if (item.exists()) {

@@ -18,7 +18,8 @@ const timeToHourMin = (time) => {
 
 const AgendaScreen = () => {
   const items = useSelector(selectTodoList).agenda;
-  const today = (new Date(Date.now())).toISOString().split("T")[0];
+  const temp = (new Date(Date.now())).toLocaleDateString().split('/');
+  const today = (new Date(Date.now())).toLocaleString().split(" ")[4]+"-"+temp[0].padStart(2, "0")+"-"+temp[1].padStart(2, "0");
 
   const [date, setDate] = useState(new Date(1598051730000));
   const [mode, setMode] = useState('date');
