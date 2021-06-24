@@ -18,7 +18,7 @@ export default function FixListScreen( { navigation } ) {
 
   return (
     <View style={styles.container}>
-      <Appbar.Header style={{backgroundColor: '#fad8bf',}}>
+      <Appbar.Header style={{backgroundColor: '#30292f',}}>
         <Appbar.BackAction onPress={() => navigation.goBack()} />
         <Appbar.Content title="FixList" />
         <Appbar.Action icon="dots-vertical" onPress={() => console.log('More options')}  />
@@ -26,7 +26,7 @@ export default function FixListScreen( { navigation } ) {
       <View style={{alignItems:'center',}}>
         <TodoList type={"fixList"} navigation={navigation}/>
       </View>
-      <StatusBar style="dark" />
+      <StatusBar style="light" />
 
 
 
@@ -74,7 +74,7 @@ const styles = StyleSheet.create({
       flex:1,
       flexDirection: 'column',
       alignItems: 'stretch',
-      backgroundColor: '#fad8bf',
+      backgroundColor: '#30292f',
     },
     title: {
       alignContent: 'flex-start',

@@ -40,7 +40,7 @@ export default function todoList( { type, navigation} ) {
           ({item}) => (
             <View style={{flexDirection: 'row',}}>
               <Card 
-                style={{width: 375, maxHeight: 120, marginTop: 5, }}
+                style={{width: 375, maxHeight: 120, marginTop: 5, backgroundColor: '#f94144' }}
                 onPress={() => navigation.navigate("Edit", {type: type, item: item} )}
                 mode='elevated'
               >
@@ -49,7 +49,7 @@ export default function todoList( { type, navigation} ) {
                     style={styles.paragraph}
                   >{item.name}</Paragraph>
                   {type == "fixList"
-                    ? <Caption>
+                    ? <Caption style={styles.caption}>
                       {timeToSimpleHumanDate(dateTimeMerge(item.startDate, item.startTime))} · {timeToHourMin(dateTimeMerge(item.startDate, item.startTime))} - { } 
                       {timeToHourMin(dateTimeMerge(item.endDate, item.endTime))}
                     </Caption>
@@ -75,10 +75,11 @@ const styles = StyleSheet.create({
   },
   paragraph : {
     fontSize: 17,
-    
+    color: '#feecec'
   },
   caption: {
-    fontSize: 14,
+    fontSize: 12,
+    color: '#802123'
   },
   colorcode: {
     backgroundColor: 'gray',
