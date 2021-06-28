@@ -1,9 +1,11 @@
 import firebase from "firebase/app";
 import "firebase/auth"
 import "firebase/database"
+import  { GOOGLE_API_KEY } from '@env';
+
 
 const firebaseConfig = {
-  apiKey: "AIzaSyBARWPzgfHwYBvP7ZbMxiHdxOhTM0j4Ba8",
+  apiKey: GOOGLE_API_KEY,
   authDomain: "whyboarder-fc081.firebaseapp.com",
   databaseURL: "https://whyboarder-fc081-default-rtdb.asia-southeast1.firebasedatabase.app",
   projectId: "whyboarder-fc081",

@@ -110,7 +110,12 @@ export default function TaskSorter() {
   const end = settings.cutoffTime;
   const limit = settings.limit;
   const offset = settings.offset;
-
+  
+  const [alertType, setAlertType] = useState('success')
+  const [visible, setVisible] = React.useState(false);
+  const showModal = () => setVisible(true);
+  const hideModal = () => setVisible(false);
+  
   function sort( { item, date, offset = 0 } ) {
     const agendaDate = [...(agenda[date] == undefined ? [] : agenda[date])];
     const totalTime = agendaDate.reduce((sum, curr) => sum + agendaDuaration(curr), 0);
@@ -175,12 +180,6 @@ export default function TaskSorter() {
     setAlertType('success')
     showModal()
   }
-
-  const [alertType, setAlertType] = useState('success')
-  const [visible, setVisible] = React.useState(false);
-  const showModal = () => setVisible(true);
-  const hideModal = () => setVisible(false);
-
 
   return (
     <View>
