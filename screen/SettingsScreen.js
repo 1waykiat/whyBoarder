@@ -43,7 +43,7 @@ export default function SettingsScreen( { navigation } ) {
   const showTimeModal = () => setTimeVisible(true)
   const hideTimeModal = () => setTimeVisible(false)
 
-  /* offset states */
+  /* Offset states */
   const [hours, setHours] = useState( (Math.floor(settings.offset / 60)).toString() )
   const [minutes, setMinutes] = useState( (settings.offset % 60).toString() )
 
