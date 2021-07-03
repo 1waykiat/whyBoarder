@@ -3,7 +3,7 @@ import "firebase/auth"
 import "firebase/database"
 
 const firebaseConfig = {
-  apiKey: "AIzaSyBARWPzgfHwYBvP7ZbMxiHdxOhTM0j4Ba8",
+  apiKey: "AIzaSyCbQLI5GiOkhG0v17EFofYxvw6y7G89Zjo",
   authDomain: "whyboarder-fc081.firebaseapp.com",
   databaseURL: "https://whyboarder-fc081-default-rtdb.asia-southeast1.firebasedatabase.app",
   projectId: "whyboarder-fc081",

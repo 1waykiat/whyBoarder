@@ -12,7 +12,6 @@ import { Button, Portal, Modal } from 'react-native-paper';
     Duration given below will be in term of minutes 
 */
 
-
 // take time in number format and return in number format e.g (0930) not ("09:30")
 const stringToNumberTime = (timeString) => {
   return parseInt(timeString.substring(0, 2) + timeString.substring(3, 5));
