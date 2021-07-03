@@ -344,6 +344,8 @@ export default function EditScreen( { navigation, route } ) {
         </View>
       )}
 
+      <Divider />
+
       {show && (
         <RNDateTimePicker
           testID="dateTimePicker"
@@ -354,6 +356,17 @@ export default function EditScreen( { navigation, route } ) {
           onChange={onChange}
         />
       )}
+
+      {/* Time Preference */}
+      <Pressable
+        onPress ={() => console.log('todo')}
+        android_ripple={{color: '#bababa'}}
+        style={styles.press}>
+        <View style={{flexDirection:'row', justifyContent:'space-between'}}>
+          <Text style={styles.title}>Time Preference</Text>
+          <Text style={styles.subtitle}>Time period to insert task </Text>
+        </View>
+      </Pressable>
 
       <Snackbar
         visible={snackVisible}
@@ -429,5 +442,9 @@ const styles = StyleSheet.create({
     position: 'absolute',
     left: 0,
     right: 0,
+  },
+  press: {
+    paddingHorizontal: 30,
+    paddingVertical: 16,
   },
 })
