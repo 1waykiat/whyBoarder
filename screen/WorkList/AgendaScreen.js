@@ -1,46 +1,14 @@
-import React, { useState } from 'react'
+import React from 'react'
 import { Agenda } from 'react-native-calendars'
-import { View, Text, TouchableOpacity, StyleSheet, Button, Platform } from 'react-native'
+import { View, Text, StyleSheet, Platform } from 'react-native'
 import { Card, Appbar } from 'react-native-paper'
 
 import { useSelector } from 'react-redux';
 import { selectTodoList } from '../../slice/todoListSlice';
+import { today } from '../../api/Time';
 
-const timeToDate = (time) => {
-  const temp = new Date(time);
-  return temp.toISOString().split('T')[0];
-}
-
-const timeToHourMin = (time) => {
-  const temp = new Date(time).getTimezoneOffset().toISOString().split('T')[1].split(':')
-  return temp[0] + ':' + temp[1];
-}
-
-const AgendaScreen = () => {
+export default function AgendaScreen( {  navigation } )  {
   const items = useSelector(selectTodoList).agenda;
-  const temp = (new Date(Date.now())).toLocaleDateString().split('/');
-  const today = (new Date(Date.now())).toLocaleString().split(" ")[4]+"-"+temp[0].padStart(2, "0")+"-"+temp[1].padStart(2, "0");
-
-  const [date, setDate] = useState(new Date(1598051730000));
-  const [mode, setMode] = useState('date');
-  const [show, setShow] = useState(false);
-
-  const [visible, setVisible] = React.useState(false);
-
-  const showModal = () => setVisible(true);
-  const hideModal = () => setVisible(false);
-
-
-  const onChange = (event, selectedDate) => {
-    const currentDate = selectedDate || date;
-    setShow(Platform.OS === 'ios');
-    setDate(currentDate);
-  };
-
-  const showMode = (currentMode) => {
-    setShow(true);
-    setMode(currentMode);
-  };
 
   const renderThing = (item) => {
     return(
@@ -54,7 +22,7 @@ const AgendaScreen = () => {
         </Card.Content>
       </Card>
     )
-  }
+  };
 
 
   return(
@@ -66,8 +34,7 @@ const AgendaScreen = () => {
       </Appbar.Header>
       <Agenda
         items={items}
-        // loadItemsForMonth={loadItems}
-        selected={today}
+        selected={today()}
         renderItem={renderThing}
       />
     </View>
@@ -107,5 +74,3 @@ const styles = StyleSheet.create({
     bottom: 0,
   },
 });
-
-export default AgendaScreen

@@ -1,14 +1,14 @@
 import { StatusBar } from 'expo-status-bar';
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet} from 'react-native';
-import { FAB, Appbar, Portal } from 'react-native-paper'
-import { useSelector } from 'react-redux';
+import { View, StyleSheet} from 'react-native';
+import { FAB, Appbar } from 'react-native-paper'
+import { useDispatch } from 'react-redux';
 
 import TodoList from '../../component/todoList';
-import { selectTodoList } from '../../slice/todoListSlice';
+import { clearTodo } from '../../slice/todoListSlice';
 
 export default function FixListScreen( { navigation } ) {
-  const todoList = useSelector(selectTodoList);
+  const dispatch = useDispatch();
 
   const [state, setState] = React.useState({ open: false });
 
@@ -38,7 +38,10 @@ export default function FixListScreen( { navigation } ) {
         actions={[
           { icon: 'delete',
             label: 'Clear',
-            onPress: () => console.log('Pressed Clear all') },
+            onPress: () => {
+              console.log('Pressed Clear all')
+              dispatch(clearTodo({type: "fixList"}))
+            } },
           {
             icon: 'calendar',
             label: 'Add task',

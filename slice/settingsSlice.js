@@ -18,7 +18,6 @@ export const slice = createSlice({
         ...state,
         [input.type]: input.newValue
       }
-      console.log(newState);
       Database( {action: "upload", slice: "settings", data: newState} )
       return newState;
     },

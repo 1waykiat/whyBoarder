@@ -33,7 +33,8 @@ const timeToHourMin = (time) => {
 // Converts to UTC YYYY-MM-DD 
 const dateExtract = (time) => {
   const temp = time.toLocaleDateString().split('/');
-  const result = time.toLocaleString().split(" ")[4]+"-"+temp[0].padStart(2, "0")+"-"+temp[1].padStart(2, "0");
+  const temp1 = time.toLocaleString().split(" ")
+  const result = temp1[temp1.length - 1]+"-"+temp[0].padStart(2, "0")+"-"+temp[1].padStart(2, "0");
   return result;
 } 
 
@@ -57,8 +58,6 @@ const timeOverlap = (task1, task2) => {
   const prelim = task1.startTime == task2.endTime || task1.endTime == task2.startTime
    const test1 = task1.endTime <= task2.startTime
    const test2 = task2.endTime <= task1.startTime
-  // console.log("Task1 startTime: " + task1.startTime , "Task2.startTime: " + task2.startTime)
-  // console.log("Task1 endTime: " + task1.endTime , "Task2.endTime: " + task2.endTime)
   return prelim ? false : !(test1 || test2)
 }
 
@@ -68,9 +67,6 @@ const dateOverlap = (task1, task2) => {
 }
 
 const validDuration = (task) => {
-  console.log(task.startTime)
-  console.log(task.endTime)
-  console.log(task.startTime == task.endTime)
   return task.startTime <= task.endTime && task.startTime != task.endTime
 }
 
@@ -123,12 +119,10 @@ export default function EditScreen( { navigation, route } ) {
     const currentDate = selectedDate || (begin === true ? startDisplay : endDisplay)
     setShow(false);
     if (begin === true) {
-      setStartDisplay(currentDate)
+      setStartDisplay(currentDate);
     } else {
       setEndDisplay(currentDate)
     }
-    console.log('startDisplay: ' + startDisplay + ' --> ' + testConvert(startDisplay))
-    console.log('endDisplay: ' + endDisplay + ' --> ' + testConvert(endDisplay))
   };
 
 
