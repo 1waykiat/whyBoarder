@@ -1,16 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit';
 import Database from '../api/Database';
+import { addDate, timeComparator, dateComparator, dateDifference, today } from '../api/Time';
 
-// compare two task by time
-const timeComparator = (x, y) => {
-  return parseInt(x.startTime.substring(0, 2) + x.startTime.substring(3, 5)) -
-    parseInt(y.startTime.substring(0, 2) + y.startTime.substring(3, 5));
-};
-
-// compare two task by date
-const dateComparator = (x, y) => {
-  return new Date(x.startDate) - new Date(y.startDate);
-};
 
 // fixList sorter by date then time
 const fixListSorter = (arr) => {
@@ -47,43 +38,66 @@ const newAgendaAdder = ({ agenda, type, date, newAgendaTask }) => type == "fixLi
     }
   : {...agenda};
 
+// agenda adder which take into account multiple days and recurrence
 const multiDayAdder = ({ agenda, type, startDate, endDate, newAgendaTask }) => {
   if (type != "fixList") return {...agenda}
   let tempAgenda = agenda;
   let currentDate = startDate;
-
-  const addDate = (dateString, numberOfDays) => {
-    let nextDate = new Date(dateString)
-    nextDate.setDate(nextDate.getDate() + numberOfDays);
-    return nextDate.toISOString().split('T')[0];
+  let recurrence;
+  let interval;
+  switch (newAgendaTask.recurring) {
+    case "Does not repeat": 
+      recurrence = 1;
+      interval = 0;
+      break;
+    case "Daily": 
+      recurrence = 14;
+      interval = 1;
+      break;
+    case "Weekly":
+      recurrence = 8;
+      interval = 7;
+      break;
   }
+
+  for (let i = 0; i < recurrence; i++) {
+    while (true) {
+      tempAgenda = newAgendaAdder({
+        agenda: tempAgenda,
+        type: type,
+        date: currentDate,
+        newAgendaTask: {
+          ...newAgendaTask,
+          startTime: currentDate == startDate ? newAgendaTask.startTime : "00:00",
+          endTime: currentDate == endDate ? newAgendaTask.endTime : "23:59",
+        }
+      })
   
-  while (true) {
-    tempAgenda = newAgendaAdder({
-      agenda: tempAgenda,
-      type: type,
-      date: currentDate,
-      newAgendaTask: {
-        ...newAgendaTask,
-        startTime: currentDate == startDate ? newAgendaTask.startTime : "00:00",
-        endTime: currentDate == endDate ? newAgendaTask.endTime : "23:59",
-      }
-    })
-
-    if (currentDate == endDate) break;
-    currentDate = addDate(currentDate, 1);
+      if (currentDate == endDate) break;
+      currentDate = addDate(currentDate, 1);
+    }
+    startDate = addDate(startDate, interval);
+    endDate = addDate(endDate, interval);
+    currentDate = startDate;
   }
+
   return tempAgenda;
 }
 
+// to cleanup agenda as a final step to ensure all arrays are not converted to array-like object
 const cleanupAgenda = (agenda) => Object.fromEntries(
-  Object.entries(agendaSorter(agenda))
+  Object.entries(agendaSorter({...agenda}))
   .filter((date) => date[1].length != 0)
   .map((date) => {
     date[1] = [...date[1]];
     return date;
   })
 );
+
+const removeAgenda = ({agenda, key}) => Object.fromEntries(Object.entries({...agenda}).map((date) => {
+  date[1] = date[1].filter((item) => item.key != key);
+  return date;
+}));
 
 const upload = (data) => Database( {action: "upload", slice: "todoList", data: data} );
 
@@ -122,13 +136,14 @@ export const slice = createSlice({
       // complete new task object with key
       const newItem = {...(input.newItem), key: state.count};
       // extract new Agenda Object to be added to new Agenda
-      const {startDate, endDate, recurring, ...newAgendaTask} = newItem;
+      const {startDate, endDate, ...newAgendaTask} = newItem;
 
       // add in new task if Fix List to Agenda without cleanup
 
       const newAgenda = multiDayAdder({
         agenda: state.agenda,
         type: input.type,
+        recurring: input.newItem.recurring,
         startDate: input.newItem.startDate,
         endDate: input.newItem.endDate, 
         newAgendaTask: newAgendaTask
@@ -152,10 +167,7 @@ export const slice = createSlice({
         ...state,
         fixList: fixListSorter(state.fixList.filter((item) => item.key != input.key)),
         flexList: flexListSorter(state.flexList.filter((item) => item.key != input.key)),
-        agenda: Object.fromEntries(Object.entries(state.agenda).map((date) => {
-          date[1] = date[1].filter((item) => item.key != input.key);
-          return date;
-        })),
+        agenda: removeAgenda({agenda: state.agenda, key: input.key}),
       };
       upload(newState);
       return newState;
@@ -164,18 +176,16 @@ export const slice = createSlice({
     // input is object with key, type and new item including key
     editTodo: (state, action) => {
       const input = action.payload;
-      const {startDate, endDate, recurring, ...newAgendaTask} = {...(input.newItem)};
+      const {startDate, endDate, ...newAgendaTask} = {...(input.newItem)};
       
       // remove task first
-      let newAgenda = Object.fromEntries(Object.entries(state.agenda).map((date) => {
-        date[1] = date[1].filter((item) => item.key != input.key);
-        return date;
-      }));
+      let newAgenda = removeAgenda({agenda: state.agenda, key: input.key});
 
       // add back the edited task
       newAgenda = multiDayAdder({
         agenda: newAgenda,
         type: input.type,
+        recurring: input.newItem.recurring,
         startDate: input.newItem.startDate,
         endDate: input.newItem.endDate, 
         newAgendaTask: newAgendaTask
@@ -246,10 +256,58 @@ export const slice = createSlice({
       upload(newState);
       return newState;
     },
+    updateRecurring: (state, action) => {
+      const updateDate = action.payload;
+      const tdy = today();
+      // already up to date, no need for any check
+      if (updateDate == tdy) return {...state};
+      const recurringFixList = {...state.fixList}.filter((item) => item.recurring != "Does not repeat");
+      let newAgenda = {...state.agenda}
+      for (let i = 0; i < recurringFixList.length; i++) {
+        const curr = recurringFixList[i];
+        let startDate;
+        const numberOfDays = dateDifference(curr);
+        const {newAgendaTask} = {...curr};
+      
+        // loop through agenda object
+        for (const date in newAgenda) {
+          if (dateComparator(date, tdy) > 0) break;
+          if (dateComparator(updateDate, date) >= 0) continue;
+          
+          for (const task of newAgenda[date]) {
+            if (task.key == curr.key) {
+              startDate = task.startDate;
+              break;
+            }
+          }
+          // if earliest matching agenda is already found then exit loop
+          if (startDate != undefined) break;
+        }
+
+        // if not found, then there is no need to update this recurring task
+        if (startDate == undefined) continue;
+
+        newAgenda = removeAgenda({agenda: newAgenda, key: curr.key});
+        newAgenda = multiDayAdder({
+          agenda: newAgenda,
+          type: "fixList",
+          startDate: addDate(startDate, curr.recurring == "Daily" ? 1 : 7),
+          endDate: addDate(startDate, numberOfDays),
+          newAgendaTask: newAgendaTask,
+        });
+      }
+
+      const newState = {
+        ...state,
+        agenda: cleanupAgenda(newAgenda),
+      };
+      upload(newState);
+      return newState;
+    },
   }	
 });
 
-export const { addTodo, removeTodo, editTodo, downloadTodo, addAgendaItem, clearTodo } = slice.actions;
+export const { addTodo, removeTodo, editTodo, downloadTodo, addAgendaItem, clearTodo, updateRecurring } = slice.actions;
 
 export const selectTodoList = state => state.todoList;
 

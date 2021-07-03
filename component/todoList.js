@@ -1,23 +1,20 @@
-import React, {useState} from 'react';
-import { FlatList, View, StyleSheet, TouchableOpacity, Text} from 'react-native';
+import React from 'react';
+import { FlatList, View, StyleSheet} from 'react-native';
 import { useSelector } from 'react-redux';
 import { selectTodoList } from '../slice/todoListSlice';
-import { Card, Paragraph, Caption, Title } from 'react-native-paper'
+import { Card, Paragraph, Caption } from 'react-native-paper'
 
 
 export default function todoList( { type, navigation} ) {
   const todoList = type == "fixList" ? useSelector(selectTodoList).fixList : useSelector(selectTodoList).flexList;
-  const [visible, setVisible] = useState(false)
-  const toggleModal = () => setVisible(!visible)
 
   const dateTimeMerge = (date, time) => {
-  if (date != undefined) {
+    if (date != undefined) {
       const dateArray = date.split("-");
       return new Date(new Date(dateArray[1] + "/" + dateArray[2] + "/" + dateArray[0] + " " + time + ":00").toUTCString());
     }
     return new Date();
   }
-
 
   const timeToSimpleHumanDate = (time) => {
     const temp = new Date(time).toDateString().split(' ')
