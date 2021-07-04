@@ -24,7 +24,9 @@ export default function Database( {action, slice, data, event = () => {}} ) {
     .get()
     .then((item) => {
       if (item.exists()) {
-        event()(item);
+        (event.pass)()(item);
+      } else {
+        (event.fail)()(item);
       }
     })
     .catch((error) => {
