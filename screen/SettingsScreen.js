@@ -192,9 +192,8 @@ export default function SettingsScreen( { navigation } ) {
       <Divider />
 
       <Portal>
-        <Modal visible={timeVisible} onDismiss={hideTimeModal} contentContainerStyle={styles.modal}>
-          <Text style={{fontSize: 20, marginBottom: 20, fontWeight: 'bold'}}> {timeType === 'offset' ? 'Offset Duration' : 'Max Duration limit'} </Text>
-          <View style={{flexDirection: 'row'}}>
+        <Modal visible={timeVisible} onDismiss={hideTimeModal} contentContainerStyle={styles.modal} dismissable={false}>
+          <View style={{flexDirection: 'row', alignSelf: 'center'}}>
             <TextInput 
               mode='flat'
               style={styles.time}
@@ -220,6 +219,20 @@ export default function SettingsScreen( { navigation } ) {
             />
             <Text style={styles.time}>mins</Text>
           </View>
+
+          <Text style={{alignSelf: 'center', color: 'red'}}>
+            { (hours === "" || minutes === "") || ( limitHrs === "" || limitMins === "")
+              ? "Please input in duration"
+              : (hours < 0 || minutes < 0 || (hours === '0' && minutes === '0')) || (limitHrs < 0 || limitMins < 0 || (limitHrs === '0' && limitMins === '0')) 
+              ? "Invalid duration set. You know why." 
+              : minutes > 59 || limitMins > 59
+              ? "Mins should be less than 60"
+              : (limitHrs * 60 + parseInt(limitMins)) > (24 * 60) 
+              ? "There are only 24 hrs in a day"
+              : ""
+            }
+          </Text>
+
           <Button
             mode="text"
             onPress={() => {
@@ -232,6 +245,9 @@ export default function SettingsScreen( { navigation } ) {
               }
             }}
             style={{paddingTop: 10,}}
+            disabled={(hours === "" || minutes === "") || ( limitHrs === "" || limitMins === "")
+            || (hours < 0 || minutes < 0 || (hours === '0' && minutes === '0')) || (limitHrs < 0 || limitMins < 0 || (limitHrs === '0' && limitMins === '0'))
+            || (minutes > 59 || limitMins > 59)}
           >
             Save
           </Button>
@@ -266,7 +282,7 @@ const styles = StyleSheet.create({
     },
     subtitle: {
       fontSize: 12,
-      color: 'gray'
+      color: '#bababa',
     },
     value: {
       fontSize: 16,
