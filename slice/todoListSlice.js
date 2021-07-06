@@ -13,7 +13,7 @@ const fixListSorter = (arr) => {
 };
 
 // agenda sorter by time
-const agendaSorter = (obj) => {
+export const agendaSorter = (obj) => {
   const arr = Object.entries(obj);
   const sorted = arr.map((date) => {
     date[1] = date[1].sort((x, y) => timeComparator(x, y));
@@ -210,9 +210,7 @@ export const slice = createSlice({
     // input is updated state object
     downloadTodo: (state, action) => {
       const input = action.payload;
-      return {
-        ...input
-      };
+      return {...input};
     },
 
     // give date and agenda item to be added
@@ -260,12 +258,14 @@ export const slice = createSlice({
     updateRecurring: (state, action) => {
       const updateDate = action.payload;
       const tdy = today();
-      console.log(tdy + " " + updateDate);
+
       // already up to date, no need for any check
       if (updateDate == tdy) return {...state};
+
       const recurringFixList = [...state.fixList].filter((item) => item.recurring != "Does not repeat");
       let newAgenda = {...state.agenda}
 
+      // loop through each recurring task
       for (let i = 0; i < recurringFixList.length; i++) {
         const curr = recurringFixList[i];
         let sDate;
@@ -302,7 +302,7 @@ export const slice = createSlice({
           endDate: newEndDate,
           newAgendaTask: newAgendaTask,
         });
-      }
+      };
 
       const newState = {
         ...state,
