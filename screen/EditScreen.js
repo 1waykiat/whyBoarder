@@ -1,8 +1,9 @@
 import React, {useState} from 'react'
-import { Text, Button, TextInput, Divider, Appbar, Menu, Snackbar } from 'react-native-paper'
-import { View, StyleSheet, Pressable, } from 'react-native'
+import { Button, TextInput, Divider, Appbar, Menu, Snackbar, Portal, Modal, Switch, RadioButton } from 'react-native-paper'
+import { Text, View, StyleSheet, Pressable, } from 'react-native'
 
 import Icon from 'react-native-vector-icons/FontAwesome5'
+import { Feather } from '@expo/vector-icons';
 
 import { useDispatch, useSelector } from 'react-redux';
 import { addTodo, editTodo, removeTodo, selectTodoList } from '../slice/todoListSlice';
@@ -73,14 +74,22 @@ const validDuration = (task) => {
 export default function EditScreen( { navigation, route } ) {
   const input = route.params;
   const item = input.item;
-
   const todoList = input.type == "fixList" ? useSelector(selectTodoList).fixList : useSelector(selectTodoList).flexList
+  
+  const dispatch = useDispatch();
 
   const [name, setName] = useState(item == undefined ? "" : item.name);
-  const [hours, setHours] = useState(item == undefined ? "" : Math.floor(item.duration / 60).toString());
-  const [minutes, setMinutes] = useState(item == undefined ? "" : (item.duration % 60).toString());
+
   const [recurring, setRecurring] = useState(item == undefined ? "Does not repeat" : item.recurring);
-  const dispatch = useDispatch();
+  const [recurVisible, setRecurVisible] = useState(false)
+  const showRecurModal = () => setRecurVisible(true)
+  const hideRecurModal = () => setRecurVisible(false)
+
+  const [hours, setHours] = useState(item == undefined ? "1" : Math.floor(item.duration / 60).toString());
+  const [minutes, setMinutes] = useState(item == undefined ? "0" : (item.duration % 60).toString());
+  const [durVisible, setDurVisible] = useState(false)
+  const showDurModal = () => setDurVisible(true)
+  const hideDurModal = () => setDurVisible(false)
 
   const [startDisplay, setStartDisplay] = useState(item == undefined  ? new Date() : dateTimeMerge(item.startDate, item.startTime) )
   const [endDisplay, setEndDisplay] = useState(item == undefined  ? new Date() : dateTimeMerge(item.endDate, item.endTime) )
@@ -89,9 +98,19 @@ export default function EditScreen( { navigation, route } ) {
   const [show, setShow] = useState(false);
   const [begin, setBegin] = useState(true)
 
-  const openMenu = () => setMenuVisible(true)
-  const closeMenu = () => setMenuVisible(false)
-  const [menuVisible, setMenuVisible] = useState(false)
+  const [prefVisible, setPrefVisible] = useState(false)
+  const showPrefModal = () => setPrefVisible(true)
+  const hidePrefModal = () => setPrefVisible(false)
+  
+  const [pm, setPm] = useState(true)
+  const onTogglePm = () => setPm(!pm)
+  const [morn, setMorn] = useState(true)
+  const onToggleMorn = () => setMorn(!morn)
+  const [noon, setNoon] = useState(true)
+  const onToggleNoon = () => setNoon(!noon)
+  const [eve, setEve] = useState(true)
+  const onToggleEve = () => setEve(!eve)
+  const timePreference = [pm, morn, noon, eve]
 
   const [snackVisible, setSnackVisible] = useState(false)
   const toggleSnack = () => setSnackVisible(!snackVisible)
@@ -197,7 +216,7 @@ export default function EditScreen( { navigation, route } ) {
     <View style={styles.container}>
       <Appbar.Header style={{backgroundColor: 'white'}}>
         <Appbar.BackAction onPress={() => navigation.goBack()} />
-        <Appbar.Content title="Add Task" />
+        <Appbar.Content title='Task' />
         <Appbar.Action icon="delete" onPress={() => {
           dispatch(removeTodo({key: item.key}));
           navigation.goBack();
@@ -207,7 +226,7 @@ export default function EditScreen( { navigation, route } ) {
       {/* Title Input */}
       <TextInput
         mode='flat'
-        style={styles.title}
+        style={styles.taskName}
         placeholder='Add Title'
         dense={true}
         multiline={true}
@@ -216,53 +235,50 @@ export default function EditScreen( { navigation, route } ) {
         autoCapitalize="none"
         returnKeychild="done"
         blurOnSubmit={false}
+        underlineColor='transparent'
       />
-      <Divider style={styles.divider}></Divider>
+      <Divider />
 
-      {/* Repeat Input */}
-      <View style={styles.repeat}>
-        <Icon style={{marginTop: 5, marginRight: 10, color:'#8c8c8c',}} name="redo" size={17} />
-        <Menu
-          visible={menuVisible}
-          onDismiss={closeMenu}
-          anchor={
-            <Pressable
-                onPress={openMenu}
-                style={
-                  styles.wrapperCustom
-                }
-                android_ripple={{color: 'gray', borderless: false, borderRadius: 20}}
-                >
-                  <View style={{ flexDirection: 'row', borderRadius: 20}}>
-                    <Text style={styles.subheading}>
-                      {recurring}
-                    </Text>
-                  </View>
-            </Pressable>
-          }
-        >
-          <Menu.Item onPress={() => {
-              setRecurring('Does not repeat')
-              closeMenu.apply()
-            }} title="Does not repeat" />
-            <Menu.Item onPress={() => {
-              setRecurring('Daily')
-              closeMenu.apply()
-            }} title="Daily" />
-            <Menu.Item onPress={() => {
-              setRecurring('Weekly')
-              closeMenu.apply()
-            }} title="Weekly" />
-        </Menu>
-      </View>
-      <Divider style={styles.divider} />
+      {/* Recurring */}
+      <Pressable
+        onPress ={showRecurModal}
+        android_ripple={{color: '#bababa'}}
+        style={styles.pressIcon}>
+        <View style={{flexDirection:'row', justifyContent:'space-between'}}>
+          <View style={{flexDirection:'row'}}>
+            <Icon style={{marginTop: 4, marginRight: 10, color:'#8c8c8c',}} name="redo" size={17} />
+            <Text style={styles.title}>Recurrence</Text>
+          </View>
+          <Text style={styles.title}>{recurring}</Text>
+        </View>
+      </Pressable>
+      <Divider />
+
+      <Portal>
+        <Modal visible={recurVisible} onDismiss={hideRecurModal} contentContainerStyle={styles.modal} >
+          <RadioButton.Group onValueChange={recur => setRecurring(recur)} value={recurring}>
+            <View style={{flexDirection:'row', justifyContent:'space-between', padding: 4}}>
+              <Text style={{marginTop: 5, fontSize: 16}}>Does not repeat</Text>
+              <RadioButton value="Does not repeat" />
+            </View>
+            <View style={{flexDirection:'row', justifyContent:'space-between', padding: 4}}>
+              <Text style={{marginTop: 5, fontSize: 16}}>Daily</Text>
+              <RadioButton value="Daily" />
+            </View>
+            <View style={{flexDirection:'row', justifyContent:'space-between', padding: 4}}>
+              <Text style={{marginTop: 5, fontSize: 16}}>Weekly</Text>
+              <RadioButton value="Weekly" />
+            </View>
+          </RadioButton.Group>
+        </Modal>
+      </Portal>
 
       {/* Start Time and End Time */}
       {input.type === 'fixList' && (
-        <View style={{flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 18, paddingVertical: 15}}>
+        <View style={{flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 20, paddingVertical: 18}}>
           <Pressable onPress={() => showDatepicker(true)}>
             <View style={{flexDirection:'row'}}>
-              <Icon style={{marginTop: 2, marginRight: 8, color:'#8c8c8c'}} name="calendar" size={20} />
+              <Icon style={{marginTop: 2, marginRight: 10, color:'#8c8c8c'}} name="calendar" size={20} />
               <Text style={styles.subheading}>{timeToHumanDate(startDisplay)}</Text>
             </View>
           </Pressable>
@@ -274,10 +290,10 @@ export default function EditScreen( { navigation, route } ) {
       )}
 
       {input.type === 'fixList' && (
-        <View style={{flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 18, paddingVertical: 15}}>
-          <Pressable onPress={() => showDatepicker(false)}>
+        <View style={{flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 20, paddingVertical: 18}}>
+          <Pressable onPress={() => showDatepicker(false)} >
             <View style={{flexDirection:'row'}}>
-              <Icon style={{marginTop: 2,marginRight: 8, color:'#8c8c8c'}} name="calendar-alt" size={20} />
+              <Icon style={{marginTop: 2,marginRight: 10, color:'#8c8c8c'}} name="calendar-alt" size={20} />
               <Text style={styles.subheading}>{timeToHumanDate(endDisplay)}</Text>
             </View>
           </Pressable>
@@ -290,55 +306,75 @@ export default function EditScreen( { navigation, route } ) {
 
 
       {/* Duration */}
-      {input.type === 'flexList' && (
-        <View style={{flexDirection: 'row', paddingHorizontal: 15, justifyContent:'space-between'}}>
-        <View style={{flexDirection:'row', }}>
-          <Icon style={{marginTop: 8, marginRight: 4, color:'#8c8c8c'}} name="clock" size={21} />
-          <Text style={{paddingVertical: 6, paddingHorizontal: 5, fontSize: 16,}}>Duration</Text>  
-        </View>
-        <View style={{flexDirection:'row'}}>
-          <TextInput
-            mode='flat'
-            style={styles.time}
-            underlineColorAndroid='gray'
-            placeholder='2'
-            keyboardType='numeric'
-            value={hours}
-            onChangeText={(number) => setHours(number)}
-            autoCapitalize="none"
-            blurOnSubmit={false}
-          />
-          <Text
-            style={{
-              fontSize: 18,
-              marginRight: 5,
-            }}
-          >
-            :
-          </Text>
-          <TextInput
-            mode='flat'
-            style={styles.time}
-            underlineColorAndroid='gray'
-            placeholder='30'
-            keyboardchild='numeric'
-            value={minutes}
-            onChangeText={(number) => setMinutes(number)}
-            autoCapitalize="none"
-            blurOnSubmit={false}
-          />
-        </View>
-      </View>
+      { input.type === 'flexList' && (
+        <Pressable
+          onPress ={showDurModal}
+          android_ripple={{color: '#bababa'}}
+          style={styles.pressIcon}>
+          <View style={{flexDirection:'row', justifyContent:'space-between'}}>
+            <View style={{flexDirection:'row'}}>
+              <Icon style={{marginTop: 3, marginRight: 8, color:'#8c8c8c'}} name="clock" size={20} />
+              <Text style={styles.title}>Duration</Text>
+            </View>
+            <Text style={styles.title}>{hours + ' hr ' + minutes + ' min'}</Text>
+          </View>
+        </Pressable>
       )}
-
-      {input.type === 'flexList' && (
-        <View style={{flexDirection: 'row', justifyContent:'flex-end', paddingRight: 30,}}>
-          <Text style={{color: '#8c8c8c'}}>hour</Text>
-          <Text style={{color: '#8c8c8c'}}>       min</Text>
-        </View>
-      )}
-
       <Divider />
+
+      <Portal>
+        <Modal visible={durVisible} onDismiss={hideDurModal} contentContainerStyle={styles.modal} dismissable={false}>
+          <View style={{flexDirection: 'row', justifyContent:'center'}}>
+            <TextInput 
+              mode='flat'
+              style={styles.time}
+              underlineColorAndroid='gray'
+              placeholder='1'
+              keyboardType='numeric'
+              value={hours}
+              onChangeText={(number) => setHours(number) }
+              autoCapitalize="none"
+              blurOnSubmit={false}
+            />
+            <Text style={styles.time}>hrs</Text>
+            <TextInput
+              mode='flat'
+              style={styles.time}
+              underlineColorAndroid='gray'
+              placeholder='30'
+              keyboardType='numeric'
+              value={minutes}
+              onChangeText={(number) => setMinutes(number)}
+              autoCapitalize="none"
+              blurOnSubmit={false}
+            />
+            <Text style={styles.time}>mins</Text>
+          </View>
+
+          <Text style={{alignSelf: 'center', color: 'red'}}>
+            { (hours === "" || minutes === "")
+              ? "Please input in duration"
+              : (hours < 0 || minutes < 0 || (hours === '0' && minutes === '0')) 
+              ? "Invalid duration set. You know why." 
+              : minutes > 59
+              ? "Mins should be less than 60"
+              : ""
+            }
+          </Text>
+        
+          <Button
+            mode="text"
+            onPress={hideDurModal}
+            style={{paddingTop: 10,}}
+            disabled={((hours === "" || minutes === "") 
+            || hours < 0 || minutes < 0 || (hours === '0' && minutes === '0') 
+            || minutes > 59)}
+          >
+            Save
+          </Button>
+        </Modal>
+      </Portal>
+
 
       {show && (
         <RNDateTimePicker
@@ -352,16 +388,83 @@ export default function EditScreen( { navigation, route } ) {
       )}
 
       {/* Time Preference */}
-      <Pressable
-        onPress ={() => console.log('todo')}
-        android_ripple={{color: '#bababa'}}
-        style={styles.press}>
-        <View style={{flexDirection:'row', justifyContent:'space-between'}}>
-          <Text style={styles.title}>Time Preference</Text>
-          <Text style={styles.subtitle}>Time period to insert task </Text>
-        </View>
-      </Pressable>
+      {input.type === 'flexList' && (
+        <Pressable
+          onPress ={showPrefModal}
+          android_ripple={{color: '#bababa'}}
+          style={styles.press}>
+          <View style={{flexDirection: 'row', justifyContent:'space-between'}}>
+            <View style={{flexDirection: 'row'}}>
+              <View>
+                <Text style={styles.title}>Time Preference</Text>
+                <Text style={styles.subtitle}>Time period to insert task</Text>
+              </View>
+            </View>
+            <View style={{flexDirection: 'row', marginVertical: 8}}>
+              {pm && (
+                <Feather name="moon" size={20} color="black" />
+              )}
+              {morn && (
+                <Feather name="sunrise" size={20} color="black" />
+              )}
+              {noon && (
+                <Feather name="sun" size={20} color="black" />
+              )}
+              {eve && (
+                <Feather name="sunset" size={20} color="black" />
+              )}
+            </View>
+          </View>
+        </Pressable>
+      )}
 
+      {/* Time preference Modal selection */}
+      <Portal>
+        <Modal visible={prefVisible} onDismiss={hidePrefModal} contentContainerStyle={styles.modal} dismissable={false}>
+          <View style={{flexDirection:'row', justifyContent: 'space-between', paddingVertical: 10,}}>
+            <View style={{flexDirection:'row'}}>
+              <Feather name="moon" size={20} color="black" style={{marginRight: 6, marginVertical: 1,}} />
+              <Text>Night</Text>
+            </View>
+            <Switch value={pm} onValueChange={onTogglePm} />
+          </View>
+          <View style={{flexDirection:'row', justifyContent: 'space-between', paddingVertical: 10,}}>
+            <View style={{flexDirection:'row'}}>
+              <Feather name="sunrise" size={20} color="black" style={{marginRight: 6, marginVertical: 1,}} />
+              <Text>Morning</Text>
+            </View>
+            <Switch value={morn} onValueChange={onToggleMorn} />
+          </View>
+          <View style={{flexDirection:'row', justifyContent: 'space-between', paddingVertical: 10,}}>
+            <View style={{flexDirection:'row'}}>
+              <Feather name="sun" size={20} color="black" style={{marginRight: 6, marginVertical: 1,}} />
+              <Text>Afternoon</Text>
+            </View>
+            <Switch value={noon} onValueChange={onToggleNoon} />
+          </View>
+          <View style={{flexDirection:'row', justifyContent: 'space-between', paddingVertical: 10,}}>
+            <View style={{flexDirection:'row'}}>
+              <Feather name="sunset" size={20} color="black" style={{marginRight: 6, marginVertical: 1,}} />
+              <Text>Evening</Text>
+            </View>
+            <Switch value={eve} onValueChange={onToggleEve} />
+          </View>
+
+          <Text style={{alignSelf: 'center', color: 'red'}}>
+            {!(pm || morn || noon || eve) ? "No time period chosen!" : ""}
+          </Text>
+
+          <Button mode='text' onPress={hidePrefModal}
+            style={{marginHorizontal: 10, marginVertical: 5, }}
+            disabled={!(pm || morn || noon || eve)}
+            >
+            Save
+          </Button>
+        </Modal>
+      </Portal>
+      
+
+      {/* Error notification */}
       <Snackbar
         visible={snackVisible}
         onDismiss={dismissSnack}
@@ -395,7 +498,7 @@ const styles = StyleSheet.create({
     alignItems: 'stretch',
     backgroundColor: 'white',
   },
-  title: {
+  taskName: {
     width: 375,
     maxHeight: 120,
     fontSize: 26,
@@ -423,12 +526,15 @@ const styles = StyleSheet.create({
   },
   subheading: {
     fontSize: 16,
+    color: 'black',
+    marginRight: 6,
   },
   time: {
     width: 44,
     height: 30,
     fontSize: 16,
     marginRight: 5,
+    marginVertical: 10,
     backgroundColor: 'white',
     fontFamily: 'sans-serif',
   },
@@ -437,8 +543,28 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
   },
+  title: {
+    fontSize: 16,
+    fontWeight:'900',
+  },
+  subtitle: {
+    fontSize: 12,
+    color: '#bababa'
+  },
   press: {
-    paddingHorizontal: 30,
+    paddingLeft: 47,
+    paddingRight: 28,
     paddingVertical: 16,
+  },
+  pressIcon: {
+    paddingLeft: 20,
+    paddingRight: 28,
+    paddingVertical: 22,
+  },
+  modal: {
+    backgroundColor: 'white',
+    padding: 20,
+    margin: 60,
+    borderRadius: 10,
   },
 })
