@@ -5,7 +5,7 @@ import { View, StyleSheet, Image, Pressable, Alert } from 'react-native'
 import colors from '../presentational/colors';
 
 import { useDispatch } from 'react-redux';
-import { downloadTodo, updateRecurring } from "../slice/todoListSlice";
+import { cleanupAgenda, downloadTodo, updateRecurring } from "../slice/todoListSlice";
 import { downloadSettings } from "../slice/settingsSlice";
 
 import Authentication from '../api/Authentication';
@@ -24,31 +24,35 @@ export default function signIn( { navigation } ) {
 
   const signInPass = () => {
     // pull and update todoList slice from Firebase
-    Database( {action: "download", slice: "todoList", event: () => (data) => {
-      const item = data.val();
-      const formattedItem = {
-        ...item,
-        fixList: Array.from(item.fixList == undefined ? {} : item.fixList),
-        flexList: Array.from(item.flexList == undefined ? {} : item.flexList),
-        agenda: Object.fromEntries(Object.entries(item.agenda).map((date) => {
-          date[1] = [...date[1]];
-          return date;
-        })), 
-      }
-      dispatch(downloadTodo(formattedItem));
+    Database( { action: "download", slice: "todoList", event: {
+      pass: () => (data) => {
+        const item = data.val();
+        const formattedItem = {
+          ...item,
+          fixList: Array.from(item.fixList == undefined ? {} : item.fixList),
+          flexList: Array.from(item.flexList == undefined ? {} : item.flexList),
+          agenda: cleanupAgenda(item.agenda), 
+        }
+        dispatch(downloadTodo(formattedItem));
+      },
+      fail: () => {},
     }} );
     // pull and update settings slice from Firebase
-    Database( {action: "download", slice: "settings", event: () => (data) => {
-      const item = data.val();
-      dispatch(downloadSettings(item));
-    }} );
-
-    Database( {action: "download", slice: "updateDate", event: () => (data) => {
-      const item = data.val();
-      dispatch(updateRecurring(item));
+    Database( {action: "download", slice: "settings", event: {
+      pass: () => (data) => {
+        const item = data.val();
+        dispatch(downloadSettings(item));
+      },
+      fail: () => {},
     }} );
     
-    Database( {action: "upload", slice: "updateDate", data: today()} )
+    Database( {action: "download", slice: "updateDate", event: {
+      pass: () => (data) => {
+        const item = data.val();
+        dispatch(updateRecurring(item));
+      },
+      fail: () => Database( {action: "upload", slice: "updateDate", data: today(),} ),
+    }} );
 
     navigation.navigate("WorkList");
   }

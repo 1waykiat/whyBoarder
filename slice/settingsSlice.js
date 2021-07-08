@@ -18,7 +18,7 @@ export const slice = createSlice({
         ...state,
         [input.type]: input.newValue
       }
-      Database( {action: "upload", slice: "settings", data: newState} )
+      Database( {action: "upload", slice: "settings", data: newState, event: () => {}} )
       return newState;
     },
     downloadSettings: (state, action) => {

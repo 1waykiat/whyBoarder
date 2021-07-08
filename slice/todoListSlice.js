@@ -5,7 +5,7 @@ import { addDate, timeComparator, dateComparator, dateDifference, today } from '
 
 // fixList sorter by date then time
 const fixListSorter = (arr) => {
-  const sorted = arr.sort((x, y) => {
+  const sorted = [...arr].sort((x, y) => {
     const dc = dateComparator(x, y)
     return dc != 0 ? dc : timeComparator(x, y);
   })
@@ -13,10 +13,10 @@ const fixListSorter = (arr) => {
 };
 
 // agenda sorter by time
-const agendaSorter = (obj) => {
-  const arr = Object.entries(obj);
+export const agendaSorter = (obj) => {
+  const arr = Object.entries({...obj});
   const sorted = arr.map((date) => {
-    date[1] = date[1].sort((x, y) => timeComparator(x, y));
+    date[1] = [...(date[1])].sort((x, y) => timeComparator(x, y));
     return date;
   });
   return Object.fromEntries(sorted);
@@ -24,9 +24,13 @@ const agendaSorter = (obj) => {
 
 // flexList sorter by duration descending order
 const flexListSorter = (arr) => {
-  const sorted = arr.sort((x, y) => {
+  const sorted = [...arr]
+  .sort((x, y) => {
     return y.duration - x. duration
   })
+  .map((item) => {
+    return { ...item, timePreference: [...(item.timePreference)] };
+  });
   return sorted;
 }
 
@@ -85,7 +89,7 @@ const multiDayAdder = ({ agenda, type, startDate, endDate, newAgendaTask }) => {
 }
 
 // to cleanup agenda as a final step to ensure all arrays are not converted to array-like object
-const cleanupAgenda = (agenda) => Object.fromEntries(
+export const cleanupAgenda = (agenda) => Object.fromEntries(
   Object.entries(agendaSorter({...agenda}))
   .filter((date) => date[1].length != 0)
   .map((date) => {
@@ -99,7 +103,7 @@ const removeAgenda = ({agenda, key}) => Object.fromEntries(Object.entries({...ag
   return date;
 }));
 
-const upload = (data) => Database( {action: "upload", slice: "todoList", data: data} );
+const upload = (data) => Database( {action: "upload", slice: "todoList", data: data, event: () => {}} );
 
 export const slice = createSlice({
   name: 'todoList',
@@ -119,6 +123,7 @@ export const slice = createSlice({
       duration: 240,
       recurring: "Does not repeat",
       key: 1,
+      timePreference: [true, false, false, false]
     }, ],
     agenda: {
       "2021-06-06": [{
@@ -210,9 +215,7 @@ export const slice = createSlice({
     // input is updated state object
     downloadTodo: (state, action) => {
       const input = action.payload;
-      return {
-        ...input
-      };
+      return {...input};
     },
 
     // give date and agenda item to be added
@@ -256,18 +259,23 @@ export const slice = createSlice({
       upload(newState);
       return newState;
     },
+    // provide current date
     updateRecurring: (state, action) => {
       const updateDate = action.payload;
       const tdy = today();
+
       // already up to date, no need for any check
       if (updateDate == tdy) return {...state};
-      const recurringFixList = {...state.fixList}.filter((item) => item.recurring != "Does not repeat");
+
+      const recurringFixList = [...state.fixList].filter((item) => item.recurring != "Does not repeat");
       let newAgenda = {...state.agenda}
+
+      // loop through each recurring task
       for (let i = 0; i < recurringFixList.length; i++) {
         const curr = recurringFixList[i];
-        let startDate;
+        let sDate;
         const numberOfDays = dateDifference(curr);
-        const {newAgendaTask} = {...curr};
+        const {startDate, endDate, ...newAgendaTask} = {...curr};
       
         // loop through agenda object
         for (const date in newAgenda) {
@@ -276,32 +284,37 @@ export const slice = createSlice({
           
           for (const task of newAgenda[date]) {
             if (task.key == curr.key) {
-              startDate = task.startDate;
+              sDate = date;
               break;
             }
           }
           // if earliest matching agenda is already found then exit loop
-          if (startDate != undefined) break;
+          if (sDate != undefined) break;
         }
 
         // if not found, then there is no need to update this recurring task
-        if (startDate == undefined) continue;
+        if (sDate == undefined) continue;
 
+        const newStartDate = addDate(sDate, curr.recurring == "Daily" ? 1 : 7);
+        const newEndDate = addDate(newStartDate, numberOfDays);
+
+        // remove the task first, then add back the task with new Start Date
         newAgenda = removeAgenda({agenda: newAgenda, key: curr.key});
         newAgenda = multiDayAdder({
           agenda: newAgenda,
           type: "fixList",
-          startDate: addDate(startDate, curr.recurring == "Daily" ? 1 : 7),
-          endDate: addDate(startDate, numberOfDays),
+          startDate: newStartDate,
+          endDate: newEndDate,
           newAgendaTask: newAgendaTask,
         });
-      }
+      };
 
       const newState = {
         ...state,
         agenda: cleanupAgenda(newAgenda),
       };
       upload(newState);
+      Database( {action: "upload", slice: "updateDate", data: today(), event: () => {}} )
       return newState;
     },
   }	
