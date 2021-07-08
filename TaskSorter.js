@@ -85,12 +85,10 @@ export default function TaskSorter() {
           if (checkPreference({startTime: preferenceStartTime, endTime: preferenceEndTime, preference: preference})) return true;
           j++;
         }
-        console.log("4")
         return false;
       };
 
       if (duration > startToEnd || duration > limit || !preferenceLimit()) {
-        console.log(item.name)
         failSort.push(item);
         return false;
       }
@@ -182,7 +180,6 @@ export default function TaskSorter() {
   
   function sortAll() {
     const flexList = checkLimit(checkAdded([...(state.flexList == undefined ? [] : state.flexList)], agenda));
-    console.log(flexList);  
     if (flexList.length == 0 && failSort.length == 0) {
       sorterMessage({ alertType: 'alreadySorted' })
       showModal()

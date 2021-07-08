@@ -28,10 +28,14 @@ const flexListSorter = (arr) => {
   .sort((x, y) => {
     return y.duration - x. duration
   })
-  .map((item) => {
-    return { ...item, timePreference: [...(item.timePreference)] };
-  });
   return sorted;
+}
+
+const cleanupFlexList = (arr) => {
+  return flexListSorter([...arr])
+    .map((item) => {
+      return { ...item, timePreference: [...(item.timePreference)] };
+    });
 }
 
 const newAgendaAdder = ({ agenda, type, date, newAgendaTask }) => type == "fixList"
@@ -156,7 +160,7 @@ export const slice = createSlice({
 
       const newState =  {
         fixList: fixListSorter(input.type == "fixList" ? [...(state.fixList), newItem] : [...state.fixList]),
-        flexList: flexListSorter(input.type == "flexList" ? [...(state.flexList), newItem] : [...state.flexList]),
+        flexList: cleanupFlexList(input.type == "flexList" ? [...(state.flexList), newItem] : [...state.flexList]),
         count: state.count + 1,
         // take new Agenda Object and remove dates which have no task and to ensure no Array-like Object instead of Array
         agenda: cleanupAgenda(newAgenda),
@@ -171,7 +175,7 @@ export const slice = createSlice({
       const newState =  {
         ...state,
         fixList: fixListSorter(state.fixList.filter((item) => item.key != input.key)),
-        flexList: flexListSorter(state.flexList.filter((item) => item.key != input.key)),
+        flexList: cleanupFlexList(state.flexList.filter((item) => item.key != input.key)),
         agenda: removeAgenda({agenda: state.agenda, key: input.key}),
       };
       upload(newState);
@@ -202,7 +206,7 @@ export const slice = createSlice({
           ? state.fixList.map((item) =>
             item.key == input.key ? input.newItem : item)
           : [...state.fixList]),
-        flexList: flexListSorter(input.type == "flexList"
+        flexList: cleanupFlexList(input.type == "flexList"
           ? state.flexList.map((item) =>
             item.key == input.key ? input.newItem : item)
           : [...state.flexList]),
@@ -232,7 +236,7 @@ export const slice = createSlice({
       const newState = {
         ...state,
         fixList: [...state.fixList],
-        flexList: [...state.flexList],
+        flexList: cleanupFlexList([...state.flexList]),
         agenda: cleanupAgenda(newAgenda),
       }
       upload(newState);
@@ -255,6 +259,7 @@ export const slice = createSlice({
         ...state,
         agenda: cleanupAgenda(newAgenda),
         [input.type]: [],
+        [input.type == "fixList" ? "flexList" : "fixList"]: input.type == "fixList" ? cleanupFlexList(state.flexList) : state.fixList,
       };
       upload(newState);
       return newState;
@@ -311,6 +316,7 @@ export const slice = createSlice({
 
       const newState = {
         ...state,
+        flexList: cleanupFlexList(state.flexList),
         agenda: cleanupAgenda(newAgenda),
       };
       upload(newState);
