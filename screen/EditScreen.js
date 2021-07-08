@@ -71,6 +71,10 @@ const validDuration = (task) => {
   return task.startTime <= task.endTime && task.startTime != task.endTime
 }
 
+function isNumeric(value) {
+  return /^\d+$/.test(value);
+}
+
 export default function EditScreen( { navigation, route } ) {
   const input = route.params;
   const item = input.item;
@@ -214,275 +218,313 @@ export default function EditScreen( { navigation, route } ) {
 
   return(
     <View style={styles.container}>
-      <Appbar.Header style={{backgroundColor: 'white'}}>
-        <Appbar.BackAction onPress={() => navigation.goBack()} />
-        <Appbar.Content title='Task' />
-        <Appbar.Action icon="delete" onPress={() => {
-          dispatch(removeTodo({key: item.key}));
-          navigation.goBack();
-        }} />
-      </Appbar.Header>
+      <View>
+        <Appbar.Header style={{backgroundColor: 'white'}}>
+          <Appbar.BackAction onPress={() => navigation.goBack()} />
+          <Appbar.Content title='Task' />
+          <Appbar.Action icon="delete" onPress={() => {
+            dispatch(removeTodo({key: item.key}));
+            navigation.goBack();
+          }} />
+        </Appbar.Header>
 
-      {/* Title Input */}
-      <TextInput
-        mode='flat'
-        style={styles.taskName}
-        placeholder='Add Title'
-        dense={true}
-        multiline={true}
-        value={name}
-        onChangeText={(text) => setName(text)}
-        autoCapitalize="none"
-        returnKeychild="done"
-        blurOnSubmit={false}
-        underlineColor='transparent'
-      />
-      <Divider />
+        {/* Title Input */}
+        <TextInput
+          mode='flat'
+          style={styles.taskName}
+          placeholder='Add Title'
+          dense={true}
+          multiline={true}
+          value={name}
+          onChangeText={(text) => setName(text)}
+          autoCapitalize="none"
+          returnKeychild="done"
+          blurOnSubmit={false}
+          underlineColor='transparent'
+        />
+        <Divider />
 
-      {/* Recurring */}
-      <Pressable
-        onPress ={showRecurModal}
-        android_ripple={{color: '#bababa'}}
-        style={styles.pressIcon}>
-        <View style={{flexDirection:'row', justifyContent:'space-between'}}>
-          <View style={{flexDirection:'row'}}>
-            <Icon style={{marginTop: 4, marginRight: 10, color:'#8c8c8c',}} name="redo" size={17} />
-            <Text style={styles.title}>Recurrence</Text>
-          </View>
-          <Text style={styles.title}>{recurring}</Text>
-        </View>
-      </Pressable>
-      <Divider />
-
-      <Portal>
-        <Modal visible={recurVisible} onDismiss={hideRecurModal} contentContainerStyle={styles.modal} >
-          <RadioButton.Group onValueChange={recur => setRecurring(recur)} value={recurring}>
-            <View style={{flexDirection:'row', justifyContent:'space-between', padding: 4}}>
-              <Text style={{marginTop: 5, fontSize: 16}}>Does not repeat</Text>
-              <RadioButton value="Does not repeat" />
-            </View>
-            <View style={{flexDirection:'row', justifyContent:'space-between', padding: 4}}>
-              <Text style={{marginTop: 5, fontSize: 16}}>Daily</Text>
-              <RadioButton value="Daily" />
-            </View>
-            <View style={{flexDirection:'row', justifyContent:'space-between', padding: 4}}>
-              <Text style={{marginTop: 5, fontSize: 16}}>Weekly</Text>
-              <RadioButton value="Weekly" />
-            </View>
-          </RadioButton.Group>
-        </Modal>
-      </Portal>
-
-      {/* Start Time and End Time */}
-      {input.type === 'fixList' && (
-        <View style={{flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 20, paddingVertical: 18}}>
-          <Pressable onPress={() => showDatepicker(true)}>
-            <View style={{flexDirection:'row'}}>
-              <Icon style={{marginTop: 2, marginRight: 10, color:'#8c8c8c'}} name="calendar" size={20} />
-              <Text style={styles.subheading}>{timeToHumanDate(startDisplay)}</Text>
-            </View>
-          </Pressable>
-
-          <Pressable onPress={() => showTimepicker(true)}>
-            <Text style={styles.subheading}>{timeToHourMin(startDisplay)}</Text>
-          </Pressable>
-        </View>
-      )}
-
-      {input.type === 'fixList' && (
-        <View style={{flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 20, paddingVertical: 18}}>
-          <Pressable onPress={() => showDatepicker(false)} >
-            <View style={{flexDirection:'row'}}>
-              <Icon style={{marginTop: 2,marginRight: 10, color:'#8c8c8c'}} name="calendar-alt" size={20} />
-              <Text style={styles.subheading}>{timeToHumanDate(endDisplay)}</Text>
-            </View>
-          </Pressable>
-
-          <Pressable onPress={() => showTimepicker(false)}>
-            <Text style={styles.subheading}>{timeToHourMin(endDisplay)}</Text>
-          </Pressable>
-        </View>
-      )}
-
-
-      {/* Duration */}
-      { input.type === 'flexList' && (
+        {/* Recurring */}
         <Pressable
-          onPress ={showDurModal}
+          onPress ={showRecurModal}
           android_ripple={{color: '#bababa'}}
           style={styles.pressIcon}>
           <View style={{flexDirection:'row', justifyContent:'space-between'}}>
             <View style={{flexDirection:'row'}}>
-              <Icon style={{marginTop: 3, marginRight: 8, color:'#8c8c8c'}} name="clock" size={20} />
-              <Text style={styles.title}>Duration</Text>
+              <Icon style={{marginTop: 4, marginRight: 10, color:'#8c8c8c',}} name="redo" size={17} />
+              <Text style={styles.title}>Recurrence</Text>
             </View>
-            <Text style={styles.title}>{hours + ' hr ' + minutes + ' min'}</Text>
+            <Text style={styles.title}>{recurring}</Text>
           </View>
         </Pressable>
-      )}
-      <Divider />
+        <Divider />
 
-      <Portal>
-        <Modal visible={durVisible} onDismiss={hideDurModal} contentContainerStyle={styles.modal} dismissable={false}>
-          <View style={{flexDirection: 'row', justifyContent:'center'}}>
-            <TextInput 
-              mode='flat'
-              style={styles.time}
-              underlineColorAndroid='gray'
-              placeholder='1'
-              keyboardType='numeric'
-              value={hours}
-              onChangeText={(number) => setHours(number) }
-              autoCapitalize="none"
-              blurOnSubmit={false}
-            />
-            <Text style={styles.time}>hrs</Text>
-            <TextInput
-              mode='flat'
-              style={styles.time}
-              underlineColorAndroid='gray'
-              placeholder='30'
-              keyboardType='numeric'
-              value={minutes}
-              onChangeText={(number) => setMinutes(number)}
-              autoCapitalize="none"
-              blurOnSubmit={false}
-            />
-            <Text style={styles.time}>mins</Text>
+        <Portal>
+          <Modal visible={recurVisible} onDismiss={hideRecurModal} contentContainerStyle={styles.modal} >
+            <RadioButton.Group onValueChange={recur => setRecurring(recur)} value={recurring}>
+              <View style={{flexDirection:'row', justifyContent:'space-between', padding: 4}}>
+                <Text style={{marginTop: 5, fontSize: 16}}>Does not repeat</Text>
+                <RadioButton value="Does not repeat" />
+              </View>
+              <View style={{flexDirection:'row', justifyContent:'space-between', padding: 4}}>
+                <Text style={{marginTop: 5, fontSize: 16}}>Daily</Text>
+                <RadioButton value="Daily" />
+              </View>
+              <View style={{flexDirection:'row', justifyContent:'space-between', padding: 4}}>
+                <Text style={{marginTop: 5, fontSize: 16}}>Weekly</Text>
+                <RadioButton value="Weekly" />
+              </View>
+            </RadioButton.Group>
+          </Modal>
+        </Portal>
+
+        {/* Start Time and End Time */}
+        {input.type === 'fixList' && (
+          <View style={{flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 20, paddingVertical: 18}}>
+            <Pressable onPress={() => showDatepicker(true)}>
+              <View style={{flexDirection:'row'}}>
+                <Icon style={{marginTop: 2, marginRight: 10, color:'#8c8c8c'}} name="calendar" size={20} />
+                <Text style={ {fontSize: 16, color: endDisplay <= startDisplay ? 'red' : 'black', marginRight: 6,}}>
+                  {timeToHumanDate(startDisplay)}
+                </Text>
+              </View>
+            </Pressable>
+
+            <Pressable onPress={() => showTimepicker(true)}>
+            <Text style={ {fontSize: 16, color: endDisplay <= startDisplay ? 'red' : 'black', marginRight: 6,}}>
+                {timeToHourMin(startDisplay)}
+              </Text>
+            </Pressable>
           </View>
+        )}
 
-          <Text style={{alignSelf: 'center', color: 'red'}}>
-            { (hours === "" || minutes === "")
-              ? "Please input in duration"
-              : (hours < 0 || minutes < 0 || (hours === '0' && minutes === '0')) 
-              ? "Invalid duration set. You know why." 
-              : minutes > 59
-              ? "Mins should be less than 60"
-              : ""
-            }
-          </Text>
-        
-          <Button
-            mode="text"
-            onPress={hideDurModal}
-            style={{paddingTop: 10,}}
-            disabled={((hours === "" || minutes === "") 
-            || hours < 0 || minutes < 0 || (hours === '0' && minutes === '0') 
-            || minutes > 59)}
-          >
-            Save
-          </Button>
-        </Modal>
-      </Portal>
+        {input.type === 'fixList' && (
+          <View style={{flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 20, paddingVertical: 18}}>
+            <Pressable onPress={() => showDatepicker(false)} >
+              <View style={{flexDirection:'row'}}>
+                <Icon style={{marginTop: 2,marginRight: 10, color:'#8c8c8c'}} name="calendar-alt" size={20} />
+                <Text style={styles.subheading}>
+                  {timeToHumanDate(endDisplay)}
+                </Text>
+              </View>
+            </Pressable>
+
+            <Pressable onPress={() => showTimepicker(false)}>
+              <Text style={styles.subheading}>
+                {timeToHourMin(endDisplay)}
+              </Text>
+            </Pressable>
+          </View>
+        )}
 
 
-      {show && (
-        <RNDateTimePicker
-          testID="dateTimePicker"
-          value={ begin === true ? startDisplay : endDisplay }
-          mode={mode}
-          is24Hour={true}
-          display="default"
-          onChange={onChange}
-        />
-      )}
+        {/* Duration */}
+        { input.type === 'flexList' && (
+          <Pressable
+            onPress ={showDurModal}
+            android_ripple={{color: '#bababa'}}
+            style={styles.pressIcon}>
+            <View style={{flexDirection:'row', justifyContent:'space-between'}}>
+              <View style={{flexDirection:'row'}}>
+                <Icon style={{marginTop: 3, marginRight: 8, color:'#8c8c8c'}} name="clock" size={20} />
+                <Text style={styles.title}>Duration</Text>
+              </View>
+              <Text style={styles.title}>{hours + ' hr ' + minutes + ' min'}</Text>
+            </View>
+          </Pressable>
+        )}
+        <Divider />
 
-      {/* Time Preference */}
-      {input.type === 'flexList' && (
-        <Pressable
-          onPress ={showPrefModal}
-          android_ripple={{color: '#bababa'}}
-          style={styles.press}>
-          <View style={{flexDirection: 'row', justifyContent:'space-between'}}>
-            <View style={{flexDirection: 'row'}}>
-              <View>
-                <Text style={styles.title}>Time Preference</Text>
-                <Text style={styles.subtitle}>Time period to insert task</Text>
+        <Portal>
+          <Modal visible={durVisible} onDismiss={hideDurModal} contentContainerStyle={styles.modal} dismissable={false}>
+            <View style={{flexDirection: 'row', justifyContent:'center'}}>
+              <TextInput 
+                mode='flat'
+                style={styles.time}
+                underlineColorAndroid='gray'
+                placeholder='1'
+                keyboardType='numeric'
+                value={hours}
+                onChangeText={(number) => setHours(number) }
+                autoCapitalize="none"
+                blurOnSubmit={false}
+              />
+              <Text style={styles.time}>hrs</Text>
+              <TextInput
+                mode='flat'
+                style={styles.time}
+                underlineColorAndroid='gray'
+                placeholder='30'
+                keyboardType='numeric'
+                value={minutes}
+                onChangeText={(number) => setMinutes(number)}
+                autoCapitalize="none"
+                blurOnSubmit={false}
+              />
+              <Text style={styles.time}>mins</Text>
+            </View>
+
+            <View style={{flexDirection:'row', justifyContent: 'center'}} >
+              {((hours === "" || minutes === "") 
+                || hours < 0 || minutes < 0 || (hours === '0' && minutes === '0') 
+                || minutes > 59
+                || !(isNumeric(hours) && isNumeric(minutes))) && (
+                  <Feather name='alert-triangle' size={20} color="red" style={{paddingHorizontal: 6}} />
+                )}
+
+              <Text style={{alignSelf: 'center', color: 'red'}}>
+                { (hours === "" || minutes === "")
+                  ? "Please input in duration"
+                  : !(isNumeric(hours) && isNumeric(minutes))
+                  ? "Only positive numeric digits allowed"
+                  : (hours === '0' && minutes === '0') 
+                  ? "Duration should be above 0" 
+                  : minutes > 59
+                  ? "Mins should be less than 60!"
+                  : ""
+                }
+              </Text>
+            </View>
+          
+            <Button
+              mode="text"
+              onPress={hideDurModal}
+              style={{paddingTop: 10,}}
+              disabled={((hours === "" || minutes === "") 
+              || (hours === '0' && minutes === '0') 
+              || minutes > 59)}
+            >
+              Save
+            </Button>
+          </Modal>
+        </Portal>
+
+
+        {show && (
+          <RNDateTimePicker
+            testID="dateTimePicker"
+            value={ begin === true ? startDisplay : endDisplay }
+            mode={mode}
+            is24Hour={true}
+            display="default"
+            onChange={onChange}
+          />
+        )}
+
+        {/* Time Preference */}
+        {input.type === 'flexList' && (
+          <Pressable
+            onPress ={showPrefModal}
+            android_ripple={{color: '#bababa'}}
+            style={styles.press}>
+            <View style={{flexDirection: 'row', justifyContent:'space-between'}}>
+              <View style={{flexDirection: 'row'}}>
+                <View>
+                  <Text style={styles.title}>Time Preference</Text>
+                  <Text style={styles.subtitle}>Time period to insert task</Text>
+                </View>
+              </View>
+              <View style={{flexDirection: 'row', marginVertical: 8}}>
+                {pm && (
+                  <Feather name="moon" size={20} color="black" />
+                )}
+                {morn && (
+                  <Feather name="sunrise" size={20} color="black" />
+                )}
+                {noon && (
+                  <Feather name="sun" size={20} color="black" />
+                )}
+                {eve && (
+                  <Feather name="sunset" size={20} color="black" />
+                )}
               </View>
             </View>
-            <View style={{flexDirection: 'row', marginVertical: 8}}>
-              {pm && (
-                <Feather name="moon" size={20} color="black" />
-              )}
-              {morn && (
-                <Feather name="sunrise" size={20} color="black" />
-              )}
-              {noon && (
-                <Feather name="sun" size={20} color="black" />
-              )}
-              {eve && (
-                <Feather name="sunset" size={20} color="black" />
-              )}
-            </View>
-          </View>
-        </Pressable>
-      )}
+          </Pressable>
+        )}
 
-      {/* Time preference Modal selection */}
-      <Portal>
-        <Modal visible={prefVisible} onDismiss={hidePrefModal} contentContainerStyle={styles.modal} dismissable={false}>
-          <View style={{flexDirection:'row', justifyContent: 'space-between', paddingVertical: 10,}}>
-            <View style={{flexDirection:'row'}}>
-              <Feather name="moon" size={20} color="black" style={{marginRight: 6, marginVertical: 1,}} />
-              <Text>Night</Text>
+        {/* Time preference Modal selection */}
+        <Portal>
+          <Modal visible={prefVisible} onDismiss={hidePrefModal} contentContainerStyle={styles.modal} dismissable={false}>
+            <View style={{flexDirection:'row', justifyContent: 'space-between', paddingVertical: 10,}}>
+              <View style={{flexDirection:'row'}}>
+                <Feather name="moon" size={20} color="black" style={{marginRight: 6, marginVertical: 1,}} />
+                <Text>Night</Text>
+              </View>
+              <Switch value={pm} onValueChange={onTogglePm} />
             </View>
-            <Switch value={pm} onValueChange={onTogglePm} />
-          </View>
-          <View style={{flexDirection:'row', justifyContent: 'space-between', paddingVertical: 10,}}>
-            <View style={{flexDirection:'row'}}>
-              <Feather name="sunrise" size={20} color="black" style={{marginRight: 6, marginVertical: 1,}} />
-              <Text>Morning</Text>
+            <View style={{flexDirection:'row', justifyContent: 'space-between', paddingVertical: 10,}}>
+              <View style={{flexDirection:'row'}}>
+                <Feather name="sunrise" size={20} color="black" style={{marginRight: 6, marginVertical: 1,}} />
+                <Text>Morning</Text>
+              </View>
+              <Switch value={morn} onValueChange={onToggleMorn} />
             </View>
-            <Switch value={morn} onValueChange={onToggleMorn} />
-          </View>
-          <View style={{flexDirection:'row', justifyContent: 'space-between', paddingVertical: 10,}}>
-            <View style={{flexDirection:'row'}}>
-              <Feather name="sun" size={20} color="black" style={{marginRight: 6, marginVertical: 1,}} />
-              <Text>Afternoon</Text>
+            <View style={{flexDirection:'row', justifyContent: 'space-between', paddingVertical: 10,}}>
+              <View style={{flexDirection:'row'}}>
+                <Feather name="sun" size={20} color="black" style={{marginRight: 6, marginVertical: 1,}} />
+                <Text>Afternoon</Text>
+              </View>
+              <Switch value={noon} onValueChange={onToggleNoon} />
             </View>
-            <Switch value={noon} onValueChange={onToggleNoon} />
-          </View>
-          <View style={{flexDirection:'row', justifyContent: 'space-between', paddingVertical: 10,}}>
-            <View style={{flexDirection:'row'}}>
-              <Feather name="sunset" size={20} color="black" style={{marginRight: 6, marginVertical: 1,}} />
-              <Text>Evening</Text>
+            <View style={{flexDirection:'row', justifyContent: 'space-between', paddingVertical: 10,}}>
+              <View style={{flexDirection:'row'}}>
+                <Feather name="sunset" size={20} color="black" style={{marginRight: 6, marginVertical: 1,}} />
+                <Text>Evening</Text>
+              </View>
+              <Switch value={eve} onValueChange={onToggleEve} />
             </View>
-            <Switch value={eve} onValueChange={onToggleEve} />
-          </View>
 
-          <Text style={{alignSelf: 'center', color: 'red'}}>
-            {!(pm || morn || noon || eve) ? "No time period chosen!" : ""}
-          </Text>
 
-          <Button mode='text' onPress={hidePrefModal}
-            style={{marginHorizontal: 10, marginVertical: 5, }}
-            disabled={!(pm || morn || noon || eve)}
-            >
-            Save
-          </Button>
-        </Modal>
-      </Portal>
-      
+            <View style={{flexDirection: 'row', justifyContent:'center'}}>
+              {!(pm || morn || noon || eve) && (
+                <Feather name='alert-triangle' size={20} color="red" style={{paddingHorizontal: 6}} />
+              )}
+              <Text style={{alignSelf: 'center', color: 'red'}}>
+                {!(pm || morn || noon || eve) ? "No time period chosen!" : ""}
+              </Text>
+            </View>
 
-      {/* Error notification */}
-      <Snackbar
-        visible={snackVisible}
-        onDismiss={dismissSnack}
-        duration={5000}
-      >
-        {alertType == "overlap"
-          ? overlapAlert
-          : alertType == 'invalid'
-          ? earlyEndAlert
-          : 'smth is wrong'}
-      </Snackbar>
+            <Button mode='text' onPress={hidePrefModal}
+              style={{marginHorizontal: 10, marginVertical: 5, }}
+              disabled={!(pm || morn || noon || eve)}
+              >
+              Save
+            </Button>
+          </Modal>
+        </Portal>
+        
+
+        {/* Error notification */}
+        <Snackbar
+          visible={snackVisible}
+          onDismiss={dismissSnack}
+          duration={5000}
+        >
+          {alertType == "overlap"
+            ? overlapAlert
+            : alertType == 'invalid'
+            ? earlyEndAlert
+            : 'smth is wrong'}
+        </Snackbar>
+        
+        { (endDisplay <= startDisplay && input.type === 'fixList') && (
+          <View style={{flexDirection:'row', justifyContent: 'center', padding: 10}}>
+            <Feather name='alert-triangle' size={20} color="red" style={{paddingHorizontal: 6}} />
+            <Text style={{color: 'red'}}>
+              {endDisplay < startDisplay ? "Start time cannot be after the End Time."
+              : "Start time cannot be same as End Time."}
+            </Text>
+          </View>
+        )}
+      </View>
 
       <Button
         mode="contained"
         onPress={() => {
           reducer()
         }}
-        style={{margin: 10, backgroundColor: '#85BEF9'}}
+        style={{margin: 20, backgroundColor: '#85BEF9',}}
+        disabled={ input.type === 'fixList' && endDisplay <= startDisplay}
       >
         {item == undefined ? "Add" : "Edit"} 
       </Button>
@@ -497,6 +539,7 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     alignItems: 'stretch',
     backgroundColor: 'white',
+    justifyContent: 'space-between',
   },
   taskName: {
     width: 375,
