@@ -10,6 +10,7 @@ import { downloadSettings } from "../slice/settingsSlice";
 
 import Authentication from '../api/Authentication';
 import Database from '../api/Database';
+import { today } from '../api/Time';
 
 export default function signIn( { navigation } ) {
   const [email, setEmail] = useState('');
@@ -34,6 +35,7 @@ export default function signIn( { navigation } ) {
         }
         dispatch(downloadTodo(formattedItem));
       },
+      fail: () => {},
     }} );
     // pull and update settings slice from Firebase
     Database( {action: "download", slice: "settings", event: {
@@ -41,6 +43,7 @@ export default function signIn( { navigation } ) {
         const item = data.val();
         dispatch(downloadSettings(item));
       },
+      fail: () => {},
     }} );
     
     Database( {action: "download", slice: "updateDate", event: {
@@ -48,7 +51,7 @@ export default function signIn( { navigation } ) {
         const item = data.val();
         dispatch(updateRecurring(item));
       },
-      fail: () => Database( {action: "upload", slice: "updateDate", data: today()} )
+      fail: () => Database( {action: "upload", slice: "updateDate", data: today(),} ),
     }} );
 
     navigation.navigate("WorkList");

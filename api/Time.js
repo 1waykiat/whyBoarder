@@ -16,12 +16,12 @@ export  const numberToStringTime = (timeNumber) => {
   return temp.substring(0, 2) + ":" + temp.substring(2, 4);
 }
 
-
 // take a time in number format and a duration in minutes to return the new time
 export const addTime = (time, duration) => {
-  const mins = (duration % 60 + time % 100) % 60;
-  const hours = Math.floor(duration / 60) + Math.floor((duration % 60 + time % 100) / 60)
-  return (Math.floor(time / 100) + hours) * 100 + mins;
+  const cTime = typeof time == "string" ? stringToNumberTime(time) : time;
+  const mins = (duration % 60 + cTime % 100) % 60;
+  const hours = Math.floor(duration / 60) + Math.floor((duration % 60 + cTime % 100) / 60)
+  return (Math.floor(cTime / 100) + hours) * 100 + mins;
 };
 
 // take a date (e.g "2021-06-16") and an interger number of days to get the date after that number of days

@@ -102,15 +102,14 @@ export default function EditScreen( { navigation, route } ) {
   const showPrefModal = () => setPrefVisible(true)
   const hidePrefModal = () => setPrefVisible(false)
   
-  const [pm, setPm] = useState(true)
+  const [pm, setPm] = useState(item == undefined  || item.timePreference == undefined ? true : item.timePreference[0])
   const onTogglePm = () => setPm(!pm)
-  const [morn, setMorn] = useState(true)
+  const [morn, setMorn] = useState(item == undefined  || item.timePreference == undefined ? true : item.timePreference[1])
   const onToggleMorn = () => setMorn(!morn)
-  const [noon, setNoon] = useState(true)
+  const [noon, setNoon] = useState(item == undefined  || item.timePreference == undefined ? true : item.timePreference[2])
   const onToggleNoon = () => setNoon(!noon)
-  const [eve, setEve] = useState(true)
+  const [eve, setEve] = useState(item == undefined  || item.timePreference == undefined ? true : item.timePreference[3])
   const onToggleEve = () => setEve(!eve)
-  const timePreference = [pm, morn, noon, eve]
 
   const [snackVisible, setSnackVisible] = useState(false)
   const toggleSnack = () => setSnackVisible(!snackVisible)
@@ -161,6 +160,7 @@ export default function EditScreen( { navigation, route } ) {
         name: name,
         duration: parseInt(hours) * 60 + parseInt(minutes),
         recurring: recurring,
+        timePreference: [pm, morn, noon, eve],
     }};
 
     const newItem = () => input.type == "fixList" ? fixListItem() : flexListItem();

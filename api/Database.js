@@ -3,7 +3,7 @@ import firebase from "./Firebase";
 
 const database = firebase.database();
 
-export default function Database( {action, slice, data, event = () => {}} ) {
+export default function Database( {action, slice, data, event = {pass: () => {}, fail:() => {}}} ) {
   const uid = firebase.auth().currentUser.uid;
   const route = uid +"/" + slice;
 
@@ -15,7 +15,7 @@ export default function Database( {action, slice, data, event = () => {}} ) {
     })
     .catch((error) =>{
       console.log(error);
-      Alert.alert(error.Message);
+      Alert.alert(error.message);
     });
   }
 
@@ -26,12 +26,12 @@ export default function Database( {action, slice, data, event = () => {}} ) {
       if (item.exists()) {
         (event.pass)()(item);
       } else {
-        (event.fail)()(item);
+        (event.fail)();
       }
     })
     .catch((error) => {
       console.log(error);
-      Alert.alert(error.Message);
+      Alert.alert(error.message);
     });
   }
 

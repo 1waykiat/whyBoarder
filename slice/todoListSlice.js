@@ -5,7 +5,7 @@ import { addDate, timeComparator, dateComparator, dateDifference, today } from '
 
 // fixList sorter by date then time
 const fixListSorter = (arr) => {
-  const sorted = arr.sort((x, y) => {
+  const sorted = [...arr].sort((x, y) => {
     const dc = dateComparator(x, y)
     return dc != 0 ? dc : timeComparator(x, y);
   })
@@ -14,9 +14,9 @@ const fixListSorter = (arr) => {
 
 // agenda sorter by time
 export const agendaSorter = (obj) => {
-  const arr = Object.entries(obj);
+  const arr = Object.entries({...obj});
   const sorted = arr.map((date) => {
-    date[1] = date[1].sort((x, y) => timeComparator(x, y));
+    date[1] = [...(date[1])].sort((x, y) => timeComparator(x, y));
     return date;
   });
   return Object.fromEntries(sorted);
@@ -24,9 +24,13 @@ export const agendaSorter = (obj) => {
 
 // flexList sorter by duration descending order
 const flexListSorter = (arr) => {
-  const sorted = arr.sort((x, y) => {
+  const sorted = [...arr]
+  .sort((x, y) => {
     return y.duration - x. duration
   })
+  .map((item) => {
+    return { ...item, timePreference: [...(item.timePreference)] };
+  });
   return sorted;
 }
 
@@ -99,7 +103,7 @@ const removeAgenda = ({agenda, key}) => Object.fromEntries(Object.entries({...ag
   return date;
 }));
 
-const upload = (data) => Database( {action: "upload", slice: "todoList", data: data} );
+const upload = (data) => Database( {action: "upload", slice: "todoList", data: data, event: () => {}} );
 
 export const slice = createSlice({
   name: 'todoList',
@@ -119,6 +123,7 @@ export const slice = createSlice({
       duration: 240,
       recurring: "Does not repeat",
       key: 1,
+      timePreference: [true, false, false, false]
     }, ],
     agenda: {
       "2021-06-06": [{
@@ -309,7 +314,7 @@ export const slice = createSlice({
         agenda: cleanupAgenda(newAgenda),
       };
       upload(newState);
-      Database( {action: "upload", slice: "updateDate", data: today()} )
+      Database( {action: "upload", slice: "updateDate", data: today(), event: () => {}} )
       return newState;
     },
   }	

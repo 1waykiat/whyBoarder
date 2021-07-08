@@ -6,7 +6,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { addAgendaItem, agendaSorter, selectTodoList } from "./slice/todoListSlice";
 import { selectSettings } from "./slice/settingsSlice";
 
-import { stringToNumberTime, numberToStringTime, addTime, addDate, agendaDuration, today, timeComparator } from "./api/Time";
+import { stringToNumberTime, numberToStringTime, addTime, addDate, agendaDuration, today, } from "./api/Time";
 
 // local update of agenda
 const updateAgenda = (agenda, date, newItem) => {
@@ -16,7 +16,7 @@ const updateAgenda = (agenda, date, newItem) => {
       ? [newItem]
       : [...((agenda)[date]), newItem]
   };
-
+  
   return Object.fromEntries(
     Object.entries(agendaSorter(newAgenda))
     .filter((date) => date[1].length != 0)
@@ -24,20 +24,33 @@ const updateAgenda = (agenda, date, newItem) => {
       date[1] = [...date[1]];
       return date;
     })
-  );
-}
-
-const checkAdded = (flexList, agenda) => {
-  const tempFilter = (item) => {
-    for(const date in agenda) {
-      for (const task of agenda[date]) {
-        if (item.key == task.key) return false;
-      }
-    }
-    return true;
+    );
   }
-  return flexList.filter(tempFilter);
-};
+  
+  const checkAdded = (flexList, agenda) => {
+    const tempFilter = (item) => {
+      for(const date in agenda) {
+        for (const task of agenda[date]) {
+          if (item.key == task.key) return false;
+        }
+      }
+      return true;
+    }
+    return flexList.filter(tempFilter);
+  };
+  
+  const preferenceArrray = [
+    {startTime: "00:00", endTime: "05:59"},
+    {startTime: "06:00", endTime: "11:59"},
+    {startTime: "12:00", endTime: "17:59"},
+    {startTime: "18:00", endTime: "23:59"},
+  ];
+
+  const checkPreference = ({startTime, endTime, preference}) => {
+    const startIndex = Math.floor((typeof startTime == "string" ? stringToNumberTime(startTime) : startTime) / 600);
+    const endIndex = Math.floor((typeof endTime == "string" ? stringToNumberTime(endTime) : endTime) / 600);
+    return preference[startIndex] && preference[endIndex];
+  };
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 export default function TaskSorter() {
@@ -58,8 +71,26 @@ export default function TaskSorter() {
   const checkLimit = (flexList) => {
     const tempFilter = (item) => {
       const duration = item.duration;
+      const preference = item.timePreference;
       const startToEnd = agendaDuration({ startTime: start, endTime: end });
-      if (duration > startToEnd || duration > limit) {
+
+      const preferenceLimit = () => {
+        if (checkPreference({startTime: start, endTime: addTime(start, duration), preference: preference})) return true;
+        let j = Math.ceil(stringToNumberTime(start) / 600);
+
+        while (j < 4) {
+          const preferenceStartTime = preferenceArrray[j].startTime;
+          const preferenceEndTime = addTime(preferenceStartTime, duration);
+          if (preferenceEndTime > end) return false
+          if (checkPreference({startTime: preferenceStartTime, endTime: preferenceEndTime, preference: preference})) return true;
+          j++;
+        }
+        console.log("4")
+        return false;
+      };
+
+      if (duration > startToEnd || duration > limit || !preferenceLimit()) {
+        console.log(item.name)
         failSort.push(item);
         return false;
       }
@@ -69,7 +100,7 @@ export default function TaskSorter() {
   }
   
   const [alert, setAlert] = useState('');
-  const [visible, setVisible] = React.useState(false);
+  const [visible, setVisible] = useState(false);
   const showModal = () => setVisible(true);
   const hideModal = () => setVisible(false);
   
@@ -77,13 +108,16 @@ export default function TaskSorter() {
     switch(alertType) {
       case 'success':
         setAlert('Task succesfully added!');
-      case 'alreadySorted':
-        setAlert('Tasks already sorted!');
-      case 'failToSort':
-        setAlert(message);
-    }
+        break;
+        case 'alreadySorted':
+          setAlert('Tasks already sorted!');
+          break;
+          case 'failToSort':
+            setAlert(message);
+            break;
+      }
   };
-
+    
   function sort( { item, date } ) {
     const agendaDate = [...(agenda[date] == undefined ? [] : agenda[date])];
     const totalTime = agendaDate.reduce((sum, curr) => sum + agendaDuration(curr), 0);
@@ -94,42 +128,27 @@ export default function TaskSorter() {
     let endTime = addTime(startTime, item.duration);
 
     let i = 0; // index of next agenda task
-    let taskStartTime = getNumberTime({array: agendaDate, index: i, type: "startTime"}); 
-    let taskEndTime = getNumberTime({array: agendaDate, index: i, type: "endTime"}); 
-    
     let j = Math.floor(startTime / 600) + 1; // index of next possible preference time slot
-    let preferenceStartTime = getNumberTime({array: preferenceArrray, index: j, type: start});
     
     //  loop to iterate through agenda of the day
-    const preferenceArrray = [
-      {startTime: "00:00", endTime: "05:59"},
-      {startTime: "06:00", endTime: "11:59"},
-      {startTime: "12:00", endTime: "17:59"},
-      {startTime: "18:00", endTime: "23:59"},
-    ]
-    const checkPreference = ({startTime, endTime, preference}) => {
-      return preference[Math.floor(startTime / 600)] && preference[Math.floor(endTime / 600)]
-    };
-    
-    const getNumberTime = ({array, index, type}) => stringToNumberTime(array[index][type]);
-
-    while (i < agendaDate.length) {
+    while (i < agendaDate.length || j < 4) {
       // next agenda task start and end time
-      
-      if (!checkPreference({ startTime: startTime, endTime: endTime, preference: "preference" })) {
+      const taskStartTime = i < agendaDate.length ? stringToNumberTime(agendaDate[i].startTime) : Infinity;
+      const taskEndTime = i < agendaDate.length ? stringToNumberTime(agendaDate[i].endTime) : Infinity;
+      const preferenceStartTime = j < 4 ? stringToNumberTime(preferenceArrray[j].startTime) : Infinity;
+
+      if (!checkPreference({ startTime: startTime, endTime: endTime, preference: item.timePreference })) {
         if (preferenceStartTime < taskStartTime) {
           startTime = preferenceStartTime;
           j++;
-          preferenceStartTime = stringToNumberTime(preferenceArrray[j].startTime);
         } else {
           startTime = addTime(taskEndTime, offset); 
           i++;
-          taskStartTime = stringToNumberTime(agendaDate[i].startTime); 
-          taskEndTime = stringToNumberTime(agendaDate[i].endTime); 
+          j = Math.ceil(startTime / 600);
         }
         endTime = addTime(startTime, item.duration);
         continue;
-      };
+      }
       
       // if end time tried is before next task with offset then end loop
       if (addTime(endTime, offset) <= taskStartTime) {
@@ -138,29 +157,15 @@ export default function TaskSorter() {
         startTime = addTime(taskEndTime, offset); 
         endTime = addTime(startTime, item.duration);
         i++;
-        taskStartTime = getNumberTime({array: agendaDate, index: i, type: "startTime"}); 
-        taskEndTime = getNumberTime({array: agendaDate, index: i, type: "endTime"}); 
-        j = Math.floor(startTime / 600);
+        j = Math.ceil(startTime / 600);
       }
     }
-
-    // for (let i = 0; i < agendaDate.length; i++) {
-    //   const taskStartTime = stringToNumberTime(agendaDate[i].startTime);
-    //   const taskEndTime = stringToNumberTime(agendaDate[i].endTime);
-
-    //   // if end time tried is before next task with offset then end loop
-    //   if (addTime(endTime, offset) <= taskStartTime) {
-    //     break;
-    //   } else {
-    //     startTime = addTime(taskEndTime, offset); 
-    //     endTime = addTime(startTime, item.duration);
-    //   }
-    // }
 
     let newAgendaItem = undefined;
     
     // if end before the cutoff time then add as new agenda
-    if (endTime <= stringToNumberTime(end)) {
+    if (endTime <= stringToNumberTime(end) && 
+      checkPreference({ startTime: startTime, endTime: endTime, preference: item.timePreference })) {
       newAgendaItem = {
         name: item.name,
         key: item.key,
@@ -177,6 +182,7 @@ export default function TaskSorter() {
   
   function sortAll() {
     const flexList = checkLimit(checkAdded([...(state.flexList == undefined ? [] : state.flexList)], agenda));
+    console.log(flexList);  
     if (flexList.length == 0 && failSort.length == 0) {
       sorterMessage({ alertType: 'alreadySorted' })
       showModal()
@@ -211,7 +217,7 @@ export default function TaskSorter() {
     failSort = [];
     toUpdate = [];
   }
-
+  
   return (
     <View>
       <Button style={styles.button} icon="filter" mode="contained" onPress={() => sortAll()}>
