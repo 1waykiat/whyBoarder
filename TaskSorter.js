@@ -126,7 +126,11 @@ export default function TaskSorter() {
     let endTime = addTime(startTime, item.duration);
 
     let i = 0; // index of next agenda task
-    let j = Math.floor(startTime / 600) + 1; // index of next possible preference time slot
+    while (i < agendaDate.length) {
+      if (startTime <= stringToNumberTime(agendaDate[i].startTime)) break;
+      i++
+    }
+    let j = Math.ceil(startTime / 600); // index of next possible preference time slot
     
     //  loop to iterate through agenda of the day
     while (i < agendaDate.length || j < 4) {
