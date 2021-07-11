@@ -4,6 +4,7 @@ import { Text, View, StyleSheet, Pressable, } from 'react-native'
 
 import Icon from 'react-native-vector-icons/FontAwesome5'
 import { Feather } from '@expo/vector-icons';
+import { FontAwesome } from '@expo/vector-icons';
 
 import { useDispatch, useSelector } from 'react-redux';
 import { addTodo, editTodo, removeTodo, selectTodoList } from '../slice/todoListSlice';
@@ -56,19 +57,28 @@ const dateTimeMerge = (date, time) => {
 
 // Check if time period of two fixed tasks overlap, return true if so.
 const timeOverlap = (task1, task2) => {
-  const prelim = task1.startTime == task2.endTime || task1.endTime == task2.startTime
-   const test1 = task1.endTime <= task2.startTime
-   const test2 = task2.endTime <= task1.startTime
-  return prelim ? false : !(test1 || test2)
+ if (task1.endDate == task2.startDate) {
+  return task1.endTime > task2.startTime
+} else if (task2.endDate == task1.startDate) {
+  return task2.endTime > task1.startTime
+} else if ( !(task1.endDate < task2.startDate || task2.endDate < task1.startDate) ) {
+  return true
+} else {
+    const prelim = task1.startTime == task2.endTime || task1.endTime == task2.startTime
+     const test1 = task1.endTime <= task2.startTime
+     const test2 = task2.endTime <= task1.startTime
+    return prelim ? false : !(test1 || test2)
+  }
 }
 
 // **needs work 
 const dateOverlap = (task1, task2) => {
-  return task1.startDate == task2.startDate
-}
+  //return task1.startDate == task2.startDate
+  const test1 = task1.endDate < task2.startDate
+  const test2 = task2.endDate < task1.startDate
+  console.log(!(test1 || test2))
 
-const validDuration = (task) => {
-  return task.startTime <= task.endTime && task.startTime != task.endTime
+  return !(test1 || test2)  
 }
 
 function isNumeric(value) {
@@ -115,12 +125,13 @@ export default function EditScreen( { navigation, route } ) {
   const [eve, setEve] = useState(item == undefined  || item.timePreference == undefined ? true : item.timePreference[3])
   const onToggleEve = () => setEve(!eve)
 
+  const [priority, setPriority] = useState(false)
+  const togglePriority = () => setPriority(!priority)
+
   const [snackVisible, setSnackVisible] = useState(false)
   const toggleSnack = () => setSnackVisible(!snackVisible)
   const dismissSnack = () => setSnackVisible(false)
-  const [alertType, setAlertType] = useState('')
   const overlapAlert = "Duration overlaps with an existing task!"
-  const earlyEndAlert = "Invalid time duration set!"
 
   const showMode = (currentMode) => {
     setShow(true);
@@ -172,17 +183,9 @@ export default function EditScreen( { navigation, route } ) {
 
     // Error checking area
     if (input.type == "fixList") {
-      if(!validDuration(newItem())) {
-        console.log('ERROR: Invalid time duration set!')
-        setAlertType('invalid')
-        toggleSnack()
-        return
-      }
-
       if(item == undefined) {
         if(todoList.filter( (task) => dateOverlap(newItem(), task)).filter( (task) => timeOverlap(newItem(), task)).length > 0) {
             console.log('ERROR: Task input time interval overlaps with existing task in FixList')
-            setAlertType('overlap')
             toggleSnack()
             return 
           } 
@@ -192,7 +195,6 @@ export default function EditScreen( { navigation, route } ) {
         .filter( (task) => timeOverlap(newItem(), task))
         .length > 0) {
           console.log('ERROR: Task input time interval overlaps with existing task in FixList')
-          setAlertType('overlap')
           toggleSnack()
           return
         }
@@ -221,11 +223,18 @@ export default function EditScreen( { navigation, route } ) {
       <View>
         <Appbar.Header style={{backgroundColor: 'white'}}>
           <Appbar.BackAction onPress={() => navigation.goBack()} />
-          <Appbar.Content title='Task' />
-          <Appbar.Action icon="delete" onPress={() => {
-            dispatch(removeTodo({key: item.key}));
-            navigation.goBack();
-          }} />
+          <Appbar.Content title={item == undefined ? 'Add Task' : 'Edit Task'} />
+          { item != undefined && (
+            <Appbar.Action icon="delete" onPress={() => {
+              dispatch(removeTodo({key: item.key}));
+              navigation.goBack();
+            }}
+            />
+          )}
+          {input.type === "flexList" && (
+            <Appbar.Action icon={ priority ? "star" : "star-outline" } onPress={togglePriority} />
+          )}
+          <Appbar.Action icon="check" onPress={() => { reducer() }} disabled={ input.type === 'fixList' && endDisplay <= startDisplay } />
         </Appbar.Header>
 
         {/* Title Input */}
@@ -494,18 +503,6 @@ export default function EditScreen( { navigation, route } ) {
         </Portal>
         
 
-        {/* Error notification */}
-        <Snackbar
-          visible={snackVisible}
-          onDismiss={dismissSnack}
-          duration={5000}
-        >
-          {alertType == "overlap"
-            ? overlapAlert
-            : alertType == 'invalid'
-            ? earlyEndAlert
-            : 'smth is wrong'}
-        </Snackbar>
         
         { (endDisplay <= startDisplay && input.type === 'fixList') && (
           <View style={{flexDirection:'row', justifyContent: 'center', padding: 10}}>
@@ -518,16 +515,17 @@ export default function EditScreen( { navigation, route } ) {
         )}
       </View>
 
-      <Button
-        mode="contained"
-        onPress={() => {
-          reducer()
-        }}
-        style={{margin: 20, backgroundColor: '#85BEF9',}}
-        disabled={ input.type === 'fixList' && endDisplay <= startDisplay}
-      >
-        {item == undefined ? "Add" : "Edit"} 
-      </Button>
+      {/* Error notification */}
+      <Portal>
+        <Modal visible={snackVisible} onDismiss={dismissSnack} contentContainerStyle={styles.modal} >
+          <Text>
+            {overlapAlert}
+          </Text>
+          <Button mode="text" onPress={dismissSnack}>
+            ok
+          </Button>
+        </Modal>
+      </Portal>
     </View>
     
   )

@@ -98,7 +98,16 @@ export default function SettingsScreen( { navigation } ) {
               <Text style={styles.title}>Start Time</Text>
               <Text style={styles.subtitle}>Tasks only added after this time </Text>
             </View>
-            <Text style={styles.value}>{timeToHourMin(startTime)}</Text>
+            <Text style={{
+              fontSize: 16,
+              color: ((day === "Same Day" && cutoffTime <= startTime) 
+              || (day === "Next Day" && timeToHourMin(cutoffTime) > timeToHourMin(startTime)))
+              ? 'red'
+              : '#2e2e2e',
+              paddingTop: 5}}
+            >
+              {timeToHourMin(startTime)}
+            </Text>
           </View>
         </Pressable>
         
@@ -112,7 +121,16 @@ export default function SettingsScreen( { navigation } ) {
               <Text style={styles.title}>Cutoff Time</Text>
               <Text style={styles.subtitle}>Tasks not added beyond this time </Text>
             </View>
-            <Text style={styles.value}>{day + ', ' + timeToHourMin(cutoffTime)}</Text>
+            <Text style={{
+              fontSize: 16,
+              color: ((day === "Same Day" && cutoffTime <= startTime) 
+              || (day === "Next Day" && timeToHourMin(cutoffTime) > timeToHourMin(startTime)))
+              ? 'red'
+              : '#2e2e2e',
+              paddingTop: 5}}
+            >
+              {day + ', ' + timeToHourMin(cutoffTime)}
+            </Text>
           </View>
         </Pressable>
         <Divider />
@@ -270,17 +288,24 @@ export default function SettingsScreen( { navigation } ) {
           </Modal>
         </Portal>
 
-        { (day === "Same Day" && cutoffTime < startTime) && (
-          <View style={{flexDirection: 'row', justifyContent: 'center', padding: 10}}>
+        { ((day === "Same Day" && cutoffTime <= startTime) || (day === "Next Day" && timeToHourMin(cutoffTime) > timeToHourMin(startTime))) && (
+          <View style={{flexDirection: 'row', justifyContent: 'center', paddingHorizontal: 30}}>
             <Feather name='alert-triangle' size={20} color="red" style={{paddingHorizontal: 6}} />
-            <Text style={{alignSelf: 'center', color: 'red'}}>
-              Start time cannot be after Cutoff time.
+            <Text style={{alignSelf: 'center', color: 'red',}}>
+              { (day === "Same Day" && cutoffTime < startTime)
+                ? "Start time cannot be after Cutoff time."
+                : (day === "Same Day" && timeToHourMin(cutoffTime) === timeToHourMin(startTime))
+                ? "Start to Cutoff time should be different."
+                : (day === "Next Day" && timeToHourMin(cutoffTime) > timeToHourMin(startTime))
+                ? "Start to Cutoff Time cannot be longer than 24 Hrs."
+                : ""
+              }
             </Text>
           </View>
         )}
       </View>
 
-      <TaskSorter />
+      <TaskSorter disable={((day === "Same Day" && cutoffTime <= startTime) || (day === "Next Day" && timeToHourMin(cutoffTime) > timeToHourMin(startTime)))}/>
 
       {/* Shifting this somewhere else but have not decided yet :) */}
       {/* <Button
