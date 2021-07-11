@@ -3,6 +3,8 @@ import { FlatList, View, StyleSheet} from 'react-native';
 import { useSelector } from 'react-redux';
 import { selectTodoList } from '../slice/todoListSlice';
 import { Card, Paragraph, Caption } from 'react-native-paper'
+import { Feather } from '@expo/vector-icons';
+import { MaterialCommunityIcons } from '@expo/vector-icons'; 
 
 
 export default function todoList( { type, navigation} ) {
@@ -37,23 +39,59 @@ export default function todoList( { type, navigation} ) {
           ({item}) => (
             <View style={{flexDirection: 'row',}}>
               <Card 
-                style={{width: 375, maxHeight: 120, marginTop: 5, }}
+                style={{width: 375, maxHeight: 120, marginTop: 5, borderRadius: 6, }}
                 onPress={() => navigation.navigate("Edit", {type: type, item: item} )}
                 mode='elevated'
               >
                 <Card.Content>
-                  <Paragraph
-                    style={styles.paragraph}
-                  >{item.name}</Paragraph>
-                  {type == "fixList"
-                    ? <Caption style={styles.caption}>
-                      {timeToSimpleHumanDate(dateTimeMerge(item.startDate, item.startTime))} · {timeToHourMin(dateTimeMerge(item.startDate, item.startTime))} - { } 
-                      {timeToHourMin(dateTimeMerge(item.endDate, item.endTime))}
-                    </Caption>
-                    : <Caption>
-                      {Math.floor(item.duration / 60)}:{(item.duration % 60).toString().padStart(2,"0")}
-                    </Caption>}
-                    <View style={styles.colorcode} />
+                  <View style={{flexDirection: 'row'}}>
+                    <Paragraph
+                      style={styles.paragraph}
+                    >{item.name}
+                    </Paragraph>
+                    { type == "flexList" && (
+                      <MaterialCommunityIcons name="star" size={18} color="#ffe46b" style={{marginTop: 2.5, marginHorizontal: 3}} />
+                    )}
+                  </View>
+                  
+                  <View style={{flexDirection: 'column'}}>
+                    {type == "fixList"
+                      ? <Caption style={styles.caption}>
+                        {
+                          item.startDate != item.endDate 
+                          ? timeToSimpleHumanDate(dateTimeMerge(item.startDate, item.startTime)) + ", " + timeToHourMin(dateTimeMerge(item.startDate, item.startTime)) + " - " +
+                            timeToSimpleHumanDate(dateTimeMerge(item.endDate, item.endTime)) + ", " + timeToHourMin(dateTimeMerge(item.endDate, item.endTime))
+                          : timeToSimpleHumanDate(dateTimeMerge(item.startDate, item.startTime)) + " · " + timeToHourMin(dateTimeMerge(item.startDate, item.startTime)) + " - " +
+                            timeToHourMin(dateTimeMerge(item.endDate, item.endTime))
+                        }
+                      </Caption>
+                      :
+                      <View style={{flexDirection: 'row'}}>
+                        <Caption style={styles.caption}>
+                          {Math.floor(item.duration / 60)} hr {(item.duration % 60)} mins
+                        </Caption>
+                        <Caption style={styles.caption}> · </Caption>
+                        { (type == "flexList" && item.timePreference[0]) && (
+                          <Feather name="moon" size={14} color="black" style={{marginTop: 4, color: '#8c8c8c'}}/>
+                        )}                                          
+                        { (type == "flexList" && item.timePreference[1]) && (
+                          <Feather name="sunrise" size={14} color="black" style={{marginTop: 4, color: '#8c8c8c'}}/>
+                        )}                                          
+                        { (type == "flexList" && item.timePreference[2]) && (
+                          <Feather name="sun" size={14} color="black" style={{marginTop: 4, color: '#8c8c8c'}}/>
+                        )}                                          
+                        { (type == "flexList" && item.timePreference[3]) && (
+                          <Feather name="sunset" size={14} color="black" style={{marginTop: 4, color: '#8c8c8c'}}/>
+                        )}    
+                      </View>
+                    }
+                    {item.recurring != "Does not repeat" && (
+                      <View style={{flexDirection: 'row'}}>
+                        <Feather name="repeat" size={12} color="black" style={{marginTop: 6, color: '#8c8c8c'}}/>
+                        <Caption style={styles.caption}> {item.recurring}</Caption>
+                      </View>                         
+                    )}
+                  </View>
                 </Card.Content>
               </Card>
             </View>
@@ -76,6 +114,7 @@ const styles = StyleSheet.create({
   },
   caption: {
     fontSize: 12,
+    marginVertical: 0
   },
   colorcode: {
     backgroundColor: 'gray',
