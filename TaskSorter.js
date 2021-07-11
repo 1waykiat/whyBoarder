@@ -49,7 +49,7 @@ const updateAgenda = (agenda, date, newItem) => {
   const checkPreference = ({startTime, endTime, preference}) => {
     const startIndex = Math.floor((typeof startTime == "string" ? stringToNumberTime(startTime) : startTime) / 600);
     const endIndex = Math.floor((typeof endTime == "string" ? stringToNumberTime(endTime) : endTime) / 600);
-    return preference[startIndex] && preference[endIndex];
+    return preference[startIndex % 4] && preference[endIndex % 4];
   };
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -63,7 +63,9 @@ export default function TaskSorter() {
   let toUpdate =[];
   let failSort = [];
   const start  = settings.startTime;
-  const end = settings.cutoffTime;
+  const end = settings.cuttoffDay == "Same Day"
+    ? settings.cutoffTime
+    : numberToStringTime(addTime(settings.cutoffTime, 24 * 60));
   const limit = settings.limit;
   const offset = settings.offset;
 
@@ -118,6 +120,13 @@ export default function TaskSorter() {
     
   function sort( { item, date } ) {
     const agendaDate = [...(agenda[date] == undefined ? [] : agenda[date])];
+    const agendaNextDate = [...(agenda[addDate(date, 1)] == undefined ? [] : agenda[addDate(date, 1)])];
+    agendaDate.push(...(agendaNextDate.map((item) => {
+      return {...item,
+        startTime: numberToStringTime(addTime(item.startTime, 24 * 60)),
+        endTime: numberToStringTime(addTime(item.endTime, 24 * 60)),
+      }
+    })));
     const totalTime = agendaDate.reduce((sum, curr) => sum + agendaDuration(curr), 0);
     // total hours of task for the day have already reached the limit set
     if (totalTime > limit) return undefined;
@@ -139,7 +148,11 @@ export default function TaskSorter() {
       const taskEndTime = i < agendaDate.length ? stringToNumberTime(agendaDate[i].endTime) : Infinity;
       const preferenceStartTime = j < 4 ? stringToNumberTime(preferenceArrray[j].startTime) : Infinity;
 
+      console.log("n: " +startTime + " " + endTime);
+      console.log("t: " + taskStartTime + " " + taskEndTime);
+
       if (!checkPreference({ startTime: startTime, endTime: endTime, preference: item.timePreference })) {
+        console.log("failPref.");
         if (preferenceStartTime < taskStartTime) {
           startTime = preferenceStartTime;
           j++;
@@ -162,21 +175,33 @@ export default function TaskSorter() {
         j = Math.ceil(startTime / 600);
       }
     }
-
+    
     let newAgendaItem = undefined;
     
+    console.log(startTime + " " + endTime);
+    console.log(date);
     // if end before the cutoff time then add as new agenda
     if (endTime <= stringToNumberTime(end) && 
       checkPreference({ startTime: startTime, endTime: endTime, preference: item.timePreference })) {
       newAgendaItem = {
         name: item.name,
         key: item.key,
-        startTime: numberToStringTime(startTime),
-        endTime: numberToStringTime(endTime),
+        startTime: numberToStringTime(startTime < 2400 ? startTime : addTime(startTime, -24 * 60)),
+        endTime: numberToStringTime(endTime < 2400 ? endTime : addTime(endTime, -24 * 60)),
       }
       
-      agenda = updateAgenda(agenda, date, newAgendaItem);
-      toUpdate.push([date, newAgendaItem]);
+      // check for overnight task
+      if (startTime < 2400 && endTime >= 2400) {
+        newAgendaItem1 = {...newAgendaItem, endTime: "23:59"};
+        newAgendaItem2 = {...newAgendaItem, startTime: "00:00"};
+        agenda = updateAgenda(agenda, date, newAgendaItem1);
+        agenda = updateAgenda(agenda, addDate(date, 1), newAgendaItem2);
+        toUpdate.push([date, newAgendaItem1]);
+        toUpdate.push([addDate(date, 1), newAgendaItem2]);
+      } else {
+        agenda = updateAgenda(agenda, startTime < 2400 ? date : addDate(date, 1), newAgendaItem);
+        toUpdate.push([startTime < 2400 ? date : addDate(date, 1), newAgendaItem]);
+      }
     }
     
     return newAgendaItem;

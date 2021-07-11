@@ -26,8 +26,12 @@ export const agendaSorter = (obj) => {
 const flexListSorter = (arr) => {
   const sorted = [...arr]
   .sort((x, y) => {
-    return y.duration - x. duration
-  })
+    if (x.priority === y.priority) {
+      return y.duration - x. duration
+    } else {
+      return x.priority ? -1 : 1;
+    }
+  }); 
   return sorted;
 }
 
@@ -127,7 +131,8 @@ export const slice = createSlice({
       duration: 240,
       recurring: "Does not repeat",
       key: 1,
-      timePreference: [true, false, false, false]
+      timePreference: [true, false, false, false],
+      priority: true,
     }, ],
     agenda: {
       "2021-06-06": [{
