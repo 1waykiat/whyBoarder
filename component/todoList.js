@@ -6,6 +6,8 @@ import { Card, Paragraph, Caption } from 'react-native-paper'
 import { Feather } from '@expo/vector-icons';
 import { MaterialCommunityIcons } from '@expo/vector-icons'; 
 
+import colorTheme from '../presentational/colorTheme';
+
 
 export default function todoList( { type, navigation} ) {
   const todoList = type == "fixList" ? useSelector(selectTodoList).fixList : useSelector(selectTodoList).flexList;
@@ -39,7 +41,7 @@ export default function todoList( { type, navigation} ) {
           ({item}) => (
             <View style={{flexDirection: 'row',}}>
               <Card 
-                style={{width: 375, maxHeight: 120, marginTop: 5, borderRadius: 6, }}
+                style={{width: 375, maxHeight: 120, marginTop: 5, borderRadius: 6, backgroundColor: item.color}}
                 onPress={() => navigation.navigate("Edit", {type: type, item: item} )}
                 mode='elevated'
               >
@@ -72,22 +74,22 @@ export default function todoList( { type, navigation} ) {
                         </Caption>
                         <Caption style={styles.caption}> · </Caption>
                         { (type == "flexList" && item.timePreference[0]) && (
-                          <Feather name="moon" size={14} color="black" style={{marginTop: 4, color: '#8c8c8c'}}/>
+                          <Feather name="moon" size={14} color="black" style={{marginTop: 4, color: colorTheme[item.color]}}/>
                         )}                                          
                         { (type == "flexList" && item.timePreference[1]) && (
-                          <Feather name="sunrise" size={14} color="black" style={{marginTop: 4, color: '#8c8c8c'}}/>
+                          <Feather name="sunrise" size={14} color="black" style={{marginTop: 4, color: colorTheme[item.color]}}/>
                         )}                                          
                         { (type == "flexList" && item.timePreference[2]) && (
-                          <Feather name="sun" size={14} color="black" style={{marginTop: 4, color: '#8c8c8c'}}/>
+                          <Feather name="sun" size={14} color="black" style={{marginTop: 4, color: colorTheme[item.color]}}/>
                         )}                                          
                         { (type == "flexList" && item.timePreference[3]) && (
-                          <Feather name="sunset" size={14} color="black" style={{marginTop: 4, color: '#8c8c8c'}}/>
+                          <Feather name="sunset" size={14} color="black" style={{marginTop: 4, color: colorTheme[item.color]}}/>
                         )}    
                       </View>
                     }
                     {item.recurring != "Does not repeat" && (
                       <View style={{flexDirection: 'row'}}>
-                        <Feather name="repeat" size={12} color="black" style={{marginTop: 6, color: '#8c8c8c'}}/>
+                        <Feather name="repeat" size={12} color="black" style={{marginTop: 6, color: colorTheme[item.color]}}/>
                         <Caption style={styles.caption}> {item.recurring}</Caption>
                       </View>                         
                     )}
@@ -110,7 +112,7 @@ const styles = StyleSheet.create({
   },
   paragraph : {
     fontSize: 17,
-    color: 'black'
+    color: 'white'
   },
   caption: {
     fontSize: 12,

@@ -2,6 +2,7 @@ import React from 'react';
 import { View, StyleSheet } from 'react-native'
 import { FAB, Appbar } from 'react-native-paper'
 import { useDispatch } from 'react-redux';
+import { Feather } from '@expo/vector-icons';
 
 import TodoList from '../../component/todoList'
 
@@ -16,9 +17,9 @@ export default function FlexibleListScreen( { navigation } ) {
 
     return (
       <View style={styles.container}>
-        <Appbar.Header style={{backgroundColor: '#277DA1'}}>
-          <Appbar.BackAction onPress={() => navigation.goBack()} />
-          <Appbar.Content title="FlexList" />
+        <Appbar.Header style={{backgroundColor: '#f7f7ff'}}>
+          <Feather name='list' size={20} style={{marginLeft: 15}} />
+          <Appbar.Content title="Flexboard" />
           <Appbar.Action icon="dots-vertical" onPress={() => console.log('More options')} />
         </Appbar.Header>
         <View style={{alignItems: 'center'}}>
@@ -58,7 +59,7 @@ const styles = StyleSheet.create({
       flex:1,
       flexDirection: 'column',
       alignItems: 'stretch',
-      backgroundColor: '#174b61',
+      backgroundColor: '#f7f7ff',
     },
     title: {
       alignContent: 'flex-start',

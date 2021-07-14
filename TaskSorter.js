@@ -221,7 +221,7 @@ export default function TaskSorter() {
   
   return (
     <View>
-      <Button style={styles.button} icon="filter" mode="contained" onPress={() => sortAll()}>
+      <Button style={styles.button} contentStyle={{backgroundColor:'#277DA1'}} icon="filter" mode="contained" onPress={() => sortAll()}>
         Sort my Tasks!
       </Button>
       <Portal>
