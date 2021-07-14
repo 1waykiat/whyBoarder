@@ -77,7 +77,6 @@ const dateOverlap = (task1, task2) => {
   //return task1.startDate == task2.startDate
   const test1 = task1.endDate < task2.startDate
   const test2 = task2.endDate < task1.startDate
-  console.log(!(test1 || test2))
 
   return !(test1 || test2)  
 }
