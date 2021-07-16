@@ -49,7 +49,7 @@ export default function todoList( { type, navigation} ) {
                       style={styles.paragraph}
                     >{item.name}
                     </Paragraph>
-                    { type == "flexList" && (
+                    { type == "flexList" && item.priority && (
                       <MaterialCommunityIcons name="star" size={18} color="#ffe46b" style={{marginTop: 2.5, marginHorizontal: 3}} />
                     )}
                   </View>

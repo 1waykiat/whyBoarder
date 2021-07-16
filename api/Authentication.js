@@ -1,4 +1,4 @@
-import firebase from "./Firebase";
+import firebase, { provider } from "./Firebase";
 import { Alert } from "react-native";
 
 const auth = firebase.auth();
@@ -27,7 +27,7 @@ export default function Authentication( {action, email, password, event } ) {
     });
   };
   
-  const signIn = async () => {
+  const emailSignIn = async () => {
     await auth
     .signInWithEmailAndPassword(email, password)
     .then(() => {
@@ -45,9 +45,20 @@ export default function Authentication( {action, email, password, event } ) {
       
       Alert.alert(error.message);
     });
-    
   };
   
+  const googleSignIn = async () => {
+    auth.signInWithRedirect(provider)
+    await auth.getRedirectResult
+    .then(() => {
+      console.log('User account signed in!');
+      event();
+    })
+    .catch(error => {
+      Alert.alert(error.message);
+    });
+  };
+
   const signOut = async () => {
     await auth
     .signOut()
@@ -93,8 +104,8 @@ export default function Authentication( {action, email, password, event } ) {
        createAccount();
        break;
     };
-    case "signIn": {
-       signIn();
+    case "emailSignIn": {
+       emailSignIn();
        break;
     } ;
     case "signOut": {
@@ -111,6 +122,10 @@ export default function Authentication( {action, email, password, event } ) {
     };
     case "checkVerified": {
       checkVerified();
+      break;
+    }
+    case "googleSignIn": {
+      googleSignIn();
       break;
     }
   }

@@ -125,7 +125,7 @@ export default function EditScreen( { navigation, route } ) {
   const [eve, setEve] = useState(item == undefined  || item.timePreference == undefined ? true : item.timePreference[3])
   const onToggleEve = () => setEve(!eve)
 
-  const [priority, setPriority] = useState(false)
+  const [priority, setPriority] = useState(item == undefined ? false : item.priority)
   const togglePriority = () => setPriority(!priority)
 
   const [snackVisible, setSnackVisible] = useState(false)
@@ -176,6 +176,7 @@ export default function EditScreen( { navigation, route } ) {
         duration: parseInt(hours) * 60 + parseInt(minutes),
         recurring: recurring,
         timePreference: [pm, morn, noon, eve],
+        priority: priority,
     }};
 
     const newItem = () => input.type == "fixList" ? fixListItem() : flexListItem();

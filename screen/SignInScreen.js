@@ -57,7 +57,7 @@ export default function signIn( { navigation } ) {
     navigation.navigate("WorkList");
   }
 
-  const signIn = () => Authentication( {action: "signIn", email, password, event: () => {
+  const emailSignIn = () => Authentication( {action: "emailSignIn", email, password, event: () => {
     Authentication( {action: "checkVerified", event: {
       pass: signInPass,
       fail: () => Authentication( {
@@ -82,11 +82,9 @@ export default function signIn( { navigation } ) {
       onChangeText={handleEmailUpdate}
       autoCapitalize="none"
       returnKeyType="next"
-      onSubmitEditing={() => { this.secondTextInput.focus(); }}
       blurOnSubmit={false}
       />
     <TextInput
-      ref={(input) => { this.secondTextInput = input; }}
       mode='outlined'
       style={styles.textInput}
       label= 'Password'
@@ -100,15 +98,23 @@ export default function signIn( { navigation } ) {
       }
       secureTextEntry={!isPasswordVisible}
       blurOnSubmit={false}
-      onSubmitEditing={() => signIn()}
       />
     <Button
       style={{marginBottom: 10, borderRadius: 10, width: 350}}
       mode="contained"
       contentStyle={{ paddingVertical: 5 }}
-      onPress={() => signIn()}>
+      onPress={() => emailSignIn()}>
         Log In
     </Button>
+
+    <Button
+      style={{marginBottom: 10, borderRadius: 10, width: 350}}
+      mode="contained"
+      contentStyle={{ paddingVertical: 5 }}
+      onPress={() =>Authentication( {action: "googleSignIn", event: () =>{}} )}>
+        Google Sign-in
+    </Button>
+
     <Button
       style={{marginBottom: 10, borderRadius: 10, width: 350}}
       mode="contained"

@@ -36,12 +36,10 @@ export default function SignUpScreen( {navigation} ) {
         onChangeText={handleEmailUpdate}
         autoCapitalize="none"
         returnKeyType="next"
-        onSubmitEditing={() => { this.secondTextInput.focus(); }}
         blurOnSubmit={false}
         />
       
       <TextInput
-        ref={(input) => { this.secondTextInput = input; }}
         mode='outlined'
         style={styles.textInput}
         label= 'Password'
@@ -52,12 +50,10 @@ export default function SignUpScreen( {navigation} ) {
         right={<TextInput.Icon name={isPasswordVisible ? "eye-off" : "eye"}
           onPress={() => setIsPasswordVisible((state) => !state)} />}
         secureTextEntry={!isPasswordVisible}
-        onSubmitEditing={() => { this.thirdTextInput.focus(); }}
         blurOnSubmit={false}
         />
 
       <TextInput
-        ref={(input) => { this.thirdTextInput = input; }}
         mode='outlined'
         style={styles.textInput}
         label= 'Confirm Password'
@@ -68,13 +64,6 @@ export default function SignUpScreen( {navigation} ) {
         right={<TextInput.Icon name={isPasswordVisible1 ? "eye-off" : "eye"}
           onPress={() => setIsPasswordVisible1((state) => !state)} />}
         secureTextEntry={!isPasswordVisible1}
-        onSubmitEditing={() => {
-          if (password == password1) {
-            createAccount();
-          } else {
-            Alert.alert("Password does not match");
-          } 
-        }}
       />
 
       <Button

@@ -44,6 +44,10 @@ const updateAgenda = (agenda, date, newItem) => {
     {startTime: "06:00", endTime: "11:59"},
     {startTime: "12:00", endTime: "17:59"},
     {startTime: "18:00", endTime: "23:59"},
+    {startTime: "24:00", endTime: "29:59"},
+    {startTime: "30:00", endTime: "35:59"},
+    {startTime: "36:00", endTime: "41:59"},
+    {startTime: "42:00", endTime: "47:59"},
   ];
 
   const checkPreference = ({startTime, endTime, preference}) => {
@@ -78,7 +82,7 @@ export default function TaskSorter() {
 
       const preferenceLimit = () => {
         if (checkPreference({startTime: start, endTime: addTime(start, duration), preference: preference})) return true;
-        let j = Math.ceil(stringToNumberTime(start) / 600);
+        let j = settings.cuttoffDay == "Same Day" ? Math.ceil(stringToNumberTime(start) / 600) : 0;
 
         while (j < 4) {
           const preferenceStartTime = preferenceArrray[j].startTime;
@@ -142,17 +146,13 @@ export default function TaskSorter() {
     let j = Math.ceil(startTime / 600); // index of next possible preference time slot
     
     //  loop to iterate through agenda of the day
-    while (i < agendaDate.length || j < 4) {
+    while (i < agendaDate.length || j < 7) {
       // next agenda task start and end time
       const taskStartTime = i < agendaDate.length ? stringToNumberTime(agendaDate[i].startTime) : Infinity;
       const taskEndTime = i < agendaDate.length ? stringToNumberTime(agendaDate[i].endTime) : Infinity;
-      const preferenceStartTime = j < 4 ? stringToNumberTime(preferenceArrray[j].startTime) : Infinity;
-
-      console.log("n: " +startTime + " " + endTime);
-      console.log("t: " + taskStartTime + " " + taskEndTime);
+      const preferenceStartTime = j < 7 ? stringToNumberTime(preferenceArrray[j].startTime) : Infinity;
 
       if (!checkPreference({ startTime: startTime, endTime: endTime, preference: item.timePreference })) {
-        console.log("failPref.");
         if (preferenceStartTime < taskStartTime) {
           startTime = preferenceStartTime;
           j++;
@@ -178,8 +178,6 @@ export default function TaskSorter() {
     
     let newAgendaItem = undefined;
     
-    console.log(startTime + " " + endTime);
-    console.log(date);
     // if end before the cutoff time then add as new agenda
     if (endTime <= stringToNumberTime(end) && 
       checkPreference({ startTime: startTime, endTime: endTime, preference: item.timePreference })) {
