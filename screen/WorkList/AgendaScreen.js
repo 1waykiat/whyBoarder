@@ -7,6 +7,7 @@ import { Feather } from '@expo/vector-icons'
 import { useSelector } from 'react-redux';
 import { selectTodoList } from '../../slice/todoListSlice';
 import { today } from '../../api/Time';
+import colorTheme from '../../presentational/colorTheme'
 
 export default function AgendaScreen( {  navigation } )  {
   const items = useSelector(selectTodoList).agenda;
@@ -14,7 +15,13 @@ export default function AgendaScreen( {  navigation } )  {
   const renderThing = (item) => {
     return(
       <Card 
-        style={styles.item}
+        style={{
+          backgroundColor: item.color,
+          flex: 1,
+          borderRadius: 10,
+          marginRight: 20,
+          marginTop: 8,
+        }}
         onPress={() => console.log('What to do....')}
       >
         <Card.Content>
@@ -27,8 +34,8 @@ export default function AgendaScreen( {  navigation } )  {
           </Caption>
           {item.recurring != "Does not repeat" && (
             <View style={{flexDirection: 'row'}}>
-              <Feather name="repeat" size={12} color="black" style={{marginTop: 6, color: '#8c8c8c'}}/>
-              <Caption style={styles.caption}> {item.recurring} </Caption>
+              <Feather name="repeat" size={12} color="black" style={{marginTop: 6, color: colorTheme[item.color]}}/>
+              <Caption style={{fontSize: 12, color: colorTheme[item.color]}}> {item.recurring} </Caption>
             </View>
           )}
         </Card.Content>
@@ -39,8 +46,8 @@ export default function AgendaScreen( {  navigation } )  {
 
   return(
     <View style={{flex: 1}}>
-      <Appbar.Header style={{backgroundColor: 'white',}}>
-        <Appbar.BackAction onPress={() => navigation.goBack()} />
+      <Appbar.Header style={{backgroundColor: '#f7f7ff',}}>
+        <Feather name='calendar' size={20} style={{marginLeft: 15}} />
         <Appbar.Content title="Agenda" />
         <Appbar.Action icon="dots-vertical" onPress={() => console.log('More options')}  />
       </Appbar.Header>
@@ -48,6 +55,9 @@ export default function AgendaScreen( {  navigation } )  {
         items={items}
         selected={today()}
         renderItem={renderThing}
+        style={{backgroundColor: '#f7f7ff'}}
+        showClosingKnob={true}
+        theme={{calendarBackground: '#f7f7ff'}}
       />
     </View>
 
@@ -55,13 +65,6 @@ export default function AgendaScreen( {  navigation } )  {
 }
 
 const styles = StyleSheet.create({
-  item: {
-    backgroundColor: 'white',
-    flex: 1,
-    borderRadius: 10,
-    marginRight: 20,
-    marginTop: 8,
-  },
   task: {
     fontSize: 16,
     fontWeight: '900',
@@ -81,7 +84,7 @@ const styles = StyleSheet.create({
   },
   paragraph : {
     fontSize: 17,
-    color: 'black'
+    color: 'white'
   },
   caption: {
     fontSize: 12,

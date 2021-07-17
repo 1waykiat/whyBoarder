@@ -51,7 +51,7 @@ export default function signIn( { navigation } ) {
         const item = data.val();
         dispatch(updateRecurring(item));
       },
-      fail: () => Database( {action: "upload", slice: "updateDate", data: today(),} ),
+      fail: () => Database( {action: "upload", slice: "updateDate", data: today(), event: () => {}} ),
     }} );
 
     navigation.navigate("WorkList");
@@ -66,6 +66,7 @@ export default function signIn( { navigation } ) {
         }
       })
     }} );
+    setPassword('')
   } });
 
   return(
@@ -105,14 +106,6 @@ export default function signIn( { navigation } ) {
       contentStyle={{ paddingVertical: 5 }}
       onPress={() => emailSignIn()}>
         Log In
-    </Button>
-
-    <Button
-      style={{marginBottom: 10, borderRadius: 10, width: 350}}
-      mode="contained"
-      contentStyle={{ paddingVertical: 5 }}
-      onPress={() =>Authentication( {action: "googleSignIn", event: () =>{}} )}>
-        Google Sign-in
     </Button>
 
     <Button

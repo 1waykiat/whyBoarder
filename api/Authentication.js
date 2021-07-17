@@ -1,4 +1,4 @@
-import firebase, { provider } from "./Firebase";
+import firebase  from "./Firebase";
 import { Alert } from "react-native";
 
 const auth = firebase.auth();
@@ -48,15 +48,15 @@ export default function Authentication( {action, email, password, event } ) {
   };
   
   const googleSignIn = async () => {
-    auth.signInWithRedirect(provider)
-    await auth.getRedirectResult
-    .then(() => {
+    try {
+      GoogleSignin.configure();
+      await GoogleSignin.hasPlayServices();
+      const userInfo = await GoogleSignin.signIn();
       console.log('User account signed in!');
-      event();
-    })
-    .catch(error => {
-      Alert.alert(error.message);
-    });
+      event(userInfo.user.id);
+    } catch(error) {
+        Alert.alert(error.message);
+    }
   };
 
   const signOut = async () => {

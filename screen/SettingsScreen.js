@@ -78,7 +78,8 @@ export default function SettingsScreen( { navigation } ) {
   return (
     <View style={styles.container}>
       <View>
-        <Appbar.Header style={{backgroundColor: 'white'}}>
+        <Appbar.Header style={{backgroundColor: '#f7f7ff'}}>
+          <Feather name="filter" size={20} style={{marginLeft: 15, marginTop: 2,}}/>
           <Appbar.Content title="Task Sorter" />
           <Appbar.Action icon="dots-vertical" onPress={() => console.log('More options')} />
         </Appbar.Header>
@@ -327,7 +328,7 @@ const styles = StyleSheet.create({
       flex:1,
       flexDirection: 'column',
       alignItems: 'stretch',
-      backgroundColor: 'white',
+      backgroundColor: '#f7f7ff',
       justifyContent: 'space-between'
     },
     title: {

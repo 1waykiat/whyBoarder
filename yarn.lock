@@ -10947,6 +10947,11 @@ react-native-calendars@^1.1263.0:
   optionalDependencies:
     moment "^2.24.0"
 
+react-native-color-palette@^2.2.0:
+  version "2.2.0"
+  resolved "https://registry.yarnpkg.com/react-native-color-palette/-/react-native-color-palette-2.2.0.tgz#be5dc50c20d22a704dfd7870f4bb43fdfb8df96f"
+  integrity sha512-5sAh7veeSMg7KOijnBTj4/A54JzfFfOjo7r9YYCnEF9HWgpMHr6oSjERM18qzP561FFVMElVOh3nCit1pvq6xQ==
+
 react-native-dotenv@^3.0.0:
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/react-native-dotenv/-/react-native-dotenv-3.0.0.tgz#9df00e5cf43746b8e3917961db8ace6c3cbe266d"

@@ -184,6 +184,7 @@ export default function TaskSorter() {
       newAgendaItem = {
         name: item.name,
         key: item.key,
+        color: item.color,
         startTime: numberToStringTime(startTime < 2400 ? startTime : addTime(startTime, -24 * 60)),
         endTime: numberToStringTime(endTime < 2400 ? endTime : addTime(endTime, -24 * 60)),
       }
@@ -244,7 +245,7 @@ export default function TaskSorter() {
   
   return (
     <View>
-      <Button style={styles.button} icon="filter" mode="contained" onPress={() => sortAll()}>
+      <Button style={styles.button} contentStyle={{backgroundColor:'#277DA1'}} icon="filter" mode="contained" onPress={() => sortAll()}>
         Sort my Tasks!
       </Button>
       <Portal>

@@ -125,6 +125,7 @@ export const slice = createSlice({
         endTime: "01:00",
         recurring: "Does not repeat",
         key: 0,
+        color: "#f94144"
     }, ],
     flexList: [{
       name: "example (flexList)",
@@ -133,6 +134,7 @@ export const slice = createSlice({
       key: 1,
       timePreference: [true, false, false, false],
       priority: true,
+      color: "#f94144"
     }, ],
     agenda: {
       "2021-06-06": [{
@@ -190,7 +192,7 @@ export const slice = createSlice({
     // input is object with key, type and new item including key
     editTodo: (state, action) => {
       const input = action.payload;
-      const {startDate, endDate, ...newAgendaTask} = {...(input.newItem)};
+      const {startDate, endDate, ...newAgendaTask} = input.newItem;
       
       // remove task first
       let newAgenda = removeAgenda({agenda: state.agenda, key: input.key});

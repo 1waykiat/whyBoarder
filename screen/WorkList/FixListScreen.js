@@ -3,6 +3,7 @@ import React from 'react';
 import { View, StyleSheet} from 'react-native';
 import { FAB, Appbar } from 'react-native-paper'
 import { useDispatch } from 'react-redux';
+import { Feather } from '@expo/vector-icons';
 
 import TodoList from '../../component/todoList';
 import { clearTodo } from '../../slice/todoListSlice';
@@ -18,9 +19,9 @@ export default function FixListScreen( { navigation } ) {
 
   return (
     <View style={styles.container}>
-      <Appbar.Header style={{backgroundColor: '#ae2e30',}}>
-        <Appbar.BackAction onPress={() => navigation.goBack()} />
-        <Appbar.Content title="FixList" />
+      <Appbar.Header style={{backgroundColor: '#f7f7ff',}}>
+        <Feather name="lock" size={20} style={{marginLeft: 15}}/>
+        <Appbar.Content title="Fixboard" />
         <Appbar.Action icon="dots-vertical" onPress={() => console.log('More options')}  />
       </Appbar.Header>
       <View style={{alignItems:'center',}}>
@@ -71,7 +72,7 @@ const styles = StyleSheet.create({
       flex:1,
       flexDirection: 'column',
       alignItems: 'stretch',
-      backgroundColor: '#641a1b',
+      backgroundColor: '#f7f7ff',
     },
     title: {
       alignContent: 'flex-start',

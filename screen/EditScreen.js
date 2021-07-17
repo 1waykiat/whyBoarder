@@ -1,10 +1,11 @@
 import React, {useState} from 'react'
 import { Button, TextInput, Divider, Appbar, Menu, Snackbar, Portal, Modal, Switch, RadioButton } from 'react-native-paper'
 import { Text, View, StyleSheet, Pressable, } from 'react-native'
+import colorTheme from '../presentational/colorTheme'
 
 import Icon from 'react-native-vector-icons/FontAwesome5'
-import { Feather } from '@expo/vector-icons';
-import { FontAwesome } from '@expo/vector-icons';
+import { Feather, MaterialCommunityIcons } from '@expo/vector-icons';
+import ColorPalette from 'react-native-color-palette'
 
 import { useDispatch, useSelector } from 'react-redux';
 import { addTodo, editTodo, removeTodo, selectTodoList } from '../slice/todoListSlice';
@@ -76,7 +77,6 @@ const dateOverlap = (task1, task2) => {
   //return task1.startDate == task2.startDate
   const test1 = task1.endDate < task2.startDate
   const test2 = task2.endDate < task1.startDate
-  console.log(!(test1 || test2))
 
   return !(test1 || test2)  
 }
@@ -128,10 +128,22 @@ export default function EditScreen( { navigation, route } ) {
   const [priority, setPriority] = useState(item == undefined ? false : item.priority)
   const togglePriority = () => setPriority(!priority)
 
+  // For the color modal, not be thrown into reducer, purely for Color palette
+  const [color, setColor] = useState('#277DA1')
+  const [colorVisible, setColorVisible] = useState(false)
+  const toggleColor = () => setColorVisible(!colorVisible)
+  const dismissColor = () => setColorVisible(false)
+  // ACTUAL value to be thrown into the reducer
+  const [colorSelected, setColorSelected] = useState(item == undefined ? '#277DA1' : item.color )
+
   const [snackVisible, setSnackVisible] = useState(false)
   const toggleSnack = () => setSnackVisible(!snackVisible)
   const dismissSnack = () => setSnackVisible(false)
   const overlapAlert = "Duration overlaps with an existing task!"
+
+  const [deleteVisible, setDeleteVisible] = useState(false)
+  const toggleDelete = () => setDeleteVisible(!deleteVisible)
+  const dismissDelete = () => setDeleteVisible(false)
 
   const showMode = (currentMode) => {
     setShow(true);
@@ -168,6 +180,7 @@ export default function EditScreen( { navigation, route } ) {
         endDate: dateExtract(endDisplay),
         endTime: timeToHourMin(endDisplay),
         recurring: recurring,
+        color: colorSelected,
     }};
   
     const flexListItem = () => {
@@ -177,6 +190,7 @@ export default function EditScreen( { navigation, route } ) {
         recurring: recurring,
         timePreference: [pm, morn, noon, eve],
         priority: priority,
+        color: colorSelected
     }};
 
     const newItem = () => input.type == "fixList" ? fixListItem() : flexListItem();
@@ -226,17 +240,42 @@ export default function EditScreen( { navigation, route } ) {
           <Appbar.BackAction onPress={() => navigation.goBack()} />
           <Appbar.Content title={item == undefined ? 'Add Task' : 'Edit Task'} />
           { item != undefined && (
-            <Appbar.Action icon="delete" onPress={() => {
-              dispatch(removeTodo({key: item.key}));
-              navigation.goBack();
-            }}
-            />
+            <Appbar.Action icon="delete" onPress={toggleDelete} />
           )}
+          <Appbar.Action icon='circle' onPress={toggleColor} color={colorSelected} style={{}} />
+
           {input.type === "flexList" && (
             <Appbar.Action icon={ priority ? "star" : "star-outline" } onPress={togglePriority} />
           )}
-          <Appbar.Action icon="check" onPress={() => { reducer() }} disabled={ input.type === 'fixList' && endDisplay <= startDisplay } />
+          <Appbar.Action 
+            icon="check" 
+            onPress={() => { reducer() }} 
+            disabled={ input.type === 'fixList' && endDisplay <= startDisplay
+            || (endDisplay - startDisplay) / 3600000 > 24 && recurring == 'Daily'
+            || (endDisplay - startDisplay) / 3600000 > 168 && recurring == 'Weekly' } />
         </Appbar.Header>
+
+        <Portal>
+          <Modal visible={deleteVisible} onDismiss={dismissDelete} contentContainerStyle={styles.modal} dismissable={false}>
+            <Text style={{fontSize: 15}}>
+              Delete the existing task?
+            </Text>
+            <View style={{flexDirection:'row', justifyContent:'flex-end', marginTop:20 }}>
+              <Button mode='text' onPress={dismissDelete} labelStyle={{fontSize: 12}}>
+                Cancel
+              </Button>
+              <Button mode="text" onPress={() => {
+                dispatch(removeTodo({key: item.key}));
+                dismissDelete()
+                navigation.goBack()
+              }}
+              labelStyle={{fontSize: 12}}
+              >        
+                Delete    
+              </Button>
+            </View>
+          </Modal>
+        </Portal>
 
         {/* Title Input */}
         <TextInput
@@ -505,16 +544,57 @@ export default function EditScreen( { navigation, route } ) {
         
 
         
-        { (endDisplay <= startDisplay && input.type === 'fixList') && (
+        { ( input.type === 'fixList' && endDisplay <= startDisplay 
+          || (endDisplay - startDisplay) / 3600000 > 24 && recurring == 'Daily'
+          || (endDisplay - startDisplay) / 3600000 > 168 && recurring == 'Weekly') && (
           <View style={{flexDirection:'row', justifyContent: 'center', padding: 10}}>
             <Feather name='alert-triangle' size={20} color="red" style={{paddingHorizontal: 6}} />
             <Text style={{color: 'red'}}>
               {endDisplay < startDisplay ? "Start time cannot be after the End Time."
+              : (endDisplay - startDisplay) / 3600000 > 24 && recurring == 'Daily'
+              ? "Daily tasks should not be longer than 24hrs."
+              : (endDisplay - startDisplay) / 3600000 > 168 && recurring == 'Weekly'
+              ? "Weekly tasks should not be longer than a week."
               : "Start time cannot be same as End Time."}
             </Text>
           </View>
         )}
+
+        <Portal>
+          <Modal visible={colorVisible} onDismiss={dismissColor} contentContainerStyle={styles.modal} dismissable={true} >
+            <ColorPalette 
+              onChange={color => setColor(color)}
+              value={color}
+              colors={['#f94144', '#277DA1', '#577590', '#4D908E', '#43AA8B', '#F3722C', '#90BE6D', '#F9C74F', '#F8961E']}
+              title="Color Theme"
+              icon={<Icon name={'check'} size={14} color={'white'}  />}
+            />
+            <View style={{flexDirection: 'row', justifyContent: 'flex-end'}}>
+              <Button 
+                mode="text"
+                onPress={() => {
+                  dismissColor()
+                  setColor(colorSelected)
+                }}
+                style={{marginHorizontal: 0, marginTop: 10, }}
+              >
+                Cancel
+              </Button>
+              <Button 
+                mode="text" 
+                onPress={() => {
+                  setColorSelected(color)
+                  dismissColor()
+                }} style={{marginHorizontal: 0, marginTop: 10, }}>
+                Save
+              </Button>
+            </View>
+          </Modal>
+        </Portal>
+
+
       </View>
+
 
       {/* Error notification */}
       <Portal>
@@ -522,13 +602,13 @@ export default function EditScreen( { navigation, route } ) {
           <Text>
             {overlapAlert}
           </Text>
-          <Button mode="text" onPress={dismissSnack}>
+          <Button mode="text" onPress={dismissSnack} >
             ok
           </Button>
         </Modal>
       </Portal>
+
     </View>
-    
   )
 };
 
