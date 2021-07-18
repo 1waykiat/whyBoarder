@@ -81,7 +81,7 @@ export default function SettingsScreen( { navigation } ) {
         <Appbar.Header style={{backgroundColor: '#f7f7ff'}}>
           <Feather name="filter" size={20} style={{marginLeft: 15, marginTop: 2,}}/>
           <Appbar.Content title="Task Sorter" />
-          <Appbar.Action icon="dots-vertical" onPress={() => console.log('More options')} />
+          <Appbar.Action icon="exit-to-app" onPress={() => Authentication( {action: "signOut", event: () => navigation.navigate("Home") })} />
         </Appbar.Header>
         <Text
           style={{color:'gray', paddingHorizontal: 30, paddingVertical: 10}}
