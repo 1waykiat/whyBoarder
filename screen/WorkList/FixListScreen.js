@@ -8,6 +8,8 @@ import { Feather } from '@expo/vector-icons';
 import TodoList from '../../component/todoList';
 import { clearTodo } from '../../slice/todoListSlice';
 
+import Authentication from '../../api/Authentication';
+
 export default function FixListScreen( { navigation } ) {
   const dispatch = useDispatch();
 
@@ -22,7 +24,7 @@ export default function FixListScreen( { navigation } ) {
       <Appbar.Header style={{backgroundColor: '#f7f7ff',}}>
         <Feather name="lock" size={20} style={{marginLeft: 15}}/>
         <Appbar.Content title="Fixboard" />
-        <Appbar.Action icon="dots-vertical" onPress={() => console.log('More options')}  />
+        <Appbar.Action icon="exit-to-app" onPress={() => Authentication( {action: "signOut", event: () => navigation.navigate("Home") })} />
       </Appbar.Header>
       <View style={{alignItems:'center',}}>
         <TodoList type={"fixList"} navigation={navigation}/>
@@ -57,12 +59,6 @@ export default function FixListScreen( { navigation } ) {
           }
         }}
       />
-
-      {/* <FAB
-          style={styles.fab}
-          icon="plus"
-          onPress={() => navigation.navigate("Edit", {type: 'fixList'})}
-      /> */}
     </View>
     )
 }

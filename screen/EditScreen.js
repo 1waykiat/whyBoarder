@@ -279,19 +279,23 @@ export default function EditScreen( { navigation, route } ) {
         <Divider />
 
         {/* Recurring */}
-        <Pressable
-          onPress ={showRecurModal}
-          android_ripple={{color: '#bababa'}}
-          style={styles.pressIcon}>
-          <View style={{flexDirection:'row', justifyContent:'space-between'}}>
-            <View style={{flexDirection:'row'}}>
-              <Icon style={{marginTop: 4, marginRight: 10, color:'#8c8c8c',}} name="redo" size={17} />
-              <Text style={styles.title}>Recurrence</Text>
+        {input.type === 'fixList' && (
+          <Pressable
+            onPress ={showRecurModal}
+            android_ripple={{color: '#bababa'}}
+            style={styles.pressIcon}>
+            <View style={{flexDirection:'row', justifyContent:'space-between'}}>
+              <View style={{flexDirection:'row'}}>
+                <Icon style={{marginTop: 4, marginRight: 10, color:'#8c8c8c',}} name="redo" size={17} />
+                <Text style={styles.title}>Recurrence</Text>
+              </View>
+              <Text style={styles.title}>{recurring}</Text>
             </View>
-            <Text style={styles.title}>{recurring}</Text>
-          </View>
-        </Pressable>
-        <Divider />
+          </Pressable>
+        )}
+        {input.type === 'fixList' && (
+          <Divider />
+        )}
 
         <Portal>
           <Modal visible={recurVisible} onDismiss={hideRecurModal} contentContainerStyle={styles.modal} >

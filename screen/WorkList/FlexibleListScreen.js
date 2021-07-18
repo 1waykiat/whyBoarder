@@ -5,6 +5,7 @@ import { useDispatch } from 'react-redux';
 import { Feather } from '@expo/vector-icons';
 
 import TodoList from '../../component/todoList'
+import Authentication from '../../api/Authentication';
 
 export default function FlexibleListScreen( { navigation } ) {
   const dispatch = useDispatch();
@@ -20,7 +21,7 @@ export default function FlexibleListScreen( { navigation } ) {
         <Appbar.Header style={{backgroundColor: '#f7f7ff'}}>
           <Feather name='list' size={20} style={{marginLeft: 15}} />
           <Appbar.Content title="Flexboard" />
-          <Appbar.Action icon="dots-vertical" onPress={() => console.log('More options')} />
+          <Appbar.Action icon="exit-to-app" onPress={() => Authentication( {action: "signOut", event: () => navigation.navigate("Home") })} />
         </Appbar.Header>
         <View style={{alignItems: 'center'}}>
           <TodoList type={"flexList"} navigation={navigation}/>

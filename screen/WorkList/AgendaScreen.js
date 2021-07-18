@@ -9,6 +9,8 @@ import { selectTodoList } from '../../slice/todoListSlice';
 import { today } from '../../api/Time';
 import colorTheme from '../../presentational/colorTheme'
 
+import Authentication from '../../api/Authentication'
+
 export default function AgendaScreen( {  navigation } )  {
   const items = useSelector(selectTodoList).agenda;
 
@@ -49,7 +51,7 @@ export default function AgendaScreen( {  navigation } )  {
       <Appbar.Header style={{backgroundColor: '#f7f7ff',}}>
         <Feather name='calendar' size={20} style={{marginLeft: 15}} />
         <Appbar.Content title="Agenda" />
-        <Appbar.Action icon="dots-vertical" onPress={() => console.log('More options')}  />
+        <Appbar.Action icon="exit-to-app" onPress={() => Authentication( {action: "signOut", event: () => navigation.navigate("Home") })} />
       </Appbar.Header>
       <Agenda
         items={items}
