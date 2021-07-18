@@ -306,7 +306,15 @@ export default function SettingsScreen( { navigation } ) {
         )}
       </View>
 
-      <TaskSorter disable={((day === "Same Day" && cutoffTime <= startTime) || (day === "Next Day" && timeToHourMin(cutoffTime) > timeToHourMin(startTime)))}/>
+      {((day === "Same Day" && cutoffTime <= startTime) || (day === "Next Day" && timeToHourMin(cutoffTime) > timeToHourMin(startTime))) && (
+        <Button style={styles.button} contentStyle={{backgroundColor:'#277DA1'}} icon="filter" mode="contained" onPress={() => sortAll()} disabled={true} >
+          Sort my Tasks!
+        </Button>
+      )}
+      {!((day === "Same Day" && cutoffTime <= startTime) || (day === "Next Day" && timeToHourMin(cutoffTime) > timeToHourMin(startTime))) && (
+        <TaskSorter disable={((day === "Same Day" && cutoffTime <= startTime) || (day === "Next Day" && timeToHourMin(cutoffTime) > timeToHourMin(startTime)))}/>
+      )}
+
 
       {/* Shifting this somewhere else but have not decided yet :) */}
       {/* <Button
@@ -366,5 +374,13 @@ const styles = StyleSheet.create({
       marginRight: 5,
       backgroundColor: 'white',
       fontFamily: 'sans-serif',
+    },
+    button: {
+      marginHorizontal: 30,
+      marginVertical: 30,
+    },
+    button: {
+      marginHorizontal: 30,
+      marginVertical: 30,
     },
   });
