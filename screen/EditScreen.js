@@ -1,10 +1,9 @@
 import React, {useState} from 'react'
-import { Button, TextInput, Divider, Appbar, Menu, Snackbar, Portal, Modal, Switch, RadioButton } from 'react-native-paper'
+import { Button, TextInput, Divider, Appbar, Portal, Modal, Switch, RadioButton } from 'react-native-paper'
 import { Text, View, StyleSheet, Pressable, } from 'react-native'
-import colorTheme from '../presentational/colorTheme'
 
 import Icon from 'react-native-vector-icons/FontAwesome5'
-import { Feather, MaterialCommunityIcons } from '@expo/vector-icons';
+import { Feather } from '@expo/vector-icons';
 import ColorPalette from 'react-native-color-palette'
 
 import { useDispatch, useSelector } from 'react-redux';
@@ -16,15 +15,6 @@ import RNDateTimePicker from '@react-native-community/datetimepicker';
 const timeToHumanDate = (time) => {
   const temp = new Date(time).toDateString().split(' ')
   return temp[0] + ', ' + temp[2] + ' ' + temp[1] + ' ' + temp[3]
-}
-
-// to solve a bug that may or may not exist
-const testConvert = (time) => {
-  const day = time.getDate()
-  const month = time.getMonth() + 1
-  const year = time.getFullYear() 
-
-  return year + '-' + month.toString().padStart(2, '0') + '-' + day
 }
 
 // Converts to local readable TIME
@@ -42,10 +32,6 @@ const dateExtract = (time) => {
 } 
 
 // Converts to UTC HH:MM 
-const timeExtract = (time) => {
-  const temp = new Date(time).toISOString().split('T')[1].split(":")
-  return temp[0] + ':' + temp[1]
-}
 
 // Merges both the YYYY-MM-DD and HH:MM to return Date object
 const dateTimeMerge = (date, time) => {
@@ -187,10 +173,9 @@ export default function EditScreen( { navigation, route } ) {
       return {
         name: name,
         duration: parseInt(hours) * 60 + parseInt(minutes),
-        recurring: recurring,
         timePreference: [pm, morn, noon, eve],
         priority: priority,
-        color: colorSelected
+        color: colorSelected,
     }};
 
     const newItem = () => input.type == "fixList" ? fixListItem() : flexListItem();

@@ -130,7 +130,6 @@ export const slice = createSlice({
     flexList: [{
       name: "example (flexList)",
       duration: 240,
-      recurring: "Does not repeat",
       key: 1,
       timePreference: [true, false, false, false],
       priority: true,
@@ -159,7 +158,6 @@ export const slice = createSlice({
       const newAgenda = multiDayAdder({
         agenda: state.agenda,
         type: input.type,
-        recurring: input.newItem.recurring,
         startDate: input.newItem.startDate,
         endDate: input.newItem.endDate, 
         newAgendaTask: newAgendaTask
@@ -201,7 +199,6 @@ export const slice = createSlice({
       newAgenda = multiDayAdder({
         agenda: newAgenda,
         type: input.type,
-        recurring: input.newItem.recurring,
         startDate: input.newItem.startDate,
         endDate: input.newItem.endDate, 
         newAgendaTask: newAgendaTask
