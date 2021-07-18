@@ -40,7 +40,7 @@ export const agendaDuration = (task) => {
 
 // takes an object with startDate and endDate to calculate the difference in number of days.
 export const dateDifference = (task) => {
-  return new Date(task.endDate) - new Date(task.endDate); 
+  return new Date(task.endDate) - new Date(task.startDate); 
 }
 
 // compare two task by time
