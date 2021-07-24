@@ -87,7 +87,7 @@ export default function todoList( { type, navigation} ) {
                         )}    
                       </View>
                     }
-                    {item.recurring != "Does not repeat" && (
+                    {(item.recurring != "Does not repeat" && type == "fixList" ) && (
                       <View style={{flexDirection: 'row'}}>
                         <Feather name="repeat" size={12} color="black" style={{marginTop: 6, color: colorTheme[item.color]}}/>
                         <Caption style={styles.caption}> {item.recurring}</Caption>
