@@ -428,7 +428,8 @@ export default function EditScreen( { navigation, route } ) {
               mode="text"
               onPress={hideDurModal}
               style={{paddingTop: 10,}}
-              disabled={((hours === "" || minutes === "") 
+              disabled={((hours === "" || minutes === "")
+              || (!(isNumeric(hours) && isNumeric(minutes))) 
               || (hours === '0' && minutes === '0') 
               || minutes > 59)}
             >
