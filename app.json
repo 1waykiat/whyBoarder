@@ -21,14 +21,14 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/logo1.png",
+        "foregroundImage": "./assets/logo2.png",
         "backgroundColor": "#FFFFFF"
       },
       "package": "com.wewhyBoarder",
       "versionCode": 1
     },
     "web": {
-      "favicon": "./assets/logo1.png"
+      "favicon": "./assets/logo2.png"
     }
   }
 }
