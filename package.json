@@ -24,7 +24,7 @@
     "global": "^4.4.0",
     "react": "16.13.1",
     "react-dom": "16.13.1",
-    "react-native": "https://github.com/expo/react-native/archive/sdk-41.0.0.tar.gz",
+    "react-native": "^0.67.2",
     "react-native-calendars": "^1.1263.0",
     "react-native-color-palette": "^2.2.0",
     "react-native-dotenv": "^3.0.0",
