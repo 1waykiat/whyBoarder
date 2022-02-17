@@ -1,14 +1,14 @@
 import firebase  from "./Firebase";
 import { Alert } from "react-native";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, sendPasswordResetEmail, sendEmailVerification } from "firebase/auth"
 
-const auth = firebase.auth();
+const auth = getAuth(firebase);
 
 export default function Authentication( {action, email, password, event } ) {
   event = event == undefined ? () => {} : event
 
   const createAccount = async () => {
-    await auth
-    .createUserWithEmailAndPassword(email, password)
+    await createUserWithEmailAndPassword(auth, email, password)
     .then(() => {
       console.log('User account created & signed in!');
       event();
@@ -28,8 +28,7 @@ export default function Authentication( {action, email, password, event } ) {
   };
   
   const emailSignIn = async () => {
-    await auth
-    .signInWithEmailAndPassword(email, password)
+    await signInWithEmailAndPassword(auth, email, password)
     .then(() => {
       console.log('User account signed in!');
       event();
@@ -59,9 +58,8 @@ export default function Authentication( {action, email, password, event } ) {
     }
   };
 
-  const signOut = async () => {
-    await auth
-    .signOut()
+  const signOut_ = async () => {
+    await signOut(auth)
     .then(() => {
       console.log('User account signed out!');
       event();
@@ -72,8 +70,7 @@ export default function Authentication( {action, email, password, event } ) {
   };
 
   const forgotPassword = async () => {
-    await auth
-    .sendPasswordResetEmail(email)
+    await sendPasswordResetEmail(auth, email)
     .then(() => {
       console.log('Password reset email sent!');
       event();
@@ -84,8 +81,7 @@ export default function Authentication( {action, email, password, event } ) {
   };
 
   const emailVerification = async () => {
-    await auth
-    .currentUser.sendEmailVerification()
+    await sendEmailVerification(auth.currentUser)
     .then(() => {
       console.log('Verification email sent!');
       event();
@@ -109,7 +105,7 @@ export default function Authentication( {action, email, password, event } ) {
        break;
     } ;
     case "signOut": {
-      signOut();
+      signOut_();
       break;
     };
     case "forgotPassword": {

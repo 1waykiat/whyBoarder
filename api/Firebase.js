@@ -1,4 +1,4 @@
-import firebase from "firebase/app";
+import { initializeApp, getApp, getApps  } from "firebase/app";
 import "firebase/auth"
 import "firebase/database"
 import {apiKey, authDomain, databaseURL, projectId, storageBucket, messagingSenderId, appId, measurementId} from "@env"
@@ -14,6 +14,6 @@ const firebaseConfig = {
   measurementId: measurementId,
 };
 
-const firebaseApp = !firebase.apps.length ? firebase.initializeApp(firebaseConfig) : firebase.app();
+const firebaseApp = getApps.length == 0 ? initializeApp(firebaseConfig) : getApp();
 
 export default firebaseApp;

@@ -12,7 +12,7 @@ import Authentication from '../api/Authentication';
 import Database from '../api/Database';
 import { today } from '../api/Time';
 
-export default function signIn( { navigation } ) {
+export default function SignInScreen( { navigation } ) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);

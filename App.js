@@ -34,7 +34,7 @@ export default function App() {
     <Provider store={store}>
       <PaperProvider>
         <NavigationContainer>
-          <Stack.Navigator initialRouteName='Home' headerMode='none'>
+          <Stack.Navigator initialRouteName='Home' screenOptions={{headerShown: false}}>
             <Stack.Screen name="Home" component={HomeScreen}/>
             <Stack.Screen name="SignIn" component={SignInScreen}/>
             <Stack.Screen name="SignUp" component={SignUpScreen}/>
@@ -47,5 +47,3 @@ export default function App() {
     </Provider>
    );
 }
-
-

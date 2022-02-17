@@ -1,27 +1,28 @@
 import { Alert } from "react-native";
 import firebase from "./Firebase";
+import { getDatabase, ref, set, child, get } from "firebase/database"
+import { getAuth } from "firebase/auth"
 
-const database = firebase.database();
+const database = getDatabase(firebase);
+const auth = getAuth(firebase)
 
 export default function Database( {action, slice, data, event = {pass: () => {}, fail:() => {}}} ) {
-  const uid = firebase.auth().currentUser.uid;
+  const uid = auth.currentUser.uid;
   const route = uid +"/" + slice;
 
   const upload = () => {
-    database.ref(route)
-    .set(data)
+    set(ref(database, route), data)
     .then(() => {
       event()
     })
-    .catch((error) =>{
+    .catch((error) => {
       console.log(error);
       Alert.alert(error.message);
     });
   }
 
   const download = () => {
-    database.ref().child(route)
-    .get()
+    get(child(ref(database), route))
     .then((item) => {
       if (item.exists()) {
         (event.pass)()(item);
